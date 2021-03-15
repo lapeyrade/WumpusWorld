@@ -1,8 +1,6 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.IO;
 using System.Linq;
 using SbsSW.SwiPlCs;
 using SbsSW.SwiPlCs.Exceptions;
@@ -10,14 +8,13 @@ using System.Reflection;
 
 public class Action
 {
-    private enum Personality{Random, Playable, Prolog};
-    private string prologFilePath = @".\Assets\Scripts\knowledgeBase.pl";
+    private string prologFilePath = @"./Assets/Scripts/knowledgeBase.pl";
 
     public Action(int wumpuses, int golds, Coordinates coords)
     {
         InitialiseProlog();
         initialiseGameKB(wumpuses, golds, coords);
-        printKB();
+        printKB();  
     }
 
     public Coordinates NextAction(string action, Coordinates coords, Coordinates prevCoords)
@@ -29,14 +26,13 @@ public class Action
         else 
             nextCoords = RandomMoveProlog(coords);
 
-        // printKB();
         return nextCoords;
     }
 
     private void InitialiseProlog()
     {
         // suppressing informational and banner messages
-        String[] param = {"-q", "-f", prologFilePath};  
+        string[] param = {"-q", "-f", prologFilePath};  
         PlEngine.Initialize(param);
         PlQuery.PlCall("resetKB");
     }
@@ -85,9 +81,9 @@ public class Action
         return null;
     }
 
-    public List<String> CheckCell(Coordinates coords)
+    public List<string> CheckCell(Coordinates coords)
     {
-        List<String> cellContent = new List<String>();
+        List<string> cellContent = new List<string>();
         using (PlQuery queryCell = new PlQuery("cell", new PlTermV(new PlTerm(coords.x), new PlTerm(coords.y), new PlTerm("State"))))
         {
             foreach (PlTermV solution in queryCell.Solutions)
@@ -152,85 +148,4 @@ public class Action
     {
         PlQuery.PlCall($"retractall({prologFact})");
     }
-
-    /* Ancient version 
-
-    private void resetKnowledgeBase()
-    {
-        string oldVersion;
-        string newVersion = "";
-        string stoppingLine = "% DYNAMIC PART OF THE KNOWLEDGE BASE";
-        
-        StreamReader streamReader = File.OpenText(prologFilePath);
-        while ((oldVersion = streamReader.ReadLine()) != null)
-        {
-            if (!oldVersion.Contains(stoppingLine))
-            {
-                newVersion += oldVersion + Environment.NewLine;
-            }
-            else
-            {
-                newVersion += stoppingLine + Environment.NewLine + Environment.NewLine;
-                break;
-            }
-        }
-        streamReader.Close();
-        File.WriteAllText(prologFilePath, newVersion);
-    }
-
-    public void WriteInKnowledgeBase(string prologText)
-    {
-        if (!File.Exists(prologFilePath))
-        {
-            using (StreamWriter sw = File.CreateText(prologFilePath)) // Create a file to write to.
-            {
-                sw.WriteLine(prologText);
-            }	
-        }
-
-        string oldVersion;
-        bool alreadyPresent = false;
-
-        StreamReader streamReader = File.OpenText(prologFilePath);
-        while ((oldVersion = streamReader.ReadLine()) != null)
-        {
-            if (oldVersion.Contains(prologText))
-            {
-                alreadyPresent = true;
-            }
-        }
-        streamReader.Close();
-        
-        if (!alreadyPresent)
-        {
-            using (StreamWriter sw = File.AppendText(prologFilePath)) // Add text to file
-                {
-                    sw.WriteLine(prologText);
-                }
-
-            PlQuery.PlCall($"assertz({prologText.Substring(0, prologText.Length - 1)})");
-        }
-
-    }
-
-    public void RemoveFromKnowledgeBase(string prologText)
-    {
-        string oldVersion;
-        string newVersion = "";
-
-        StreamReader streamReader = File.OpenText(prologFilePath);
-        while ((oldVersion = streamReader.ReadLine()) != null)
-        {
-            if (!oldVersion.Contains(prologText))
-            {
-                newVersion += oldVersion + Environment.NewLine;
-                PlQuery.PlCall($"retract({prologText.Substring(0, prologText.Length - 1)})");
-            }
-        }
-        streamReader.Close();
-        File.WriteAllText(prologFilePath, newVersion);
-    }
-
-    */
-
 }

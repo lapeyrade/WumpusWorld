@@ -26,9 +26,6 @@ public class GameController : MonoBehaviour
     private Action action;
     private Agent agent;
 
-    public Sprite[] agentSprites;
-
-
     void Awake()
     {
         Random.InitState(randomSeed); // Random Seed
