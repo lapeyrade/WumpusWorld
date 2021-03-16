@@ -259,10 +259,6 @@ MonoBehaviour:
   wumpuses: 1
   golds: 1
   agents: 1
-  agentSprites:
-  - {fileID: 5731584507761909605, guid: 5e3907c78dd172742a3c3344017c687c, type: 3}
-  - {fileID: -1516033387003549848, guid: 5e3907c78dd172742a3c3344017c687c, type: 3}
-  - {fileID: -4784937291257459594, guid: 5e3907c78dd172742a3c3344017c687c, type: 3}
 --- !u!4 &1979442550
 Transform:
   m_ObjectHideFlags: 0

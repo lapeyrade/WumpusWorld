@@ -5,26 +5,38 @@ using System.Linq;
 
 public class GameController : MonoBehaviour
 {
-    public int randomSeed = 4;
-    public int gridSizeX = 5;
-    public int gridSizeY = 5;
-    public int startX = 1;
-    public int startY = 1;
+    [SerializeField]
+    private int randomSeed = 4;
+    [SerializeField]
+    private int gridSizeX = 5;
+    [SerializeField]
+    private int gridSizeY = 5;
+    [SerializeField]
+    private int startX = 1;
+    [SerializeField]
+    private int startY = 1;
+    [SerializeField]
     public float tileSize = 1.05f;
-    public int pits = 3;
-    public int wumpuses = 1;
-    public int golds = 1;
-    public int agents = 1;
+    [SerializeField]
+    private int pits = 3;
+    [SerializeField]
+    private int wumpuses = 1;
+    [SerializeField]
+    private int golds = 1;
+    [SerializeField]
+    private int agents = 1;
 
     public Coordinates grid;
-    public Coordinates startCoords;
-    public Dictionary<string, GameObject>[,] map;
-    public Dictionary<string, GameObject>[,] mapFull;
+    private Coordinates startCoords;
+    private Dictionary<string, GameObject>[,] map;
+    private Dictionary<string, GameObject>[,] mapFull;
 
     private bool gameOver = false;
 
     private Action action;
     private Agent agent;
+
+    private bool debugEnabled = true;
 
     void Awake()
     {
@@ -32,7 +44,7 @@ public class GameController : MonoBehaviour
 
         grid = new Coordinates(gridSizeX + 2, gridSizeY + 2);
         startCoords = new Coordinates(startX, startY);
-        action = new Action(wumpuses, golds, startCoords);
+        action = new Action(wumpuses, golds, startCoords, debugEnabled);
 
         map = new Dictionary<string, GameObject>[grid.x, grid.y];
         mapFull = new Dictionary<string, GameObject>[grid.x, grid.y];
@@ -308,9 +320,12 @@ public class GameController : MonoBehaviour
         Coordinates coordsWumpus = action.WumpusFound();
         if (coordsWumpus != null && !map[coordsWumpus.x, coordsWumpus.y].ContainsKey("wumpusDead"))
         {
+            if(mapFull[coordsWumpus.x, coordsWumpus.y].ContainsKey("wumpus"))
+                AddToGrids(coordsWumpus.x, coordsWumpus.y, "wumpusDead", false, true);
+
+            AddToGrids(coordsWumpus.x, coordsWumpus.y, "wumpusDead", true, false);
             RemoveFromGrids(coordsWumpus.x, coordsWumpus.y, "wumpus", true, true);
             AddToGrids(coordsWumpus.x, coordsWumpus.y, "safe", true, false);
-            AddToGrids(coordsWumpus.x, coordsWumpus.y, "wumpusDead", true, true);
 
             action.RemoveFromKB($"cell({coordsWumpus.x}, {coordsWumpus.y}, wumpus)");
             action.AddFactKB($"cell({coordsWumpus.x}, {coordsWumpus.y}, safe)");

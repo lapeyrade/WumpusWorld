@@ -5,16 +5,21 @@ using System.Linq;
 using SbsSW.SwiPlCs;
 using SbsSW.SwiPlCs.Exceptions;
 using System.Reflection;
+using System;
+using System.IO;
 
 public class Action
 {
     private string prologFilePath = @"./Assets/Scripts/knowledgeBase.pl";
+    private string debugPrologFilePath = @"./Assets/Scripts/debugKB.pl";
+    private bool debugEnabled;
 
-    public Action(int wumpuses, int golds, Coordinates coords)
+    public Action(int wumpuses, int golds, Coordinates coords, bool debug)
     {
+        debugEnabled = debug;
         InitialiseProlog();
         initialiseGameKB(wumpuses, golds, coords);
-        printKB();  
+        printKB();
     }
 
     public Coordinates NextAction(string action, Coordinates coords, Coordinates prevCoords)
@@ -96,6 +101,9 @@ public class Action
 
     public void printKB()
     {
+        if(debugEnabled)
+            resetDebugKB();
+
         ClearLog();
         printSingleElement("wumpusTotal", "Initial number of Wumpus: ");
         printSingleElement("wumpusKilled", "Wumpus killed: ");
@@ -108,7 +116,11 @@ public class Action
         using (PlQuery queryCell = new PlQuery("cell", new PlTermV(new PlTerm("X"), new PlTerm("Y"), new PlTerm("State"))))
         { 
             foreach (PlTermV solution in queryCell.Solutions)
+            {
                 Debug.Log("Cell X: " + solution[0].ToString() +  ", Y: " + solution[1].ToString() + " = " + solution[2].ToString());
+                if(debugEnabled)
+                    WriteInDebugKB("cell(" + solution[0] + "," + solution[1] + "," + solution[2] + ").");
+            }
         }
 
         void printSingleElement(string element, string message)
@@ -116,7 +128,11 @@ public class Action
             using (PlQuery queryElement = new PlQuery(element, new PlTermV(new PlTerm("X"))))
             {
                 foreach (PlTermV solution in queryElement.Solutions)
+                {
                     Debug.Log(message + solution[0].ToString());
+                    if(debugEnabled)
+                        WriteInDebugKB(element + "(" + solution[0] + ").");
+                }
             }
         }
     }
@@ -147,5 +163,63 @@ public class Action
     public void RemoveFromKB(string prologFact)
     {
         PlQuery.PlCall($"retractall({prologFact})");
+    }
+
+    /***************** DEBUG *****************/
+    private void resetDebugKB()
+    {
+        string oldVersion;
+        string newVersion = "";
+        string stoppingLine = "% DYNAMIC PART OF THE KNOWLEDGE BASE";
+        
+        StreamReader streamReader = File.OpenText(debugPrologFilePath);
+        while ((oldVersion = streamReader.ReadLine()) != null)
+        {
+            if (!oldVersion.Contains(stoppingLine))
+            {
+                newVersion += oldVersion + Environment.NewLine;
+            }
+            else
+            {
+                newVersion += stoppingLine + Environment.NewLine + Environment.NewLine;
+                break;
+            }
+        }
+        streamReader.Close();
+        File.WriteAllText(debugPrologFilePath, newVersion);
+    }
+
+
+    public void WriteInDebugKB(string prologText)
+    {
+        if (!File.Exists(debugPrologFilePath))
+        {
+            using (StreamWriter sw = File.CreateText(debugPrologFilePath)) // Create a file to write to.
+            {
+                sw.WriteLine(prologText);
+            }	
+        }
+
+        string oldVersion;
+        bool alreadyPresent = false;
+
+        StreamReader streamReader = File.OpenText(debugPrologFilePath);
+        while ((oldVersion = streamReader.ReadLine()) != null)
+        {
+            if (oldVersion.Contains(prologText))
+            {
+                alreadyPresent = true;
+            }
+        }
+        streamReader.Close();
+        
+        if (!alreadyPresent)
+        {
+            using (StreamWriter sw = File.AppendText(debugPrologFilePath)) // Add text to file
+                {
+                    sw.WriteLine(prologText);
+                }
+        }
+
     }
 }
