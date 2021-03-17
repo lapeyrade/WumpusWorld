@@ -13,14 +13,14 @@ public class Agent
 
     public GameObject agentTile;
 
-    public Stack<Coordinates> prevCoords = new Stack<Coordinates>();
+    // public Stack<Coordinates> prevCoords = new Stack<Coordinates>();
 
     public Agent(Coordinates startCoords, int arrowsAtStart)
     {
         coords = startCoords;
         golds = 0;
         arrows = arrowsAtStart;
-        prevCoords.Push(startCoords);
+        // prevCoords.Push(startCoords);
     }
 }
 

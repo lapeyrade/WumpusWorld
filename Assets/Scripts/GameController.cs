@@ -280,11 +280,6 @@ public class GameController : MonoBehaviour
             if(!map[newCoords.x, newCoords.y].ContainsKey("start"))
                 AddToGrids(newCoords.x, newCoords.y, "visited", true, true);
 
-            if (newCoords.x == agent.prevCoords.Peek().x && newCoords.y == agent.prevCoords.Peek().y && agent.prevCoords.Count() > 1)
-                agent.prevCoords.Pop();
-            else
-                agent.prevCoords.Push(new Coordinates(agent.coords.x, agent.coords.y));
-
             RemoveFromGrids(agent.coords.x, agent.coords.y, "agent", true, true);
             AddToGrids(newCoords.x, newCoords.y, "agent", true, true);
 
@@ -306,6 +301,7 @@ public class GameController : MonoBehaviour
         }
         else
         {
+            action.BumpIntoWall();
             RemoveFromGrids(newCoords.x, newCoords.y, "emptyCell", true, false);
             RemoveFromGrids(newCoords.x, newCoords.y, "safe", true, false);
             AddToGrids(newCoords.x, newCoords.y, "wall", true, false);
@@ -386,11 +382,11 @@ public class GameController : MonoBehaviour
     {
         if (Input.GetKeyDown("return"))
         {
-            MoveAgent(action.NextAction("random", agent.coords, agent.prevCoords.Peek()));
+            MoveAgent(action.NextAction("random", agent.coords));
         }
         else if (Input.GetKeyDown("space"))
         {
-            MoveAgent(action.NextAction("prolog", agent.coords, agent.prevCoords.Peek()));
+            MoveAgent(action.NextAction("prolog", agent.coords));
         }
         else if (Input.GetKeyDown("right"))
         {

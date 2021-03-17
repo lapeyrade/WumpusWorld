@@ -18,20 +18,16 @@ public class Action
     {
         debugEnabled = debug;
         InitialiseProlog();
-        initialiseGameKB(wumpuses, golds, coords);
+        InitialiseGameKB(wumpuses, golds, coords);
         printKB();
     }
 
-    public Coordinates NextAction(string action, Coordinates coords, Coordinates prevCoords)
+    public Coordinates NextAction(string action, Coordinates coords)
     {
-        Coordinates nextCoords;
-
         if(action == "prolog")
-            nextCoords = NextMoveProlog(coords, prevCoords);
+            return NextMoveProlog(coords);
         else 
-            nextCoords = RandomMoveProlog(coords);
-
-        return nextCoords;
+            return RandomMoveProlog(coords);
     }
 
     private void InitialiseProlog()
@@ -42,28 +38,15 @@ public class Action
         PlQuery.PlCall("resetKB");
     }
 
-    public void CheckNearCells(Coordinates coords)
+    private void InitialiseGameKB(int wumpuses, int golds, Coordinates coords)
     {
-        PlQuery.PlCall($"checkNearCells({coords.x}, {coords.y})");
+        PlQuery.PlCall($"initGameAttributes({wumpuses}, {golds})");
+        PlQuery.PlCall($"initAgent({coords.x}, {coords.y})");
     }
     
-
-    private Coordinates RandomMoveProlog(Coordinates coords)
+    private Coordinates NextMoveProlog(Coordinates coords)
     {
-        using(PlQuery query = new PlQuery("randomMove", new PlTermV(new PlTerm[] {new PlTerm(coords.x), new PlTerm(coords.y), new PlTerm("PosX2"), new PlTerm("PosY2")})))
-        {
-            foreach (PlTermV solution in query.Solutions)
-            {
-                return new Coordinates((int)solution[2], (int)solution[3]) ;
-            }
-        }
-        Debug.Log("Random Move.");
-        return new Coordinates(coords.x+1, coords.y);
-    }
-
-    private Coordinates NextMoveProlog(Coordinates coords, Coordinates prevCoords)
-    {
-        using(PlQuery query = new PlQuery("nextMove", new PlTermV(new PlTerm[] {new PlTerm(coords.x), new PlTerm(coords.y), new PlTerm("PosX2"), new PlTerm("PosY2"), new PlTerm(prevCoords.x), new PlTerm(prevCoords.y)})))
+        using(PlQuery query = new PlQuery("nextMove", new PlTermV(new PlTerm[] {new PlTerm(coords.x), new PlTerm(coords.y), new PlTerm("NewX"), new PlTerm("NewY")})))
         {
             foreach (PlTermV solution in query.Solutions)
             {
@@ -72,6 +55,24 @@ public class Action
         }
         Debug.Log("Random Move.");
         return RandomMoveProlog(coords);
+    }
+
+    private Coordinates RandomMoveProlog(Coordinates coords)
+    {
+        using(PlQuery query = new PlQuery("randomMove", new PlTermV(new PlTerm[] {new PlTerm(coords.x), new PlTerm(coords.y), new PlTerm("NewX"), new PlTerm("NewY")})))
+        {
+            foreach (PlTermV solution in query.Solutions)
+            {
+                return new Coordinates((int)solution[2], (int)solution[3]);
+            }
+        }
+        Debug.Log("Random Move failed. Going Right.");
+        return new Coordinates(coords.x+1, coords.y);
+    }
+
+    public void CheckNearCells(Coordinates coords)
+    {
+        PlQuery.PlCall($"checkNearCells({coords.x}, {coords.y})");
     }
 
     public Coordinates WumpusFound()
@@ -99,6 +100,12 @@ public class Action
         return cellContent;
     }
 
+    public void BumpIntoWall()
+    {
+        PlQuery.PlCall($"popStack(stackX)");
+        PlQuery.PlCall($"popStack(stackY)");
+    }
+
     public void printKB()
     {
         if(debugEnabled)
@@ -111,6 +118,27 @@ public class Action
         printSingleElement("arrowUsed", "Arrows shot: ");
         printSingleElement("goldTotal", "Initial number of gold: ");
         printSingleElement("goldAgent", "Number of gold picked up: ");
+
+
+        // Print agent previous coordinates
+        using (PlQuery queryPreviousCoordsX = new PlQuery("nb_getval", new PlTermV(new PlTerm("stackX"), new PlTerm("PrevX"))))
+        { 
+            foreach (PlTermV solution in queryPreviousCoordsX.Solutions)
+            {
+                Debug.Log("Previous Coords X: " + solution[1].ToString());
+                if(debugEnabled)
+                    WriteInDebugKB("stackX(" + solution[1]+ ").");
+            }
+        }
+        using (PlQuery queryPreviousCoordsY = new PlQuery("nb_getval", new PlTermV(new PlTerm("stackY"), new PlTerm("PrevY"))))
+        { 
+            foreach (PlTermV solution in queryPreviousCoordsY.Solutions)
+            {
+                Debug.Log("Previous Coords Y: " + solution[1].ToString());
+                if(debugEnabled)
+                    WriteInDebugKB("stackY(" + solution[1]+ ").");
+            }
+        }
 
         // Print Cells
         using (PlQuery queryCell = new PlQuery("cell", new PlTermV(new PlTerm("X"), new PlTerm("Y"), new PlTerm("State"))))
@@ -135,12 +163,6 @@ public class Action
                 }
             }
         }
-    }
-
-    private void initialiseGameKB(int wumpuses, int golds, Coordinates coords)
-    {
-        PlQuery.PlCall($"initGameAttributes({wumpuses}, {golds})");
-        PlQuery.PlCall($"initAgent({coords.x}, {coords.y})");
     }
 
     public void ClearLog()
