@@ -8,8 +8,8 @@ using System.Linq;
 public class Agent
 {
     public Coordinates coords { get; set; }
-    public int golds { get; set; }
-    public int arrows { get; set; }
+    public int nbGold { get; set; }
+    public int nbArrow { get; set; }
 
     public GameObject agentTile;
 
@@ -18,9 +18,8 @@ public class Agent
     public Agent(Coordinates startCoords, int arrowsAtStart)
     {
         coords = startCoords;
-        golds = 0;
-        arrows = arrowsAtStart;
-        // prevCoords.Push(startCoords);
+        nbGold = 0;
+        nbArrow = arrowsAtStart;
     }
 }
 

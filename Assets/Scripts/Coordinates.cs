@@ -1,11 +1,11 @@
 public class Coordinates
 {
-    public int x { get; set;}
-    public int y { get; set;}
+    public int col { get; set;}
+    public int row { get; set;}
 
-    public Coordinates(int coordX, int coordY)
+    public Coordinates(int coordCol, int coordRow)
     {
-        x = coordX;
-        y = coordY;
+        col = coordCol;
+        row = coordRow;
     }
 }

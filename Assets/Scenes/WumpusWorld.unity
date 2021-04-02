@@ -249,16 +249,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e146ff4090db454689f20a6b480911f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  randomSeed: 4
-  gridSizeX: 5
-  gridSizeY: 5
-  startX: 1
-  startY: 1
+  RandomSeed: 0
+  maxGridCol: 7
+  maxGridRow: 7
+  startCol: 1
+  startRow: 1
   tileSize: 1.05
-  pits: 3
-  wumpuses: 1
-  golds: 1
-  agents: 1
+  nbPit: 3
+  nbWumpus: 1
+  nbGold: 1
+  nbAgent: 1
+  debugEnabled: 1
 --- !u!4 &1979442550
 Transform:
   m_ObjectHideFlags: 0

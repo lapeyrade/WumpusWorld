@@ -18,8 +18,6 @@ public class Action
     {
         debugEnabled = debug;
         InitialiseProlog();
-        InitialiseGameKB(wumpuses, golds, coords);
-        printKB();
     }
 
     public Coordinates NextAction(string action, Coordinates coords)
@@ -32,23 +30,29 @@ public class Action
 
     private void InitialiseProlog()
     {
-        // suppressing informational and banner messages
-        string[] param = {"-q", "-f", prologFilePath};  
+        string[] param = {"-q", "-f", prologFilePath};  // suppressing informational & banner messages
         PlEngine.Initialize(param);
         PlQuery.PlCall("resetKB");
     }
 
-    private void InitialiseGameKB(int wumpuses, int golds, Coordinates coords)
+    public void InitialiseGameKB(int seedRandom, Coordinates startCoords, Coordinates gridMin, Coordinates gridMax, int nbGold, int nbWumpus, int nbPit)
     {
-        PlQuery.PlCall($"initGameAttributes({wumpuses}, {golds})");
-        PlQuery.PlCall($"initAgent({coords.x}, {coords.y})");
+        using(PlQuery queryInitGame = new PlQuery("initGame", new PlTermV(new PlTerm[] {new PlTerm(seedRandom), new PlTerm(startCoords.col), new PlTerm(startCoords.row), new PlTerm(gridMin.col), new PlTerm(gridMin.row), new PlTerm(gridMax.col-1), new PlTerm(gridMax.row-1), new PlTerm(nbGold), new PlTerm(nbWumpus), new PlTerm(nbPit)})))
+        // using(PlQuery queryInitGame = new PlQuery("initGame", new PlTermV(new PlTerm[] {new PlTerm(5), new PlTerm(1), new PlTerm(1), new PlTerm(0), new PlTerm(0), new PlTerm(6), new PlTerm(6), new PlTerm(1), new PlTerm(1), new PlTerm(3)})))
+        {
+            foreach (PlTermV solution in queryInitGame.Solutions)
+            {
+                Debug.Log("test");
+            }
+        }
+        printKB();
     }
     
     private Coordinates NextMoveProlog(Coordinates coords)
     {
-        using(PlQuery query = new PlQuery("nextMove", new PlTermV(new PlTerm[] {new PlTerm(coords.x), new PlTerm(coords.y), new PlTerm("NewX"), new PlTerm("NewY")})))
+        using(PlQuery queryNextMove = new PlQuery("nextMove", new PlTermV(new PlTerm[] {new PlTerm(coords.col), new PlTerm(coords.row), new PlTerm("NewCol"), new PlTerm("NewRow")})))
         {
-            foreach (PlTermV solution in query.Solutions)
+            foreach (PlTermV solution in queryNextMove.Solutions)
             {
                 return new Coordinates((int)solution[2], (int)solution[3]);
             }
@@ -59,7 +63,7 @@ public class Action
 
     private Coordinates RandomMoveProlog(Coordinates coords)
     {
-        using(PlQuery query = new PlQuery("randomMove", new PlTermV(new PlTerm[] {new PlTerm(coords.x), new PlTerm(coords.y), new PlTerm("NewX"), new PlTerm("NewY")})))
+        using(PlQuery query = new PlQuery("randomMove", new PlTermV(new PlTerm[] {new PlTerm(coords.col), new PlTerm(coords.row), new PlTerm("NewCol"), new PlTerm("NewRow")})))
         {
             foreach (PlTermV solution in query.Solutions)
             {
@@ -67,17 +71,17 @@ public class Action
             }
         }
         Debug.Log("Random Move failed. Going Right.");
-        return new Coordinates(coords.x+1, coords.y);
+        return new Coordinates(coords.col+1, coords.row);
     }
 
     public void CheckNearCells(Coordinates coords)
     {
-        PlQuery.PlCall($"checkNearCells({coords.x}, {coords.y})");
+        PlQuery.PlCall($"checkNearCells({coords.col}, {coords.row})");
     }
 
     public Coordinates WumpusFound()
     {
-        using(PlQuery query = new PlQuery("cell", new PlTermV(new PlTerm[] {new PlTerm("X"), new PlTerm("Y"), new PlTerm("wumpus")})))
+        using (PlQuery query = new PlQuery("cell", new PlTermV(new PlTerm[] {new PlTerm("Col"), new PlTerm("Row"), new PlTerm("wumpus")})))
         {
             foreach (PlTermV solution in query.Solutions)
             {
@@ -87,10 +91,23 @@ public class Action
         return null;
     }
 
+    public List<Coordinates> CoordinatesState(string state)
+    {
+        List<Coordinates> stateCoordinates = new List<Coordinates>();
+        using (PlQuery queryWorld = new PlQuery("world", new PlTermV(new PlTerm[] {new PlTerm("Col"), new PlTerm("Row"), new PlTerm(state)})))
+        {
+            foreach (PlTermV solution in queryWorld.Solutions)
+            {
+                stateCoordinates.Add(new Coordinates((int)solution[0], (int)solution[1]));
+            }
+        }
+        return stateCoordinates;
+    }
+
     public List<string> CheckCell(Coordinates coords)
     {
         List<string> cellContent = new List<string>();
-        using (PlQuery queryCell = new PlQuery("cell", new PlTermV(new PlTerm(coords.x), new PlTerm(coords.y), new PlTerm("State"))))
+        using (PlQuery queryCell = new PlQuery("cell", new PlTermV(new PlTerm(coords.col), new PlTerm(coords.row), new PlTerm("State"))))
         {
             foreach (PlTermV solution in queryCell.Solutions)
             {
@@ -102,8 +119,8 @@ public class Action
 
     public void BumpIntoWall()
     {
-        PlQuery.PlCall($"popStack(stackX)");
-        PlQuery.PlCall($"popStack(stackY)");
+        PlQuery.PlCall($"popStack(stackCol)");
+        PlQuery.PlCall($"popStack(stackRow)");
     }
 
     public void printKB()
@@ -112,52 +129,76 @@ public class Action
             resetDebugKB();
 
         ClearLog();
-        printSingleElement("wumpusTotal", "Initial number of Wumpus: ");
-        printSingleElement("wumpusKilled", "Wumpus killed: ");
-        printSingleElement("arrowTotal", "Initial number of arrows: ");
-        printSingleElement("arrowUsed", "Arrows shot: ");
-        printSingleElement("goldTotal", "Initial number of gold: ");
-        printSingleElement("goldAgent", "Number of gold picked up: ");
+        printSingleElement("nbWumpus", "Initial number of Wumpus: ");
+        printSingleElement("nbWumpusDead", "Wumpus killed: ");
+        printSingleElement("nbArrow", "Initial number of arrows: ");
+        printSingleElement("nbArrowUsed", "Arrows shot: ");
+        printSingleElement("nbGold", "Initial number of gold: ");
+        printSingleElement("nbGoldAgent", "Number of gold picked up: ");
 
 
         // Print agent previous coordinates
-        using (PlQuery queryPreviousCoordsX = new PlQuery("nb_getval", new PlTermV(new PlTerm("stackX"), new PlTerm("PrevX"))))
+        using (PlQuery queryPreviousCoordsCol = new PlQuery("nb_getval", new PlTermV(new PlTerm("stackCol"), new PlTerm("PrevCol"))))
         { 
-            foreach (PlTermV solution in queryPreviousCoordsX.Solutions)
+            foreach (PlTermV solution in queryPreviousCoordsCol.Solutions)
             {
-                Debug.Log("Previous Coords X: " + solution[1].ToString());
+                Debug.Log("Previous Coords Col: " + solution[1].ToString() + "\n");
                 if(debugEnabled)
-                    WriteInDebugKB("stackX(" + solution[1]+ ").");
+                    WriteInDebugKB("stackCol(" + solution[1]+ ").");
             }
         }
-        using (PlQuery queryPreviousCoordsY = new PlQuery("nb_getval", new PlTermV(new PlTerm("stackY"), new PlTerm("PrevY"))))
+        using (PlQuery queryPreviousCoordsRow = new PlQuery("nb_getval", new PlTermV(new PlTerm("stackRow"), new PlTerm("PrevRow"))))
         { 
-            foreach (PlTermV solution in queryPreviousCoordsY.Solutions)
+            foreach (PlTermV solution in queryPreviousCoordsRow.Solutions)
             {
-                Debug.Log("Previous Coords Y: " + solution[1].ToString());
+                Debug.Log("Previous Coords Row: " + solution[1].ToString() + "\n");
                 if(debugEnabled)
-                    WriteInDebugKB("stackY(" + solution[1]+ ").");
+                    WriteInDebugKB("stackRow(" + solution[1]+ ").");
             }
         }
 
+        Debug.Log("------------------\n");
+        if(debugEnabled)
+        {
+            WriteInDebugKB("% ------------------");
+        }
+        
+        // Print World
+        using (PlQuery queryWorld = new PlQuery("world", new PlTermV(new PlTerm("Col"), new PlTerm("Row"), new PlTerm("State"))))
+        { 
+            foreach (PlTermV solution in queryWorld.Solutions)
+            {
+                Debug.Log("World= Col: " + solution[0].ToString() +  ", Row: " + solution[1].ToString() + " = " + solution[2].ToString() + "\n");
+                if(debugEnabled)
+                    WriteInDebugKB("world(" + solution[0] + "," + solution[1] + "," + solution[2] + ").");
+            }
+        }
+
+        Debug.Log("------------------\n");
+        if(debugEnabled)
+        {
+            WriteInDebugKB("% ------------------");
+        }
+
         // Print Cells
-        using (PlQuery queryCell = new PlQuery("cell", new PlTermV(new PlTerm("X"), new PlTerm("Y"), new PlTerm("State"))))
+        using (PlQuery queryCell = new PlQuery("cell", new PlTermV(new PlTerm("Col"), new PlTerm("Row"), new PlTerm("State"))))
         { 
             foreach (PlTermV solution in queryCell.Solutions)
             {
-                Debug.Log("Cell X: " + solution[0].ToString() +  ", Y: " + solution[1].ToString() + " = " + solution[2].ToString());
+                Debug.Log("Cell= Col: " + solution[0].ToString() +  ", Row: " + solution[1].ToString() + " = " + solution[2].ToString() + "\n");
                 if(debugEnabled)
                     WriteInDebugKB("cell(" + solution[0] + "," + solution[1] + "," + solution[2] + ").");
             }
         }
 
+
         void printSingleElement(string element, string message)
         {
-            using (PlQuery queryElement = new PlQuery(element, new PlTermV(new PlTerm("X"))))
+            using (PlQuery queryElement = new PlQuery(element, new PlTermV(new PlTerm("Col"))))
             {
                 foreach (PlTermV solution in queryElement.Solutions)
                 {
-                    Debug.Log(message + solution[0].ToString());
+                    Debug.Log(message + solution[0].ToString() + "\n");
                     if(debugEnabled)
                         WriteInDebugKB(element + "(" + solution[0] + ").");
                 }
@@ -222,26 +263,26 @@ public class Action
             }	
         }
 
-        string oldVersion;
-        bool alreadyPresent = false;
+        // string oldVersion;
+        // bool alreadyPresent = false;
 
-        StreamReader streamReader = File.OpenText(debugPrologFilePath);
-        while ((oldVersion = streamReader.ReadLine()) != null)
-        {
-            if (oldVersion.Contains(prologText))
-            {
-                alreadyPresent = true;
-            }
-        }
-        streamReader.Close();
+        // StreamReader streamReader = File.OpenText(debugPrologFilePath);
+        // while ((oldVersion = streamReader.ReadLine()) != null)
+        // {
+        //     if (oldVersion.Contains(prologText))
+        //     {
+        //         alreadyPresent = true;
+        //     }
+        // }
+        // streamReader.Close();
         
-        if (!alreadyPresent)
-        {
+        // if (!alreadyPresent)
+        // {
             using (StreamWriter sw = File.AppendText(debugPrologFilePath)) // Add text to file
                 {
                     sw.WriteLine(prologText);
                 }
-        }
+        // }
 
     }
 }
