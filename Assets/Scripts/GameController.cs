@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
-    
+
     [SerializeField]
-    private int RandomSeed = 5;
+    private int RandomSeed = 0;
 
     private int minGridCol = 0;
     private int minGridRow = 0;
@@ -32,7 +33,7 @@ public class GameController : MonoBehaviour
 
     [SerializeField]
     private bool debugEnabled = true;
-    
+
     public Coordinates gridMax;
     public Coordinates gridMin;
     private Coordinates startCoords;
@@ -66,7 +67,7 @@ public class GameController : MonoBehaviour
         else
         {
             GenerateGrid();
-            if(useProlog)
+            if (useProlog)
             {
                 action.InitialiseGameKB(RandomSeed, startCoords, gridMin, gridMax, nbGold, nbWumpus, nbPit);
             }
@@ -82,11 +83,11 @@ public class GameController : MonoBehaviour
     {
         for (int col = gridMin.col; col < gridMax.col; col++)
         {
-            for (int row = gridMin.row; row < gridMax.row ; row++) 
+            for (int row = gridMin.row; row < gridMax.row; row++)
             {
                 map[col, row] = new Dictionary<string, GameObject>();
                 mapFull[col, row] = new Dictionary<string, GameObject>();
-                if(!(col == startCoords.col && row == startCoords.row))
+                if (!(col == startCoords.col && row == startCoords.row))
                     AddToGrids(col, row, "emptyCell", true, true);
             }
         }
@@ -95,15 +96,16 @@ public class GameController : MonoBehaviour
 
     private void GrenerateWall()
     {
-        if(useProlog)
+        if (useProlog)
         {
             List<Coordinates> wallsCoords = action.CoordinatesState("wall");
-            foreach(Coordinates coords in wallsCoords)
+            foreach (Coordinates coords in wallsCoords)
             {
                 WallGeneration(coords.col, coords.row);
             }
         }
-        else{
+        else
+        {
             for (int row = gridMin.row; row < gridMax.row; row++) // right
             {
                 WallGeneration(gridMax.col - 1, row);
@@ -127,16 +129,15 @@ public class GameController : MonoBehaviour
             RemoveFromGrids(col, row, "emptyCell", false, true);
             RemoveFromGrids(col, row, "safe", false, true);
             AddToGrids(col, row, "wall", false, true);
-            // action.AddFactKB($"world({col}, {row}, wall)");
         }
     }
 
     private void GenerateGold()
     {
-        if(useProlog)
+        if (useProlog)
         {
             List<Coordinates> goldsCoords = action.CoordinatesState("gold");
-            foreach(Coordinates coords in goldsCoords)
+            foreach (Coordinates coords in goldsCoords)
             {
                 AddToGrids(coords.col, coords.row, "gold", false, true);
             }
@@ -147,7 +148,7 @@ public class GameController : MonoBehaviour
             int row = Random.Range(gridMin.row, gridMax.row - 1);
             for (int gold = 0; gold < nbGold; gold++)
             {
-                while (mapFull[col, row].ContainsKey("start") || mapFull[col, row].ContainsKey("pit") || mapFull[col, row].ContainsKey("wumpus") || mapFull[col, row].ContainsKey("gold") ||mapFull[col, row].ContainsKey("wall"))
+                while (mapFull[col, row].ContainsKey("start") || mapFull[col, row].ContainsKey("pit") || mapFull[col, row].ContainsKey("wumpus") || mapFull[col, row].ContainsKey("gold") || mapFull[col, row].ContainsKey("wall"))
                 {
                     col = Random.Range(gridMin.col, gridMax.col - 1);
                     row = Random.Range(gridMin.row, gridMax.row - 1);
@@ -159,10 +160,10 @@ public class GameController : MonoBehaviour
 
     private void GenerateWumpus()
     {
-        if(useProlog)
+        if (useProlog)
         {
             List<Coordinates> wumpusCoords = action.CoordinatesState("wumpus");
-            foreach(Coordinates coords in wumpusCoords)
+            foreach (Coordinates coords in wumpusCoords)
             {
                 AddToGrids(coords.col, coords.row, "wumpus", false, true);
                 GenerateAroundCell(coords.col, coords.row, "stench");  // Stench Generation
@@ -187,10 +188,10 @@ public class GameController : MonoBehaviour
 
     private void GeneratePit()
     {
-        if(useProlog)
+        if (useProlog)
         {
             List<Coordinates> pitCoords = action.CoordinatesState("pit");
-            foreach(Coordinates coords in pitCoords)
+            foreach (Coordinates coords in pitCoords)
             {
                 AddToGrids(coords.col, coords.row, "pit", false, true);
                 RemoveFromGrids(coords.col, coords.row, "emptyCell", false, true);
@@ -207,7 +208,7 @@ public class GameController : MonoBehaviour
                 {
                     col = Random.Range(gridMin.col, gridMax.col - 1);
                     row = Random.Range(gridMin.row, gridMax.row - 1);
-                } 
+                }
                 AddToGrids(col, row, "pit", false, true);
                 RemoveFromGrids(col, row, "emptyCell", false, true);
                 GenerateAroundCell(col, row, "breeze");  // breeze Generation
@@ -238,7 +239,8 @@ public class GameController : MonoBehaviour
         {
             AddToGrids(startCoords.col, startCoords.row, "agent", true, true);
             agent = new Agent(startCoords, nbWumpus);
-            CheckNearCells(startCoords);
+            // CheckNearCells(startCoords);
+            UpdateGrids(startCoords);
         }
         else if (nbAgent > 1)
         {
@@ -258,219 +260,142 @@ public class GameController : MonoBehaviour
 
     private void AddToGrids(int col, int row, string cell, bool updateMap, bool updateMapFull)
     {
-        if(updateMap && map[col, row].ContainsKey(cell) == false)
+        if (updateMap && map[col, row].ContainsKey(cell) == false)
         {
             map[col, row].Add(cell, (GameObject)Instantiate(Resources.Load(cell), transform));
             map[col, row][cell].transform.position = new Vector2((col - gridMax.col / 2 - 1f) * tileSize, row * tileSize);
         }
 
-        if(updateMapFull && mapFull[col, row].ContainsKey(cell) == false)
+        if (updateMapFull && mapFull[col, row].ContainsKey(cell) == false)
         {
             mapFull[col, row].Add(cell, (GameObject)Instantiate(Resources.Load(cell), transform));
-            mapFull[col, row][cell].transform.position = new Vector2((col + gridMax.col /2 + 1f) * tileSize, row * tileSize);
+            mapFull[col, row][cell].transform.position = new Vector2((col + gridMax.col / 2 + 1f) * tileSize, row * tileSize);
 
         }
     }
 
     private void RemoveFromGrids(int col, int row, string cell, bool updateMap, bool updateMapFull)
     {
-        if(updateMap && map[col, row].ContainsKey(cell) == true)
+        if (updateMap && map[col, row].ContainsKey(cell) == true)
         {
             Destroy(map[col, row][cell]);
             map[col, row].Remove(cell);
         }
 
-        if(updateMapFull && mapFull[col, row].ContainsKey(cell) == true)
+        if (updateMapFull && mapFull[col, row].ContainsKey(cell) == true)
         {
             Destroy(mapFull[col, row][cell]);
             mapFull[col, row].Remove(cell);
         }
     }
-
-    private void CheckNearCells(Coordinates coords)
+    private void UpdateGrids(Coordinates newCoords)
     {
-        if(!map[coords.col + 1, coords.row].ContainsKey("visited")) // right
-        {
-            foreach (string state in action.CheckCell(new Coordinates(coords.col + 1, coords.row)))
-            {
-                AddToGrids(coords.col + 1, coords.row, state, true, false);
-                RemoveFromGrids(coords.col + 1, coords.row, "emptyCell", true, false);
-            }
-        }
-        if(!map[coords.col - 1, coords.row].ContainsKey("visited")) // left
-        {
-            foreach (string state in action.CheckCell(new Coordinates(coords.col - 1, coords.row)))
-            {
-                AddToGrids(coords.col - 1, coords.row, state, true, false);
-                RemoveFromGrids(coords.col - 1, coords.row, "emptyCell", true, false);
-            }
-        }
-        if(!map[coords.col, coords.row + 1].ContainsKey("visited")) // top
-        {
-            foreach (string state in action.CheckCell(new Coordinates(coords.col, coords.row + 1)))
-            {
-                AddToGrids(coords.col, coords.row + 1, state, true, false);
-                RemoveFromGrids(coords.col, coords.row + 1, "emptyCell", true, false);
-            }
-        }
-        if(!map[coords.col, coords.row - 1].ContainsKey("visited")) // bottom
-        {
-            foreach (string state in action.CheckCell(new Coordinates(coords.col, coords.row - 1)))
-            {
-                AddToGrids(coords.col, coords.row - 1, state, true, false);
-                RemoveFromGrids(coords.col, coords.row -1, "emptyCell", true, false);
-            }
-        }
-    }
+        FlipAgentSprite();
+        UpdateCell(new Coordinates(newCoords.col, newCoords.row)); // Current Cell
 
-
-    private void MoveAgent(Coordinates newCoords)
-    {
         if (!mapFull[newCoords.col, newCoords.row].ContainsKey("wall"))
         {
-            action.RemoveFromKB($"cell({agent.coords.col}, {agent.coords.row}, agent)");
-            action.AddFactKB($"cell({newCoords.col}, {newCoords.row}, agent)");
-            action.AddFactKB($"cell({newCoords.col}, {newCoords.row}, visited)");
+            if (newCoords.col + 1 < gridMax.col)
+                UpdateCell(new Coordinates(newCoords.col + 1, newCoords.row)); // Right
+            if (newCoords.col - 1 >= gridMin.col)
+                UpdateCell(new Coordinates(newCoords.col - 1, newCoords.row)); // Left
+            if (newCoords.row + 1 <= gridMax.row)
+                UpdateCell(new Coordinates(newCoords.col, newCoords.row + 1)); // Upper
+            if (newCoords.row - 1 >= gridMin.row)
+                UpdateCell(new Coordinates(newCoords.col, newCoords.row - 1)); // Lower
 
-            RemoveFromGrids(newCoords.col, newCoords.row, "safe", true, true);
-            RemoveFromGrids(newCoords.col, newCoords.row, "emptyCell", true, true);
+            if (newCoords.col + 1 < gridMax.col && newCoords.row + 1 <= gridMax.row)
+                UpdateCell(new Coordinates(newCoords.col + 1, newCoords.row + 1)); // Right Upper
+            if (newCoords.col - 1 >= gridMin.col && newCoords.row + 1 <= gridMax.row)
+                UpdateCell(new Coordinates(newCoords.col - 1, newCoords.row + 1)); // Left Upper
+            if (newCoords.col + 1 < gridMax.col && newCoords.row - 1 >= gridMin.row)
+                UpdateCell(new Coordinates(newCoords.col + 1, newCoords.row - 1)); // Right Lower
+            if (newCoords.col - 1 >= gridMin.col && newCoords.row - 1 >= gridMin.row)
+                UpdateCell(new Coordinates(newCoords.col - 1, newCoords.row - 1)); // Left Lower
 
-            if(!map[newCoords.col, newCoords.row].ContainsKey("start"))
-                AddToGrids(newCoords.col, newCoords.row, "visited", true, true);
+            agent.MoveAgent(newCoords);
+        }
 
-            RemoveFromGrids(agent.coords.col, agent.coords.row, "agent", true, true);
-            AddToGrids(newCoords.col, newCoords.row, "agent", true, true);
+        // action.PrintKB();
 
-            if(agent.coords.col < newCoords.col)
+        void FlipAgentSprite()
+        {
+            if (agent.coords.col < newCoords.col)
             {
-                map[newCoords.col, newCoords.row]["agent"].GetComponent<SpriteRenderer>().flipX = false;
-                mapFull[newCoords.col, newCoords.row]["agent"].GetComponent<SpriteRenderer>().flipX = false;
+                map[agent.coords.col, agent.coords.row]["agent"].GetComponent<SpriteRenderer>().flipX = false;
+                mapFull[agent.coords.col, agent.coords.row]["agent"].GetComponent<SpriteRenderer>().flipX = false;
             }
-            else if(agent.coords.col > newCoords.col)
+            else if (agent.coords.col > agent.coords.col)
             {
-                map[newCoords.col, newCoords.row]["agent"].GetComponent<SpriteRenderer>().flipX = true;
-                mapFull[newCoords.col, newCoords.row]["agent"].GetComponent<SpriteRenderer>().flipX = true;
-            }
-
-            agent.coords.col = newCoords.col;
-            agent.coords.row = newCoords.row;
-
-            ActionCase(mapFull[agent.coords.col, agent.coords.row]);
-        }
-        else
-        {
-            action.BumpIntoWall();
-            RemoveFromGrids(newCoords.col, newCoords.row, "emptyCell", true, false);
-            RemoveFromGrids(newCoords.col, newCoords.row, "safe", true, false);
-            AddToGrids(newCoords.col, newCoords.row, "wall", true, false);
-            // action.RemoveFromKB($"cell({newCoords.col}, {newCoords.row}, safe)");
-            // action.AddFactKB($"cell({newCoords.col}, {newCoords.row}, wall)");
-            action.printKB();
-        }
-    }
-
-    private void ActionCase(Dictionary<string, GameObject> position)
-    {
-        Coordinates coordsWumpus = action.WumpusFound();
-        if (coordsWumpus != null && !map[coordsWumpus.col, coordsWumpus.row].ContainsKey("wumpusDead"))
-        {
-            if(mapFull[coordsWumpus.col, coordsWumpus.row].ContainsKey("wumpus"))
-                AddToGrids(coordsWumpus.col, coordsWumpus.row, "wumpusDead", false, true);
-
-            AddToGrids(coordsWumpus.col, coordsWumpus.row, "wumpusDead", true, false);
-            RemoveFromGrids(coordsWumpus.col, coordsWumpus.row, "wumpus", true, true);
-            AddToGrids(coordsWumpus.col, coordsWumpus.row, "safe", true, false);
-
-            action.RemoveFromKB($"cell({coordsWumpus.col}, {coordsWumpus.row}, wumpus)");
-            action.AddFactKB($"cell({coordsWumpus.col}, {coordsWumpus.row}, safe)");
-            action.AddFactKB($"cell({coordsWumpus.col}, {coordsWumpus.row}, wumpusDead)");
-            mapFull[coordsWumpus.col, coordsWumpus.row].Remove("wumpus");
-            agent.nbArrow -= 1;
-        }
-
-        if (position.ContainsKey("pit") || position.ContainsKey("wumpus"))
-            gameOver = true;
-
-        if (position.ContainsKey("gold"))
-        {
-            RemoveFromGrids(agent.coords.col, agent.coords.row, "gold", false, true);
-
-            action.AddFactKB($"cell({agent.coords.col}, {agent.coords.row}, gold)");
-            action.RemoveFromKB($"goldAgent({agent.nbGold})");
-            agent.nbGold += 1;
-            action.AddFactKB($"goldAgent({agent.nbGold})");
-            action.RemoveFromKB($"cell({agent.coords.col}, {agent.coords.row}, gold)");
-            if (agent.nbGold == nbGold)
-            {
-                action.RemoveFromKB($"allGoldsFound(false)");
-                action.AddFactKB($"allGoldsFound(true)");
+                map[agent.coords.col, agent.coords.row]["agent"].GetComponent<SpriteRenderer>().flipX = true;
+                mapFull[agent.coords.col, agent.coords.row]["agent"].GetComponent<SpriteRenderer>().flipX = true;
             }
         }
-        if (position.ContainsKey("breeze"))
+
+        void UpdateCell(Coordinates coords)
         {
-            AddToGrids(agent.coords.col, agent.coords.row, "breeze", true, false);
-            // action.RemoveFromKB($"cell({agent.coords.col}, {agent.coords.row}, safe)");
-            // action.AddFactKB($"cell({agent.coords.col}, {agent.coords.row}, breeze)");
-        }
-        if (position.ContainsKey("stench"))
-        {
-            AddToGrids(agent.coords.col, agent.coords.row, "stench", true, false);
-            // action.RemoveFromKB($"cell({agent.coords.col}, {agent.coords.row}, safe)");
-            // action.AddFactKB($"cell({agent.coords.col}, {agent.coords.row}, stench)");
-        }
-        if (position.ContainsKey("start"))
-        {
-            if (agent.nbGold == nbGold)
+            List<string> cellStates = action.CheckCell(coords);
+            List<string> gridCellStates = map[coords.col, coords.row].Keys.ToList();
+
+            foreach (string cellState in cellStates)
             {
-                gameOver = true;
+                if (!gridCellStates.Contains(cellState))
+                {
+                    if (cellState == "agent")
+                        AddToGrids(coords.col, coords.row, cellState, true, true);
+                    else
+                        AddToGrids(coords.col, coords.row, cellState, true, false);
+                }
+            }
+
+            foreach (string gridCellState in gridCellStates)
+            {
+                if (!cellStates.Contains(gridCellState))
+                {
+                    if (gridCellState == "emptyCell" && gridCellStates.Count > 1)
+                        RemoveFromGrids(coords.col, coords.row, gridCellState, true, false);
+                    else if (gridCellState == "agent" || gridCellState == "gold" || gridCellState == "wumpus" || gridCellState == "wumpusDead")
+                        RemoveFromGrids(coords.col, coords.row, gridCellState, true, true);
+                    else if (gridCellState != "emptyCell")
+                        RemoveFromGrids(coords.col, coords.row, gridCellState, true, false);
+                }
             }
         }
-        action.CheckNearCells(new Coordinates(agent.coords.col, agent.coords.row));
-        CheckNearCells(new Coordinates(agent.coords.col, agent.coords.row));
-
-        action.printKB();
     }
 
     private void waitForAction()
     {
-        if (Input.GetKeyDown("return"))
-        {
-            MoveAgent(action.NextAction("random", agent.coords));
-        }
-        else if (Input.GetKeyDown("space"))
-        {
-            MoveAgent(action.NextAction("prolog", agent.coords));
-        }
-        else if (Input.GetKeyDown("right"))
-        {
-            MoveAgent(new Coordinates(agent.coords.col + 1, agent.coords.row));
-        }
-        else if (Input.GetKeyDown("left"))
-        {
-            MoveAgent(new Coordinates(agent.coords.col - 1, agent.coords.row));
-        }
-        else if (Input.GetKeyDown("up"))
-        {
-            MoveAgent(new Coordinates(agent.coords.col, agent.coords.row + 1));
-        }
-        else if (Input.GetKeyDown("down"))
-        {
-            MoveAgent(new Coordinates(agent.coords.col, agent.coords.row - 1));
-        }
-        else if (Input.GetKeyDown("escape"))
-        {
+        if (Input.GetKeyDown("escape") || action.IsGameOver())
             gameOver = true;
-        }
+
+        else if (Input.GetKeyDown("return"))
+            UpdateGrids(action.RandomMoveProlog(agent.coords));
+
+        else if (Input.GetKeyDown("space"))
+            UpdateGrids(action.NextMoveProlog(agent.coords));
+
+        else if (Input.GetKeyDown("right"))
+            UpdateGrids(action.NextMovePlayer(agent.coords, new Coordinates(agent.coords.col + 1, agent.coords.row)));
+
+        else if (Input.GetKeyDown("left"))
+            UpdateGrids(action.NextMovePlayer(agent.coords, new Coordinates(agent.coords.col - 1, agent.coords.row)));
+
+        else if (Input.GetKeyDown("up"))
+            UpdateGrids(action.NextMovePlayer(agent.coords, new Coordinates(agent.coords.col, agent.coords.row + 1)));
+
+        else if (Input.GetKeyDown("down"))
+            UpdateGrids(action.NextMovePlayer(agent.coords, new Coordinates(agent.coords.col, agent.coords.row - 1)));
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (gameOver == true)
+        if (!gameOver)
         {
-            UnityEditor.EditorApplication.isPlaying = false;
-            Application.Quit();
+            waitForAction();
         }
-        waitForAction();
+        // else 
+        // Application.Quit();
+        // UnityEditor.EditorApplication.isPlaying = false;
     }
 }

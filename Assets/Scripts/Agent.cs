@@ -21,5 +21,11 @@ public class Agent
         nbGold = 0;
         nbArrow = arrowsAtStart;
     }
+
+    public void MoveAgent(Coordinates newCoords)
+    {
+        coords.col = newCoords.col;
+        coords.row = newCoords.row;
+    }
 }
 
