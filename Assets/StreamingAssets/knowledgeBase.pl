@@ -6,26 +6,38 @@
 
 %%%%%%%%%% CUSTOM PREDICATES %%%%%%%%%%
 % Check if fact exists, if not assert it
-assertx(Fact):-
+assertX(Fact):-
     \+(Fact) -> assertz(Fact); true.
 
-retractx(Fact):-
+retractX(Fact):-
     Fact -> retract(Fact); true.
+
+updateX(OldPredicate, NewPredicate):-
+    retractX(OldPredicate),
+    assertX(NewPredicate).
 
 %%%%%%%%%% KNOWLEDGEBASE MANAGEMENT %%%%%%%%%%
 % Erase all knowledges
 resetKB():-
     retractall(cell(_, _, _)),
     retractall(world(_, _, _)),
+    retractall(nbWumpus(_, _, _)),
+    retractall(nbWumpusDead(_, _, _)),
+    retractall(nbArrow(_, _, _)),
+    retractall(nbArrowUsed(_, _, _)),
+    retractall(nbGold(_, _, _)),
+    retractall(nbGoldAgent(_, _, _)),
     retractall(allGoldsFound(_)),
     retractall(gameOver(_)).
+    retractall(stackCol(_)).
+    retractall(stackRow(_)).
 
 % Initiate the game with attributes  Ex: initGame(0, 1, 1, 0, 0, 8, 8, 1, 1, 3).
 initGame(RandSeed, StartCol, StartRow, MinGridCol, MinGridRow, MaxGridCol, MaxGridRow, NBGold, NBWumpus, NBPit):-
     set_random(seed(RandSeed)),
     initAgent(StartCol, StartRow),
     initGameAttributes(NBWumpus, NBGold),
-    assertx(world(StartCol, StartRow, start)),
+    assertX(world(StartCol, StartRow, start)),
     initWallCol(MinGridCol, MinGridRow, MaxGridRow); % Left
     initWallCol(MaxGridCol, MinGridRow, MaxGridRow); % Right
     initWallRow(MinGridCol, MinGridRow, MaxGridCol); % Bot
@@ -36,32 +48,32 @@ initGame(RandSeed, StartCol, StartRow, MinGridCol, MinGridRow, MaxGridCol, MaxGr
 
 % Initiate attributes values
 initGameAttributes(NBWumpus, NBGold):-
-    assertx(nbWumpus(NBWumpus)),
-    assertx(nbWumpusDead(0)),
-    assertx(nbArrow(NBWumpus)),
-    assertx(nbArrowUsed(0)),
-    assertx(nbGold(NBGold)),
-    assertx(nbGoldAgent(0)),
-    assertx(allGoldsFound(false)),
-    assertx(gameOver(false)).
+    assertX(nbWumpus(NBWumpus)),
+    assertX(nbWumpusDead(0)),
+    assertX(nbArrow(NBWumpus)),
+    assertX(nbArrowUsed(0)),
+    assertX(nbGold(NBGold)),
+    assertX(nbGoldAgent(0)),
+    assertX(allGoldsFound(false)),
+    assertX(gameOver(false)).
 
 % Initiate agent attributes
 initAgent(Col, Row):-
-    assertx(cell(Col, Row, start)),
-    assertx(cell(Col, Row, agent)),
-    assertx(cell(Col, Row, visited)),
-    assertx(stackCol([Col])),
-    assertx(stackRow([Row])),
+    assertX(cell(Col, Row, start)),
+    assertX(cell(Col, Row, agent)),
+    assertX(cell(Col, Row, visited)),
+    assertX(stackCol([Col])),
+    assertX(stackRow([Row])),
     surroundingSafe(Col, Row).
 
 % Initiate Top & Bottom Walls
 initWallRow(Col, Row, MaxGridCol):-
-    assertx(world(Col, Row, wall)); Col < MaxGridCol,
+    assertX(world(Col, Row, wall)); Col < MaxGridCol,
     NewCol is Col + 1, initWallRow(NewCol, Row, MaxGridCol).
 
 % Initiate Left & Right Walls
 initWallCol(Col, Row, MaxGridRow):-
-    assertx(world(Col, Row, wall)); Row < MaxGridRow,
+    assertX(world(Col, Row, wall)); Row < MaxGridRow,
     NewRow is Row + 1, initWallCol(Col, NewRow, MaxGridRow).
 
 % Initiate Golds Ex: initGold(0, 0, 4, 4, 0, 1).
@@ -69,7 +81,7 @@ initGold(MinGridCol, MinGridRow, MaxGridCol, MaxGridRow, Gold, NBGold):-
     Gold < NBGold,
     random_between(MinGridCol, MaxGridCol, NewCol),
     random_between(MinGridRow, MaxGridRow, NewRow),
-    (cellFree(NewCol, NewRow) -> (assertx(world(NewCol, NewRow, gold)),
+    (cellFree(NewCol, NewRow) -> (assertX(world(NewCol, NewRow, gold)),
     NewGold is Gold + 1); NewGold is Gold),
     initGold(MinGridCol, MinGridRow, MaxGridCol, MaxGridRow, NewGold, NBGold).
 
@@ -78,7 +90,7 @@ initWumpus(MinGridCol, MinGridRow, MaxGridCol, MaxGridRow, Wumpus, NBWumpus):-
     Wumpus < NBWumpus,
     random_between(MinGridCol, MaxGridCol, NewCol),
     random_between(MinGridRow, MaxGridRow, NewRow),
-    (cellFree(NewCol, NewRow) -> (assertx(world(NewCol, NewRow, wumpus)),
+    (cellFree(NewCol, NewRow) -> (assertX(world(NewCol, NewRow, wumpus)),
     NewWumpus is Wumpus + 1, generateAroundCell(NewCol, NewRow, stench)); NewWumpus is Wumpus),
     initWumpus(MinGridCol, MinGridRow, MaxGridCol, MaxGridRow, NewWumpus, NBWumpus).
 
@@ -87,7 +99,7 @@ initPit(MinGridCol, MinGridRow, MaxGridCol, MaxGridRow, Pit, NBPit):-
     Pit < NBPit,
     random_between(MinGridCol, MaxGridCol, NewCol),
     random_between(MinGridRow, MaxGridRow, NewRow),
-    (cellFree(NewCol, NewRow) -> (assertx(world(NewCol, NewRow, pit)),
+    (cellFree(NewCol, NewRow) -> (assertX(world(NewCol, NewRow, pit)),
     NewPit is Pit + 1, generateAroundCell(NewCol, NewRow, breeze)); NewPit is Pit),
     initPit(MinGridCol, MinGridRow, MaxGridCol, MaxGridRow, NewPit, NBPit).
 
@@ -101,10 +113,10 @@ cellFree(Col, Row):-
 
 % Generate Freeze or Stench around a cell
 generateAroundCell(Col, Row, State):-
-    RightCol is Col+1,assertx(world(RightCol, Row, State)),
-    LeftCol is Col-1, assertx(world(LeftCol, Row, State)),
-    UpRow is Row+1, assertx(world(Col, UpRow, State)),
-    DownRow is Row-1, assertx(world(Col, DownRow, State)).
+    RightCol is Col+1, assertX(world(RightCol, Row, State)),
+    LeftCol is Col-1, assertX(world(LeftCol, Row, State)),
+    UpRow is Row+1, assertX(world(Col, UpRow, State)),
+    DownRow is Row-1, assertX(world(Col, DownRow, State)).
 
 %%%%%%%%%% STACK MANAGEMENT %%%%%%%%%%
 % Add Element at the 1st place of stack
@@ -117,8 +129,8 @@ pushStack(NewCol, NewRow):-
     stackCol(StackCol), stackRow(StackRow),
     push(NewCol, StackCol, NewStackCol),
     push(NewRow, StackRow, NewStackRow),
-    retractx(stackCol(StackCol)), retractx(stackRow(StackRow)),
-    assertx(stackCol(NewStackCol)), assertx(stackRow(NewStackRow)).
+    updateX(stackCol(StackCol), stackCol(NewStackCol)),
+    updateX(stackRow(StackRow), stackRow(NewStackRow)).
 
 % Show 1st Element from stack
 peekStack(TopCol, TopRow):-
@@ -130,8 +142,8 @@ popStack():-
     stackCol(StackCol), stackRow(StackRow),
     pop(_, StackCol, NewStackCol),
     pop(_, StackRow, NewStackRow),
-    retractx(stackCol(StackCol)), retractx(stackRow(StackRow)),
-    assertx(stackCol(NewStackCol)), assertx(stackRow(NewStackRow)).
+    updateX(stackCol(StackCol), stackCol(NewStackCol)),
+    updateX(stackRow(StackRow), stackRow(NewStackRow)).
 
 %%%%%%%%%% AGENT MOVEMENT %%%%%%%%%%
 
@@ -222,15 +234,15 @@ prologMove(_, _, NewCol, NewRow):-
 
 checkCell(Col, Row):-
     (cell(Col, Row, start), allGoldsFound(true)) ->
-        (retractx(gameOver(_)), assertx(gameOver(true)), false); true,
+        (updateX(gameOver(_) , gameOver(true)), false); true,
     (cell(Col, Row, pit) ; cell(Col, Row, wumpus)) ->
-         (retractx(gameOver(_)), assertx(gameOver(true))); true,
+        (updateX(gameOver(_) , gameOver(true)), false); true,
     (cell(Col, Row, gold) -> 
-        nbGoldAgent(NBGoldAgent), retractx(world(Col, Row, gold)),
-        retractx(cell(Col, Row, gold)), NewNBGoldAgent is NBGoldAgent + 1,
-        retractx(nbGoldAgent(_)), assertx(nbGoldAgent(NewNBGoldAgent)),
+        nbGoldAgent(NBGoldAgent), retractX(world(Col, Row, gold)),
+        retractX(cell(Col, Row, gold)), NewNBGoldAgent is NBGoldAgent + 1,
+        updateX(nbGoldAgent(_), nbGoldAgent(NewNBGoldAgent)),
         nbGold(NBGold), (NewNBGoldAgent = NBGold ->
-            (retractx(allGoldsFound(_)), assertx(allGoldsFound(true))); true); true),
+            updateX(allGoldsFound(_), allGoldsFound(true)); true); true),
     seekWumpus(Col, Row).
 
 seekWumpus(Col, Row):-
@@ -247,23 +259,26 @@ seekWumpus(Col, Row):-
 
 killWumpus(Col, Row):-
     (cell(Col, Row, wumpus), nbArrow(ArrowAgent), ArrowAgent > 0) ->
-        (retractx(cell(Col, Row, wumpus)), retractx(world(Col, Row, wumpus)), assertx(cell(Col, Row, wumpusDead)), assertx(world(Col, Row, wumpusDead)), assertx(cell(Col, Row, safe)), NewArrowAgent is ArrowAgent - 1, retractx(nbArrow(_)), assertx(nbArrow(NewArrowAgent))); true.
+        (retractX(cell(Col, Row, wumpus)), retractX(world(Col, Row, wumpus)),
+        assertX(cell(Col, Row, wumpusDead)), assertX(world(Col, Row, wumpusDead)), nbWumpusDead(NBWumpusDead), retractX(nbWumpusDead(NBWumpusDead)), 
+        assertX(cell(Col, Row, safe)), NewArrowAgent is ArrowAgent - 1,
+        updateX(nbArrow(_), nbArrow(NewArrowAgent))); true.
         
 % Sense what is in destination cell
 checkNextCell(Col, Row, NewCol, NewRow):-
     (world(NewCol, NewRow, wall) ->
-        (assertx(cell(NewCol, NewRow, wall)), retractx(cell(NewCol, NewRow, safe)), popStack);
-            (retractx(cell(Col, Row, agent)), assertx(cell(NewCol, NewRow, agent)), assertx(cell(NewCol, NewRow, visited)))),
+        (assertX(cell(NewCol, NewRow, wall)), retractX(cell(NewCol, NewRow, safe)), popStack);
+            (updateX(cell(Col, Row, agent), cell(NewCol, NewRow, agent)), assertX(cell(NewCol, NewRow, visited)))),
     (world(NewCol, NewRow, breeze) ->
-        (retractx(cell(NewCol, NewRow, safe)), assertx(cell(NewCol, NewRow, breeze))); true),
+        (retractX(cell(NewCol, NewRow, safe)), assertX(cell(NewCol, NewRow, breeze))); true),
     (world(NewCol, NewRow, stench) ->
-        (retractx(cell(NewCol, NewRow, safe)), assertx(cell(NewCol, NewRow, stench))); true),
+        (retractX(cell(NewCol, NewRow, safe)), assertX(cell(NewCol, NewRow, stench))); true),
     (world(NewCol, NewRow, gold) ->
-        (assertx(cell(NewCol, NewRow, gold))); true),
+        (assertX(cell(NewCol, NewRow, gold))); true),
     (world(NewCol, NewRow, pit) ->
-        (assertx(cell(NewCol, NewRow, pit)), (retractx(gameOver(_)), assertx(gameOver(true)))); true),
+        (assertX(cell(NewCol, NewRow, pit)), (updateX(gameOver(_), gameOver(true)))); true),
     (world(NewCol, NewRow, wumpus) ->
-        (assertx(cell(NewCol, NewRow, wumpus)), (retractx(gameOver(_)), assertx(gameOver(true))));true),
+        (assertX(cell(NewCol, NewRow, wumpus)), (updateX(gameOver(_), gameOver(true))));true),
     checkNearCells(NewCol, NewRow).
     
 %%%% RANDOM MOVEMENT %%%%
@@ -277,22 +292,22 @@ randomMove(Col, Row, NewCol, NewRow):-
 % Move right
 move(Col, Row, NewCol, NewRow, 1):- % Right
     NewCol is Col+1, NewRow is Row,
-    pushStack(NewCol, stackCol), pushStack(NewRow, stackRow).
+    pushStack(NewCol, NewRow).
 
 % Move left
 move(Col, Row, NewCol, NewRow, 2):- % Left
     NewCol is Col-1, NewRow is Row,
-    pushStack(NewCol, stackCol), pushStack(NewRow, stackRow).
+    pushStack(NewCol, NewRow).
 
 % Move down
 move(Col, Row, NewCol, NewRow, 3):- % Down
     NewRow is Row-1, NewCol is Col,
-    pushStack(NewCol, stackCol), pushStack(NewRow, stackRow).
+    pushStack(NewCol, NewRow).
 
 % Move up
 move(Col, Row, NewCol, NewRow, 4):- % Up
     NewRow is Row+1, NewCol is Col,
-    pushStack(NewCol, stackCol), pushStack(NewRow, stackRow).
+    pushStack(NewCol, NewRow).
 
 %%%%%%%%%% NEAR CELL DETECTION %%%%%%%%%%
 
@@ -302,7 +317,7 @@ isSafe(Col, Row):-
     \+(cell(Col, Row, stench)),
     \+(cell(Col, Row, wumpus)),
     \+(cell(Col, Row, pit))) ->
-        (assertx(cell(Col, Row, safe))); false.
+        (assertX(cell(Col, Row, safe))); false.
 
 % Check if side cells are safe
 surroundingSafe(Col, Row):-
@@ -315,7 +330,7 @@ surroundingSafe(Col, Row):-
 markSafe(Col, Row):-
     (\+(cell(Col, Row, visited)),
     \+(cell(Col, Row, wall))) ->
-        (assertx(cell(Col, Row, safe))); true.
+        (assertX(cell(Col, Row, safe))); true.
 
 % Check is cell is safe or start
 safeOrStart(Col, Row):-
@@ -352,7 +367,7 @@ checkNearCells(Col, Row):-
 findElement(Col, Row, State):-
     RightCol is Col+1, LeftCol is Col-1,
     DownRow is Row-1, UpRow is Row+1,
-    ((safeOrVisited(LeftCol, Row), safeOrVisited(Col, DownRow), safeOrVisited(Col, UpRow), \+(cell(RightCol, Row, wumpusDead))) -> assertx(cell(RightCol, Row, State)); true), % Right
-    ((safeOrVisited(RightCol, Row), safeOrVisited(Col, DownRow), safeOrVisited(Col, UpRow), \+(cell(LeftCol, Row, wumpusDead))) -> assertx(cell(LeftCol, Row, State)); true), % Left
-    ((safeOrVisited(RightCol, Row), safeOrVisited(LeftCol, Row), safeOrVisited(Col, UpRow), \+(cell(Col, DownRow, wumpusDead))) -> assertx(cell(Col, DownRow, State)); true), % Up
-    ((safeOrVisited(RightCol, Row), safeOrVisited(LeftCol, Row), safeOrVisited(Col, DownRow), \+(cell(Col, UpRow, wumpusDead))) -> assertx(cell(Col, UpRow, State)); true). % Down
+    ((safeOrVisited(LeftCol, Row), safeOrVisited(Col, DownRow), safeOrVisited(Col, UpRow), \+(cell(RightCol, Row, wumpusDead))) -> assertX(cell(RightCol, Row, State)); true), % Right
+    ((safeOrVisited(RightCol, Row), safeOrVisited(Col, DownRow), safeOrVisited(Col, UpRow), \+(cell(LeftCol, Row, wumpusDead))) -> assertX(cell(LeftCol, Row, State)); true), % Left
+    ((safeOrVisited(RightCol, Row), safeOrVisited(LeftCol, Row), safeOrVisited(Col, UpRow), \+(cell(Col, DownRow, wumpusDead))) -> assertX(cell(Col, DownRow, State)); true), % Up
+    ((safeOrVisited(RightCol, Row), safeOrVisited(LeftCol, Row), safeOrVisited(Col, DownRow), \+(cell(Col, UpRow, wumpusDead))) -> assertX(cell(Col, UpRow, State)); true). % Down

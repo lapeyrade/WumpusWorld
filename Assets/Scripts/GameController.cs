@@ -239,7 +239,6 @@ public class GameController : MonoBehaviour
         {
             AddToGrids(startCoords.col, startCoords.row, "agent", true, true);
             agent = new Agent(startCoords, nbWumpus);
-            // CheckNearCells(startCoords);
             UpdateGrids(startCoords);
         }
         else if (nbAgent > 1)
@@ -316,7 +315,7 @@ public class GameController : MonoBehaviour
             agent.MoveAgent(newCoords);
         }
 
-        // action.PrintKB();
+        action.PrintKB();
 
         void FlipAgentSprite()
         {
