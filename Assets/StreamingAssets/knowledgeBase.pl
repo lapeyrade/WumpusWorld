@@ -28,8 +28,8 @@ resetKB():-
     retractall(nbGold(_, _, _)),
     retractall(nbGoldAgent(_, _, _)),
     retractall(allGoldsFound(_)),
-    retractall(gameOver(_)).
-    retractall(stackCol(_)).
+    retractall(gameOver(_)),
+    retractall(stackCol(_)),
     retractall(stackRow(_)).
 
 % Initiate the game with attributes  Ex: initGame(0, 1, 1, 0, 0, 8, 8, 1, 1, 3).
