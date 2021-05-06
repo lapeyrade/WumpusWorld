@@ -13,7 +13,7 @@ digraph WumpusWorldGraph {
 
     /* Ranks */
     // rankdir = TB
-    rankdir = LR
+    rankdir = LR;
 
     subgraph {
         /* Entities */
@@ -24,15 +24,7 @@ digraph WumpusWorldGraph {
         cellGold [label="Mark Gold", shape="rectangle"]
         cellPit [label="Mark Pit", shape="rectangle"]
         cellWumpus [label="Mark Wumpus", shape="rectangle"]
-
         cellSafe [label="Mark Safe", shape="rectangle"]
-        nearCellSafe [label="Mark Near Cells Safe", shape="rectangle"]
-
-        checkForPit[label="Check for Pits", shape="rectangle"]
-        checkForWumpus[label="Check for Wumpuses", shape="rectangle"]
-
-        markWumpus[label="Mark Cell Wumpus", shape="rectangle"]
-        markPit[label="Mark Cell Pit", shape="rectangle"]
 
         /* Relationships */
         checkCell -> stayCell[label= "Cell = Wall"]
@@ -42,12 +34,6 @@ digraph WumpusWorldGraph {
         checkCell -> cellWumpus[label= "Cell = Wumpus"]
         checkCell -> cellPit[label= "Cell = Pit"]
         checkCell -> cellSafe[label= "Cell = Safe"]
-        cellSafe -> nearCellSafe[label= "Cell = Safe"]
-
-        checkCell -> checkForWumpus
-        checkForWumpus -> markWumpus[label= "Near cell = Stench \n Other Near Cell = Safe"]
-        checkCell -> checkForPit
-        checkForPit -> markPit[label= "Near cell = Breeze \n Other Near Cell = Safe"] 
     }
 
 
@@ -56,19 +42,29 @@ digraph WumpusWorldGraph {
         gameOverWin [label="Win", shape="circle", style=filled, fillcolor=green]
         gameOverLose [label="Lose", shape="circle", style=filled, fillcolor=red]
         takeGold [label="Take Gold", shape="rectangle"]
+        nearCellSafe [label="Mark Near Cells Safe", shape="rectangle"]
+        checkForWumpus[label="Check for Wumpuses", shape="rectangle"]
         killWumpus [label="Kill Wumpus", shape="rectangle"]
+        markWumpus[label="Mark Cell Wumpus", shape="rectangle"]
+        checkForPit[label="Check for Pits", shape="rectangle"]
+        markPit[label="Mark Cell Pit", shape="rectangle"]
 
         /* Relationships */
         actionCell -> gameOverWin [label= "Cell = Start \n All Golds = Found"]
         actionCell -> gameOverLose [label= "Cell = Pit \n Cell = Wumpus"]
+        actionCell -> nearCellSafe[label="Cell = Safe"]
+        actionCell -> checkForWumpus
+        checkForWumpus -> markWumpus[label= "Near Cell = Stench \n Other Near Cells = Safe"]
+        markWumpus -> killWumpus[label= "Near Cell = Wumpus"]
+        actionCell -> checkForPit
+        checkForPit -> markPit[label= "Near Cell = Breeze \n Other Near Cells = Safe"] 
         actionCell -> takeGold [label= "Cell = Gold"]
-        actionCell -> killWumpus[label= "Near Cell = Wumpus"]
     }
 
     subgraph {
         /* Entities */
         goBack [label="Go Back to Start Cell", shape="rectangle"]
-        goWumpusDead [label="Go To Dead Wumpus Cell", shape="rectangle"]
+        goWumpusDead [label="Go to Dead Wumpus Cell", shape="rectangle"]
         goRight [label="Go Right", shape="rectangle"]
         goLeft [label="Go Left", shape="rectangle"]
         goUp [label="Go Up", shape="rectangle"]

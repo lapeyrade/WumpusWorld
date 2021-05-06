@@ -1,0 +1,128 @@
+digraph wumpus_state_graph {
+
+
+    /* Entities */
+    // node [shape=point,label=""]EXIT;
+    
+    Initialisation[label = "Initialisation", style=filled, fillcolor=gray]
+    gameWon[label= "Win", shape=circle, style=filled, fillcolor=green]
+    gameLost[label= "Lose", shape=circle, style=filled, fillcolor=red]
+    statePercepting[label="Percepts"];
+    stateActing[label="Action"];
+    stateMovement[label="Movement"];
+    
+    /* Relationships */
+    Initialisation-> statePercepting  [label="Game Initialisation", shape = rect];
+	statePercepting->stateActing [label="Perceive Cell Content", shape = rect];
+	stateActing->stateMovement [label="Act inside Cell", shape = rect];
+	stateMovement->statePercepting;
+
+    /* Ranks */
+    // { rank=same; shortName; };
+    rankdir = LR;
+
+
+    subgraph cluster_percept {
+		style=filled;
+		color=lightblue;
+
+		node [style=filled,color=white, shape=circle];
+		label = "Perception";
+
+        statePercepting[label="Perceive cell content", shape=doublecircle];
+        cellWall [label="Perceive Wall", shape=rect]
+        cellBreeze [label="Perceive Breeze", shape=rect]
+        cellStench [label="Perceive Stench", shape=rect]
+        cellGold [label="Perceive Gold", shape=rect]
+        cellPit [label="Perceive Pit", shape=rect]
+        cellWumpus [label="Perceive Wumpus", shape=rect]
+        cellSafe [label="Perceive Safe", shape=rect]
+        cellStart [label="Perceive Start", shape=rect]
+        gameWon
+
+        statePercepting -> cellWall[label= "Cell = Wall"] 
+        cellWall -> statePercepting
+        statePercepting -> cellBreeze[label= "Cell = Breeze"]
+        cellBreeze -> statePercepting
+        statePercepting -> cellStench[label= "Cell = Stench"]
+        cellStench -> statePercepting
+        statePercepting -> cellGold[label= "Cell = Gold"]
+        cellGold -> statePercepting
+        statePercepting -> cellWumpus[label= "Cell = Wumpus"]
+        cellWumpus -> statePercepting
+        statePercepting -> cellPit[label= "Cell = Pit"]
+        cellPit -> statePercepting
+        statePercepting -> cellSafe[label= "Cell = Safe"]
+        cellSafe -> statePercepting
+        statePercepting -> cellStart[label= "Cell = Start \n & All golds Found"]
+        cellStart -> gameWon
+	}
+
+    subgraph cluster_action {
+		style=filled;
+		color=lightblue;
+
+		node [style=filled,color=white, shape=circle];
+		label = "Action";
+
+        stateActing[label="Act in Cell", shape=doublecircle];
+        loseGame [label="Lose the Game", shape=rect]
+        markCellSafe [label="Mark Near Cell Safe", shape=rect]
+        checkForWumpus[label="Check for Wumpuses", shape=rect]
+        killWumpus [label="Kill Wumpus", shape=rect]
+        markWumpus[label="Mark Cell Wumpus", shape=rect]
+        checkForPit[label="Check for Pits", shape=rect]
+        markPit[label="Mark Cell Pit", shape=rect]
+        takeGold [label="Lose the Game", shape=rect]
+
+        stateActing -> loseGame[label= "Wumpus Sensed \n or Pit Sensed"] 
+        loseGame -> gameLost
+        stateActing -> markCellSafe [lael="cell safe"]
+        markCellSafe -> stateActing
+        checkForWumpus -> markWumpus[label= "Near Cell = Stench \n Other Near Cells = Safe"]
+        markWumpus -> killWumpus[label= "Near Cell = Wumpus"]
+        killWumpus -> stateActing
+        actionCell -> checkForPit
+        checkForPit -> markPit[label= "Near Cell = Breeze \n Other Near Cells = Safe"] 
+        markPit -> stateActing
+        stateActing -> takeGold[label= "Gold Sensed"] 
+        takeGold -> stateMovement
+
+
+	}
+
+     subgraph cluster_movement {
+		style=filled;
+		color=lightblue;
+
+		node [style=filled,color=white, shape=circle];
+		label = "Movement";
+
+        stateMovement[label="Move Next Cell", shape=doublecircle];
+        
+        goBack [label="Go Back to Start Cell", shape=rect]
+        goWumpusDead [label="Go to Dead Wumpus Cell", shape=rect]
+        goRight [label="Go Right", shape=rect]
+        goLeft [label="Go Left", shape=rect]
+        goUp [label="Go Up", shape=rect]
+        goDown [label="Go Down", shape=rect]
+        goBack2 [label="Go Back to Start Cell", shape=rect]
+
+        /* Relationships */
+        stateMovement -> goBack[label= "Cell != Start \n All golds Found"]
+        goBack-> statePercepting
+        stateMovement -> goWumpusDead[label= "Near Cell = Not Visited & Dead Wumpus"]
+        goWumpusDead -> statePercepting
+        stateMovement -> goRight[label= "Right Cell = Not Visited & Safe"]
+        goRight -> statePercepting
+        stateMovement -> goLeft[label= "Left Cell = Not Visited & Safe"]
+        goLeft -> statePercepting
+        stateMovement -> goUp[label= "Top Cell = Not Visited & Safe"]
+        goUp -> statePercepting
+        stateMovement -> goDown[label= "Down Cell = Not Visited & Safe"]
+        goDown -> statePercepting
+        stateMovement -> goBack2
+        goBack2 -> statePercepting
+
+	}
+}

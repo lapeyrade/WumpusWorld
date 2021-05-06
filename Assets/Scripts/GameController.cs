@@ -54,7 +54,7 @@ public class GameController : MonoBehaviour
         gridMax = new Coordinates(maxGridCol + 2, maxGridRow + 2);
         gridMin = new Coordinates(minGridCol, minGridRow);
         startCoords = new Coordinates(startCol, startRow);
-        action = new Action(nbWumpus, nbGold, startCoords, debugEnabled);
+        action = new Action(debugEnabled);
 
         map = new Dictionary<string, GameObject>[gridMax.col, gridMax.row];
         mapFull = new Dictionary<string, GameObject>[gridMax.col, gridMax.row];
@@ -239,7 +239,7 @@ public class GameController : MonoBehaviour
         {
             AddToGrids(startCoords.col, startCoords.row, "agent", true, true);
             agent = new Agent(startCoords, nbWumpus);
-            UpdateGrids(startCoords);
+            UpdateGrids();
         }
         else if (nbAgent > 1)
         {
@@ -287,49 +287,20 @@ public class GameController : MonoBehaviour
             mapFull[col, row].Remove(cell);
         }
     }
-    private void UpdateGrids(Coordinates newCoords)
+
+    private void UpdateGrids()
     {
-        FlipAgentSprite();
-        UpdateCell(new Coordinates(newCoords.col, newCoords.row)); // Current Cell
-
-        if (!mapFull[newCoords.col, newCoords.row].ContainsKey("wall"))
+        for (int col = gridMin.col; col < gridMax.col; col++)
         {
-            if (newCoords.col + 1 < gridMax.col)
-                UpdateCell(new Coordinates(newCoords.col + 1, newCoords.row)); // Right
-            if (newCoords.col - 1 >= gridMin.col)
-                UpdateCell(new Coordinates(newCoords.col - 1, newCoords.row)); // Left
-            if (newCoords.row + 1 <= gridMax.row)
-                UpdateCell(new Coordinates(newCoords.col, newCoords.row + 1)); // Upper
-            if (newCoords.row - 1 >= gridMin.row)
-                UpdateCell(new Coordinates(newCoords.col, newCoords.row - 1)); // Lower
-
-            if (newCoords.col + 1 < gridMax.col && newCoords.row + 1 <= gridMax.row)
-                UpdateCell(new Coordinates(newCoords.col + 1, newCoords.row + 1)); // Right Upper
-            if (newCoords.col - 1 >= gridMin.col && newCoords.row + 1 <= gridMax.row)
-                UpdateCell(new Coordinates(newCoords.col - 1, newCoords.row + 1)); // Left Upper
-            if (newCoords.col + 1 < gridMax.col && newCoords.row - 1 >= gridMin.row)
-                UpdateCell(new Coordinates(newCoords.col + 1, newCoords.row - 1)); // Right Lower
-            if (newCoords.col - 1 >= gridMin.col && newCoords.row - 1 >= gridMin.row)
-                UpdateCell(new Coordinates(newCoords.col - 1, newCoords.row - 1)); // Left Lower
-
-            agent.MoveAgent(newCoords);
+            for (int row = gridMin.row; row < gridMax.row; row++)
+            {
+                UpdateCell(new Coordinates(col, row));
+            }
         }
+
+        agent.MoveAgent(action.AgentPosition());
 
         action.PrintKB();
-
-        void FlipAgentSprite()
-        {
-            if (agent.coords.col < newCoords.col)
-            {
-                map[agent.coords.col, agent.coords.row]["agent"].GetComponent<SpriteRenderer>().flipX = false;
-                mapFull[agent.coords.col, agent.coords.row]["agent"].GetComponent<SpriteRenderer>().flipX = false;
-            }
-            else if (agent.coords.col > agent.coords.col)
-            {
-                map[agent.coords.col, agent.coords.row]["agent"].GetComponent<SpriteRenderer>().flipX = true;
-                mapFull[agent.coords.col, agent.coords.row]["agent"].GetComponent<SpriteRenderer>().flipX = true;
-            }
-        }
 
         void UpdateCell(Coordinates coords)
         {
@@ -340,7 +311,7 @@ public class GameController : MonoBehaviour
             {
                 if (!gridCellStates.Contains(cellState))
                 {
-                    if (cellState == "agent")
+                    if (cellState == "agent" || cellState == "wumpusDead")
                         AddToGrids(coords.col, coords.row, cellState, true, true);
                     else
                         AddToGrids(coords.col, coords.row, cellState, true, false);
@@ -368,22 +339,24 @@ public class GameController : MonoBehaviour
             gameOver = true;
 
         else if (Input.GetKeyDown("return"))
-            UpdateGrids(action.RandomMoveProlog(agent.coords));
+            action.RandomMoveProlog();
 
         else if (Input.GetKeyDown("space"))
-            UpdateGrids(action.NextMoveProlog(agent.coords));
+            action.NextMoveProlog();
 
         else if (Input.GetKeyDown("right"))
-            UpdateGrids(action.NextMovePlayer(agent.coords, new Coordinates(agent.coords.col + 1, agent.coords.row)));
+            action.NextMovePlayer(new Coordinates(agent.coords.col + 1, agent.coords.row));
 
         else if (Input.GetKeyDown("left"))
-            UpdateGrids(action.NextMovePlayer(agent.coords, new Coordinates(agent.coords.col - 1, agent.coords.row)));
+            action.NextMovePlayer(new Coordinates(agent.coords.col - 1, agent.coords.row));
 
         else if (Input.GetKeyDown("up"))
-            UpdateGrids(action.NextMovePlayer(agent.coords, new Coordinates(agent.coords.col, agent.coords.row + 1)));
+            action.NextMovePlayer(new Coordinates(agent.coords.col, agent.coords.row + 1));
 
         else if (Input.GetKeyDown("down"))
-            UpdateGrids(action.NextMovePlayer(agent.coords, new Coordinates(agent.coords.col, agent.coords.row - 1)));
+            action.NextMovePlayer(new Coordinates(agent.coords.col, agent.coords.row - 1));
+
+        UpdateGrids();
     }
 
     // Update is called once per frame
@@ -392,6 +365,7 @@ public class GameController : MonoBehaviour
         if (!gameOver)
         {
             waitForAction();
+
         }
         // else 
         // Application.Quit();

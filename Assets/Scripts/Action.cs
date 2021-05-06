@@ -8,6 +8,7 @@ using System.Reflection;
 using System;
 using System.IO;
 
+
 public class Action
 {
     // private string prologFilePath = @"./Assets/Scripts/knowledgeBase.pl";
@@ -16,65 +17,43 @@ public class Action
     private string debugPrologFilePath = Path.Combine(Application.streamingAssetsPath, "debugKB.pl");
     private bool debugEnabled;
 
-    public Action(int wumpuses, int golds, Coordinates coords, bool debug)
+    public Action(bool debug)
     {
         debugEnabled = debug;
-        InitialiseProlog();
-    }
-
-    private void InitialiseProlog()
-    {
-        string[] param = { "-q", "-f", prologFilePath };  // suppressing informational & banner messages
-        PlEngine.Initialize(param);
-        PlQuery.PlCall("resetKB");
     }
 
     public void InitialiseGameKB(int seedRandom, Coordinates startCoords, Coordinates gridMin, Coordinates gridMax, int nbGold, int nbWumpus, int nbPit)
     {
+        string[] param = { "-q", "-f", prologFilePath };  // suppressing informational & banner messages
+        PlEngine.Initialize(param);
+        // PlQuery.PlCall("resetKB");
+
         using (PlQuery queryInitGame = new PlQuery("initGame", new PlTermV(new PlTerm[] { new PlTerm(seedRandom), new PlTerm(startCoords.col), new PlTerm(startCoords.row), new PlTerm(gridMin.col), new PlTerm(gridMin.row), new PlTerm(gridMax.col - 1), new PlTerm(gridMax.row - 1), new PlTerm(nbGold), new PlTerm(nbWumpus), new PlTerm(nbPit) })))
         {
-            foreach (PlTermV solution in queryInitGame.Solutions)
-            {
-            }
+            foreach (PlTermV solution in queryInitGame.Solutions) { }
         }
         PrintKB();
     }
 
-    public Coordinates NextMovePlayer(Coordinates coords, Coordinates newCoords)
+    public void NextMovePlayer(Coordinates newCoords)
     {
-        using (PlQuery queryNextMove = new PlQuery("nextMovePlayer", new PlTermV(new PlTerm[] { new PlTerm(coords.col), new PlTerm(coords.row), new PlTerm(newCoords.col), new PlTerm(newCoords.row) })))
+        using (PlQuery queryNextMove = new PlQuery("nextMove", new PlTermV(new PlTerm[] { new PlTerm(newCoords.col), new PlTerm(newCoords.row) })))
         {
-            foreach (PlTermV solution in queryNextMove.Solutions)
-            {
-            }
+            foreach (PlTermV solution in queryNextMove.Solutions) { }
         }
-        return newCoords;
     }
 
-    public Coordinates NextMoveProlog(Coordinates coords)
+    public void NextMoveProlog()
     {
-        using (PlQuery queryNextMove = new PlQuery("nextMoveProlog", new PlTermV(new PlTerm[] { new PlTerm(coords.col), new PlTerm(coords.row), new PlTerm("NewCol"), new PlTerm("NewRow") })))
+        using (PlQuery queryNextMove = new PlQuery("nextMove", new PlTermV(new PlTerm[] { new PlTerm("NewCol"), new PlTerm("NewRow") })))
         {
-            foreach (PlTermV solution in queryNextMove.Solutions)
-            {
-                return new Coordinates((int)solution[2], (int)solution[3]);
-            }
+            foreach (PlTermV solution in queryNextMove.Solutions) { }
         }
-        Debug.Log("Random Move.");
-        return RandomMoveProlog(coords);
     }
 
-    public Coordinates RandomMoveProlog(Coordinates coords)
+    public void RandomMoveProlog()
     {
-        using (PlQuery query = new PlQuery("randomMove", new PlTermV(new PlTerm[] { new PlTerm(coords.col), new PlTerm(coords.row), new PlTerm("NewCol"), new PlTerm("NewRow") })))
-        {
-            foreach (PlTermV solution in query.Solutions)
-            {
-                return new Coordinates((int)solution[2], (int)solution[3]);
-            }
-        }
-        Debug.Log("Random Move failed. Going Right.");
-        return new Coordinates(coords.col + 1, coords.row);
+        PlQuery.PlCall("randomMove");
     }
 
     public List<Coordinates> CoordinatesState(string state)
@@ -108,12 +87,24 @@ public class Action
         return PlQuery.PlCall("gameOver(true)");
     }
 
+    public Coordinates AgentPosition()
+    {
+        using (PlQuery queryAgentPosition = new PlQuery("cell", new PlTermV(new PlTerm[] { new PlTerm("Col"), new PlTerm("Row"), new PlTerm("agent") })))
+        {
+            foreach (PlTermV solution in queryAgentPosition.Solutions)
+            {
+                return new Coordinates((int)solution[0], (int)solution[1]);
+            }
+        }
+        return null;
+    }
+
     public void PrintKB()
     {
         if (debugEnabled)
             resetDebugKB();
 
-        // ClearLog();
+        ClearLog();
         printGlobalVariables("nbWumpus", "Initial number of Wumpus: ");
         printGlobalVariables("nbWumpusDead", "Wumpus killed: ");
         printGlobalVariables("nbArrow", "Initial number of arrows: ");
@@ -207,27 +198,27 @@ public class Action
 
     public void ClearLog()
     {
-#if UNITY_EDITOR
-        var assembly = Assembly.GetAssembly(typeof(UnityEditor.Editor));
-        var type = assembly.GetType("UnityEditor.LogEntries");
-        var method = type.GetMethod("Clear");
-        method.Invoke(new object(), null);
-#endif
+        #if UNITY_EDITOR
+                var assembly = Assembly.GetAssembly(typeof(UnityEditor.Editor));
+                var type = assembly.GetType("UnityEditor.LogEntries");
+                var method = type.GetMethod("Clear");
+                method.Invoke(new object(), null);
+        #endif
     }
 
-    public void AddFactKB(string prologFact)
-    {
-        // If fact not already in KB, add it
-        if (PlQuery.PlCall($"{prologFact}") == false)
-        {
-            PlQuery.PlCall($"assertz({prologFact})");
-        }
-    }
+    // public void AddFactKB(string prologFact)
+    // {
+    //     // If fact not already in KB, add it
+    //     if (PlQuery.PlCall($"{prologFact}") == false)
+    //     {
+    //         PlQuery.PlCall($"assertz({prologFact})");
+    //     }
+    // }
 
-    public void RemoveFromKB(string prologFact)
-    {
-        PlQuery.PlCall($"retractall({prologFact})");
-    }
+    // public void RemoveFromKB(string prologFact)
+    // {
+    //     PlQuery.PlCall($"retractall({prologFact})");
+    // }
 
     /***************** DEBUG *****************/
     private void resetDebugKB()
