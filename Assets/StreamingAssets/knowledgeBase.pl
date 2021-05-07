@@ -123,6 +123,21 @@ initPit(MinGridCol, MinGridRow, MaxGridCol, MaxGridRow, Pit, NBPit):-
                 NewPit is Pit),
         initPit(MinGridCol, MinGridRow, MaxGridCol, MaxGridRow, NewPit, NBPit)); true.
 
+
+% cell(X, Y, wumpus):-
+%     \+(cell(X, Y, wumpusDead)), !,
+%     cell(X, Y, wumpus). % true.
+
+% cell(X, Y, wumpus):-
+%     \+(cell(X, Y, wumpusDead)),
+%     check(Haut, Bas, Gauche);
+%     Regle2;
+%     Regle3;
+%     Regle4. % false.
+
+% check(Cell1, Cell2, Cell3):-
+%     safeOrVisited(Cell1), safeOrVisited(Cell2), safeOrVisited(Cell3).
+
 % If cell is not alerady taken
 cellFree(Col, Row):-
     \+(world(Col, Row, pit)),
