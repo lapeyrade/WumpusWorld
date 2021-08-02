@@ -1,3 +1,6 @@
+/// <summary>
+/// Coordinates used for the grid of the game
+/// </summary>
 public class Coordinates
 {
     public int col { get; set; }

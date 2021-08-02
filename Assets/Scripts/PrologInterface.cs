@@ -5,6 +5,10 @@ using System.Reflection;
 using System;
 using System.IO;
 
+/// <summary>
+/// Interface between the Unity C# code and the Prolog Engine
+/// via the SwiPlCs Plugin
+/// </summary>
 public class PrologInterface : MonoBehaviour
 {
     [SerializeField]

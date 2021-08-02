@@ -2,6 +2,9 @@ using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
 
+/// <summary>
+/// Manage the main dynamics of the game
+/// </summary>
 public class GameController : MonoBehaviour
 {
     private bool gameOver = false;

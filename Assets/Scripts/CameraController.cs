@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// Center the game camera dynamically to the game dimensions
+/// </summary>
 public class CameraController : MonoBehaviour
 {
     public GameObject gridManager;

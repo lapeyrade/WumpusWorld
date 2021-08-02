@@ -1,6 +1,10 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+/// <summary>
+/// Contains agent characteristics and actions
+/// </summary>
+
 public class Agent : MonoBehaviour
 {
     public Coordinates coords;

@@ -1,6 +1,10 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+/// <summary>
+/// Construct and update the world
+/// Manage the graphical part 
+/// </summary>
 public class World : MonoBehaviour
 {
     [SerializeField]
