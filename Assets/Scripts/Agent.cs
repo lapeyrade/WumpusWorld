@@ -1,31 +1,78 @@
-using System;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using System.Linq;
 
-
-public class Agent
+public class Agent : MonoBehaviour
 {
-    public Coordinates coords { get; set; }
-    public int nbGold { get; set; }
-    public int nbArrow { get; set; }
+    public Coordinates coords;
+    public int nbGold = 0;
+    public int nbArrow;
+    public Dictionary<string, GameObject>[,] map;
 
-    public GameObject agentTile;
+    public GameObject gridManager;
+    private World world;
 
-    // public Stack<Coordinates> prevCoords = new Stack<Coordinates>();
+    public Stack<Coordinates> pastMovements = new Stack<Coordinates>();
 
-    public Agent(Coordinates startCoords, int arrowsAtStart)
+    void Awake()
+    {
+        world = gridManager.GetComponent<World>();
+    }
+
+    public void InitAgent(Coordinates startCoords, int nbWumpus, Coordinates gridMax)
     {
         coords = startCoords;
-        nbGold = 0;
-        nbArrow = arrowsAtStart;
+        nbArrow = nbWumpus;
+        map = new Dictionary<string, GameObject>[gridMax.col, gridMax.row];
     }
 
-    public void MoveAgent(Coordinates newCoords)
+    public void MoveBack()
     {
-        coords.col = newCoords.col;
-        coords.row = newCoords.row;
+        if(pastMovements.Count > 1){
+            pastMovements.Pop();
+            Move(pastMovements.Pop());
+        }
+    }
+
+    public void Move(Coordinates newCoords)
+    {
+        pastMovements.Push(newCoords);
+        world.RemoveFromGrids(coords.col, coords.row, "agent", true, true);
+        coords = newCoords;
+        world.AddToGrids(coords.col, coords.row, "agent", true, true);
+        world.AddToGrids(coords.col, coords.row, "visited", true, false);
+    }
+
+    public void TakeGold()
+    {
+        world.RemoveFromGrids(coords.col, coords.row, "gold", true, true);
+        nbGold += 1;
+    }
+
+    public void MarkNearCellSafe()
+    {
+        world.AddToGrids(coords.col + 1, coords.row, "safe", true, false);
+        world.AddToGrids(coords.col - 1, coords.row, "safe", true, false);
+        world.AddToGrids(coords.col, coords.row + 1, "safe", true, false);
+        world.AddToGrids(coords.col, coords.row - 1, "safe", true, false);
+    }
+
+    public void CheckForWumpus()
+    {
+        // Debug.Log("Agent Function: Check For Wumpus");
+    }
+
+    public void CheckForPit()
+    {
+        // Debug.Log("Agent Function: Check For Pits");
+    }
+    
+    public void HitWall()
+    {
+        world.RemoveFromGrids(coords.col, coords.row, "agent", true, true);
+        world.RemoveFromGrids(coords.col, coords.row, "visited", true, false);
+        pastMovements.Pop();
+        coords = pastMovements.Peek();
+        world.AddToGrids(coords.col, coords.row, "agent", true, true);
     }
 }
-

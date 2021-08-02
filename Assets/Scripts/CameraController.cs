@@ -1,16 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
     public GameObject gridManager;
 
-    void Start()
+    public void AdjustCameraPosition()
     {
-        GameController gameController = gridManager.GetComponent<GameController>();
-        Coordinates gridMax = gameController.gridMax;
-        float tileSize = gameController.tileSize;
+        World world = gridManager.GetComponent<World>();
+        Coordinates gridMax = world.gridMax;
+        float tileSize = world.tileSize;
 
         transform.position = new Vector3(((gridMax.col - 1) * tileSize) / 2, (((gridMax.row - 1) * tileSize)) / 2, -1);
 
