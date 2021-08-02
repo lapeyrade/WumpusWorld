@@ -1,10 +1,8 @@
 using UnityEngine;
-using System.Linq;
 using System.Collections.Generic;
 
 public class World : MonoBehaviour
 {
-
     [SerializeField]
     private int RandomSeed = 4;
 
@@ -249,48 +247,4 @@ public class World : MonoBehaviour
             map[col, row].Remove(content);
         }
     }
-
-    public void UpdateGrids()
-    {
-        for (int col = gridMin.col; col < gridMax.col; col++)
-        {
-            for (int row = gridMin.row; row < gridMax.row; row++)
-            {
-                UpdateCell(new Coordinates(col, row));
-            }
-        }
-
-        prologInterface.PrintKB();
-
-        void UpdateCell(Coordinates coords)
-        {
-            List<string> prologAgentMap = prologInterface.CheckCell(coords);
-            List<string> gridAgentMap = agent.map[coords.col, coords.row].Keys.ToList();
-
-            foreach (string cellContentProlog in prologAgentMap)
-            {
-                if (!gridAgentMap.Contains(cellContentProlog))
-                {
-                    if (cellContentProlog == "agent" || cellContentProlog == "wumpusDead")
-                        AddToGrids(coords.col, coords.row, cellContentProlog, true, true);
-                    else
-                        AddToGrids(coords.col, coords.row, cellContentProlog, true, false);
-                }
-            }
-
-            foreach (string cellContentGrid in gridAgentMap)
-            {
-                if (!prologAgentMap.Contains(cellContentGrid))
-                {
-                    if (cellContentGrid == "emptyCell" && gridAgentMap.Count > 1)
-                        RemoveFromGrids(coords.col, coords.row, cellContentGrid, true, false);
-                    else if (cellContentGrid == "agent" || cellContentGrid == "gold" || cellContentGrid == "wumpus" || cellContentGrid == "wumpusDead")
-                        RemoveFromGrids(coords.col, coords.row, cellContentGrid, true, true);
-                    // else if (cellContentGrid != "emptyCell")
-                    //     RemoveFromGrids(coords.col, coords.row, cellContentGrid, true, false);
-                }
-            }
-        }
-    }
-
 }

@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 
 public class Agent : MonoBehaviour
@@ -28,7 +27,8 @@ public class Agent : MonoBehaviour
 
     public void MoveBack()
     {
-        if(pastMovements.Count > 1){
+        if (pastMovements.Count > 1)
+        {
             pastMovements.Pop();
             Move(pastMovements.Pop());
         }
@@ -66,7 +66,7 @@ public class Agent : MonoBehaviour
     {
         // Debug.Log("Agent Function: Check For Pits");
     }
-    
+
     public void HitWall()
     {
         world.RemoveFromGrids(coords.col, coords.row, "agent", true, true);

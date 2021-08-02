@@ -96,19 +96,15 @@ public class GameController : MonoBehaviour
         }
 
         else if (Input.GetKeyDown("right"))
-            // agent.Move(prologInterface.NextMovePlayer(new Coordinates(agent.coords.col + 1, agent.coords.row)));
             agent.Move(new Coordinates(agent.coords.col + 1, agent.coords.row));
 
         else if (Input.GetKeyDown("left"))
-            // agent.Move(prologInterface.NextMovePlayer(new Coordinates(agent.coords.col - 1, agent.coords.row)));
             agent.Move(new Coordinates(agent.coords.col - 1, agent.coords.row));
 
         else if (Input.GetKeyDown("up"))
-            // agent.Move(prologInterface.NextMovePlayer(new Coordinates(agent.coords.col, agent.coords.row + 1)));
             agent.Move(new Coordinates(agent.coords.col, agent.coords.row + 1));
 
         else if (Input.GetKeyDown("down"))
-            // agent.Move(prologInterface.NextMovePlayer(new Coordinates(agent.coords.col, agent.coords.row - 1)));
             agent.Move(new Coordinates(agent.coords.col, agent.coords.row - 1));
     }
 
@@ -183,12 +179,6 @@ public class GameController : MonoBehaviour
                             Debug.Log(col + " " + row + " " + prologInterface.CheckCellElement(new Coordinates(col, row), "wumpus"));
                         }
                     }
-                    // List<Coordinates> WumpusesCoordinates = prologInterface.ElementCoordinates("wumpus");
-                    // foreach (Coordinates coords in WumpusesCoordinates)
-                    // {
-                    //     Debug.Log($"Wumpus Col: {coords.col}, Row: {coords.row}");
-                    // }
-                    // agent.CheckForWumpus();
                     break;
                 case "CheckForPit":
                     agent.CheckForPit();
@@ -200,37 +190,6 @@ public class GameController : MonoBehaviour
                     break;
             }
         }
-
-        // List<string> cellContent = agent.map[agent.coords.col, agent.coords.row].Keys.ToList();
-
-        // if (cellContent.Contains("wall"))
-        // {
-        //     prologInterface.RemoveCellContentKB(agent.coords, "safe");
-        //     agent.HitWall();
-        //     prologInterface.AddCellContentKB(agent.coords, "agent");
-        // }
-        // else
-        // {
-        // if (cellContent.Contains("gold"))
-        // {
-        //     agent.TakeGold();
-        //     prologInterface.RemoveFromKB("nb_gold_agent");
-        //     prologInterface.AddToKB($"nb_gold_agent({agent.nbGold})");
-        // }
-
-        // if ((cellContent.Contains("safe") || cellContent.Contains("start")) && !cellContent.Contains("breeze") &&
-        //  !cellContent.Contains("stench") && !cellContent.Contains("pit") && !cellContent.Contains("wumpus") &&
-        //   !cellContent.Contains("wall"))
-        // {
-        //     agent.MarkNearCellSafe();
-        //     prologInterface.AddCellContentKB(new Coordinates(agent.coords.col + 1, agent.coords.row), "safe");
-        //     prologInterface.AddCellContentKB(new Coordinates(agent.coords.col - 1, agent.coords.row), "safe");
-        //     prologInterface.AddCellContentKB(new Coordinates(agent.coords.col, agent.coords.row + 1), "safe");
-        //     prologInterface.AddCellContentKB(new Coordinates(agent.coords.col, agent.coords.row - 1), "safe");
-        // }
-        // agent.CheckForPit();
-        // agent.CheckForWumpus();
-        // }
     }
 
     public void SetGameOver(string message, bool exitApp)
