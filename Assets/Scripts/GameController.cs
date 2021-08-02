@@ -31,14 +31,7 @@ public class GameController : MonoBehaviour
                 MoveCell();
                 SenseCell();
                 ActionCell();
-                prologInterface.PrintKB();
-
-                string stackTrace = "";
-                foreach (Coordinates movement in agent.pastMovements)
-                {
-                    stackTrace += movement.ToString();
-                }
-                Debug.Log(stackTrace);
+                prologInterface.PrintKB(agent);
             }
         }
     }
@@ -171,12 +164,12 @@ public class GameController : MonoBehaviour
                     prologInterface.AddCellContentKB(new Coordinates(agent.coords.col, agent.coords.row - 1), "safe");
                     break;
                 case "CheckForWumpus":
-                    Debug.Log("wumpus");
                     for (int row = agent.coords.row - 3; row < agent.coords.row + 3; row++)
                     {
                         for (int col = agent.coords.col - 3; col < agent.coords.col + 3; col++)
                         {
-                            Debug.Log(col + " " + row + " " + prologInterface.CheckCellElement(new Coordinates(col, row), "wumpus"));
+                            Debug.Log(col + " " + row + " " + prologInterface.CheckCellElement(new Coordinates(col, row), "wumpusyes"));
+                            // Debug.Log(col + " " + row + " " + prologInterface.CheckCellElement(new Coordinates(col, row), "wumpus"));
                         }
                     }
                     break;

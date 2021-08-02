@@ -213,7 +213,7 @@ public class World : MonoBehaviour
         agent.Move(startCoords);
         gameController.SenseCell();
         gameController.ActionCell();
-        prologInterface.PrintKB();
+        prologInterface.PrintKB(agent);
     }
 
     public void AddToGrids(int col, int row, string content, bool updateMapAgent, bool updateMap)
