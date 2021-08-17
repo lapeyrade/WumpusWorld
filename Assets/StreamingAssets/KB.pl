@@ -103,6 +103,20 @@ next_action(Action):-
 	\+(cell(Col, DownRow, safe))),
     Action = "MarkNearCellSafe", !.
 
+% cell(2, 3, wumpusyes):-
+%     cell(1, 1, agent).
+
+% cell(3, 3, wumpusyes):-
+%     cell(1, 1, agent).
+
+% cell(X, Y, safe):-
+%     tnot(cell(Col, Row, wumpus)),
+%     tnot(cell(Col, Row, pit)).
+
+% cell(1, 1, safe).
+% cell(1, 1, stenchno).
+% cell(1, 1, wumpusno).
+
 next_action(Action):-
     wumpus_checked(false),
     Action = "CheckForWumpus",
@@ -113,8 +127,6 @@ next_action(Action):-
     retractall(wumpus_checked(_)),
     assertz(wumpus_checked(false)),
     Action = "MoveNextCell", !.
-
-
 
 %%%%%%%%%% GAME RULES %%%%%%%%%%
 % Define Stench & Wumpus attributes
@@ -193,6 +205,7 @@ cell(Col, Row, wumpusno) :-
 
 % Right
 cell(Col, Row, wumpusyes) :-
+    writeln("test wumpus yes"),
     in_limits(Col, Row),
     RightCol is Col+1,
     LeftCol is Col-1,
@@ -206,6 +219,7 @@ cell(Col, Row, wumpusyes) :-
 
 % Left
 cell(Col, Row, wumpusyes) :-
+    writeln("test wumpus yes"),
     in_limits(Col, Row),
     RightCol is Col+1,
     LeftCol is Col-1,
@@ -219,6 +233,7 @@ cell(Col, Row, wumpusyes) :-
 
 % Up
 cell(Col, Row, wumpusyes) :-
+    writeln("test wumpus yes"),
     in_limits(Col, Row),
     RightCol is Col+1,
     LeftCol is Col-1,
@@ -232,6 +247,7 @@ cell(Col, Row, wumpusyes) :-
 
 % Down
 cell(Col, Row, wumpusyes) :-
+    writeln("test wumpus yes"),
     in_limits(Col, Row),
     RightCol is Col+1,
     LeftCol is Col-1,

@@ -34,6 +34,7 @@ public class GameController : MonoBehaviour
                 MoveCell();
                 SenseCell();
                 ActionCell();
+
                 prologInterface.PrintKB(agent);
             }
         }
@@ -134,6 +135,7 @@ public class GameController : MonoBehaviour
         if (cellContent.Contains("emptyCell") && cellContent.Count > 1)
             world.RemoveFromGrids(agent.coords.col, agent.coords.row, "emptyCell", true, false);
 
+
         if (cellContent.Contains("start") && agent.nbGold == world.nbGold)
             SetGameOver("Game Won!", false);
 
@@ -167,9 +169,9 @@ public class GameController : MonoBehaviour
                     prologInterface.AddCellContentKB(new Coordinates(agent.coords.col, agent.coords.row - 1), "safe");
                     break;
                 case "CheckForWumpus":
-                    for (int row = agent.coords.row - 3; row < agent.coords.row + 3; row++)
+                    for (int row = agent.coords.row - 4; row < agent.coords.row + 4; row++)
                     {
-                        for (int col = agent.coords.col - 3; col < agent.coords.col + 3; col++)
+                        for (int col = agent.coords.col - 4; col < agent.coords.col + 4; col++)
                         {
                             Debug.Log(col + " " + row + " " + prologInterface.CheckCellElement(new Coordinates(col, row), "wumpusyes"));
                             // Debug.Log(col + " " + row + " " + prologInterface.CheckCellElement(new Coordinates(col, row), "wumpus"));

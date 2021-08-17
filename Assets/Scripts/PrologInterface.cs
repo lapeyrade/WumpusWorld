@@ -157,13 +157,13 @@ public class PrologInterface : MonoBehaviour
         if (debugFileLog)
             WriteInDebugKB("% ------------------");
 
-        PrintCellContent(debugFileLog, consoleLog);
-
         PrintAgentMovements(debugFileLog, consoleLog);
+
+        PrintCellContent(debugFileLog, consoleLog);
 
         void PrintAgentMovements(Boolean debugFile, Boolean consoleLog)
         {
-            string stackTrace = "";
+            string stackTrace = "% ";
             foreach (Coordinates movement in agent.pastMovements)
             {
                 stackTrace += movement.ToString();
