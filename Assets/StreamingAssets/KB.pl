@@ -95,9 +95,6 @@ next_action(Action):-
 %     tnot(cell(Col, Row, wumpus)),
 %     tnot(cell(Col, Row, pit)).
 
-% cell(1, 1, safe).
-% cell(1, 1, stenchno).
-% cell(1, 1, wumpusno).
 
 next_action(Action):-
     wumpus_checked(false),

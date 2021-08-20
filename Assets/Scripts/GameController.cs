@@ -122,30 +122,34 @@ public class GameController : MonoBehaviour
 
         List<string> cellContent = agent.map[agent.coords.col, agent.coords.row].Keys.ToList();
 
-        if (!cellContent.Contains("stenchyes"))
-            prologInterface.AddCellContentKB(new Coordinates(agent.coords.col, agent.coords.row), "stenchno");
-
-        if (!cellContent.Contains("wumpusyes"))
-            prologInterface.AddCellContentKB(new Coordinates(agent.coords.col, agent.coords.row), "wumpusno");
-
-        if(prologInterface.CheckCellElement(new Coordinates(agent.coords.col, agent.coords.row), "safe"))
+        if (!cellContent.Contains("wall"))
         {
-            world.AddToGrids(agent.coords.col, agent.coords.row, "safe", true, false);
-            world.AddToGrids(agent.coords.col+1, agent.coords.row, "safe", true, false);
-            world.AddToGrids(agent.coords.col-1, agent.coords.row, "safe", true, false);
-            world.AddToGrids(agent.coords.col, agent.coords.row+1, "safe", true, false);
-            world.AddToGrids(agent.coords.col, agent.coords.row-1, "safe", true, false);
+            if (!cellContent.Contains("stenchyes"))
+                prologInterface.AddCellContentKB(new Coordinates(agent.coords.col, agent.coords.row), "stenchno");
+
+            if (!cellContent.Contains("wumpusyes"))
+                prologInterface.AddCellContentKB(new Coordinates(agent.coords.col, agent.coords.row), "wumpusno");
+
+            if (prologInterface.CheckCellElement(new Coordinates(agent.coords.col, agent.coords.row), "safe"))
+            {
+                world.AddToGrids(agent.coords.col, agent.coords.row, "safe", true, false);
+                world.AddToGrids(agent.coords.col + 1, agent.coords.row, "safe", true, false);
+                world.AddToGrids(agent.coords.col - 1, agent.coords.row, "safe", true, false);
+                world.AddToGrids(agent.coords.col, agent.coords.row + 1, "safe", true, false);
+                world.AddToGrids(agent.coords.col, agent.coords.row - 1, "safe", true, false);
+            }
+
+            if (cellContent.Contains("emptyCell") && cellContent.Count > 1)
+                world.RemoveFromGrids(agent.coords.col, agent.coords.row, "emptyCell", true, false);
+
+
+            if (cellContent.Contains("start") && agent.nbGold == world.nbGold)
+                SetGameOver("Game Won!", false);
+
+            else if (cellContent.Contains("pit") || cellContent.Contains("wumpus"))
+                SetGameOver("Game Lost!", false);
         }
 
-        if (cellContent.Contains("emptyCell") && cellContent.Count > 1)
-            world.RemoveFromGrids(agent.coords.col, agent.coords.row, "emptyCell", true, false);
-
-
-        if (cellContent.Contains("start") && agent.nbGold == world.nbGold)
-            SetGameOver("Game Won!", false);
-
-        else if (cellContent.Contains("pit") || cellContent.Contains("wumpus"))
-            SetGameOver("Game Lost!", false);
     }
 
     public void ActionCell()
