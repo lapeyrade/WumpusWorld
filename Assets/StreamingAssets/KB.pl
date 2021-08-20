@@ -3,7 +3,7 @@
 % :- use_module(library(reif)).
 
 % :- set_prolog_flag(double_quotes, chars).
-:- table cell/3 as incremental.
+:- table cell2/3 as incremental.
 
 :- dynamic([cell/3, nb_wumpus/1, nb_wumpus_dead/1,
             nb_arrow/1, nb_arrow_used/1,
@@ -84,24 +84,6 @@ next_action(Action):-
     cell(Col, Row, agent),
     cell(Col, Row, gold),
     Action = "TakeGold", !.
-
-next_action(Action):-
-    cell(Col, Row, agent),
-    (cell(Col, Row, safe); cell(Col, Row, start)),
-    \+(cell(Col, Row, breeze)),
-    \+(cell(Col, Row, stenchyes)),
-    \+(cell(Col, Row, pit)),
-    \+(cell(Col, Row, wumpus)),
-    \+(cell(Col, Row, wall)),
-    RightCol is Col+1,
-    LeftCol is Col-1,
-    UpRow is Row+1,
-    DownRow is Row-1,
-	(\+(cell(RightCol, Row, safe));
-	\+(cell(LeftCol, Row, safe));
-	\+(cell(Col, UpRow, safe));
-	\+(cell(Col, DownRow, safe))),
-    Action = "MarkNearCellSafe", !.
 
 % cell(2, 3, wumpusyes):-
 %     cell(1, 1, agent).
@@ -205,7 +187,7 @@ cell(Col, Row, wumpusno) :-
 
 % Right
 cell(Col, Row, wumpusyes) :-
-    writeln("test wumpus yes"),
+    % write(Col), writeln(Row),
     in_limits(Col, Row),
     RightCol is Col+1,
     LeftCol is Col-1,
@@ -219,7 +201,7 @@ cell(Col, Row, wumpusyes) :-
 
 % Left
 cell(Col, Row, wumpusyes) :-
-    writeln("test wumpus yes"),
+    % write(Col), writeln(Row),
     in_limits(Col, Row),
     RightCol is Col+1,
     LeftCol is Col-1,
@@ -233,7 +215,7 @@ cell(Col, Row, wumpusyes) :-
 
 % Up
 cell(Col, Row, wumpusyes) :-
-    writeln("test wumpus yes"),
+    % write(Col), writeln(Row), 
     in_limits(Col, Row),
     RightCol is Col+1,
     LeftCol is Col-1,
@@ -247,7 +229,7 @@ cell(Col, Row, wumpusyes) :-
 
 % Down
 cell(Col, Row, wumpusyes) :-
-    writeln("test wumpus yes"),
+    % write(Col), writeln(Row),
     in_limits(Col, Row),
     RightCol is Col+1,
     LeftCol is Col-1,
@@ -292,3 +274,14 @@ cell(Col, Row, stench):-
     cell(Col, Row, stenchyes),
     cell(Col, Row, stenchno),
     tnot(cell(Col, Row, stench)).
+
+cell2(Col, Row, safe):-
+    RightCol is Col+1,
+    LeftCol is Col-1,
+    UpRow is Row+1,
+    DownRow is Row-1,
+    (cell(Col, Row, wumpusno);
+        cell(RightCol, Row, stenchno);
+        cell(LeftCol, Row, stenchno);
+        cell(Col, UpRow, stenchno);
+        cell(Col, DownRow, stenchno)).

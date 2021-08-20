@@ -53,14 +53,6 @@ public class Agent : MonoBehaviour
         nbGold += 1;
     }
 
-    public void MarkNearCellSafe()
-    {
-        world.AddToGrids(coords.col + 1, coords.row, "safe", true, false);
-        world.AddToGrids(coords.col - 1, coords.row, "safe", true, false);
-        world.AddToGrids(coords.col, coords.row + 1, "safe", true, false);
-        world.AddToGrids(coords.col, coords.row - 1, "safe", true, false);
-    }
-
     public void CheckForWumpus()
     {
         // Debug.Log("Agent Function: Check For Wumpus");

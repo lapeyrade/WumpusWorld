@@ -94,7 +94,7 @@ public class PrologInterface : MonoBehaviour
 
     public Boolean CheckCellElement(Coordinates coords, string element)
     {
-        return PlQuery.PlCall($"cell({coords.col}, {coords.row}, {element})");
+        return PlQuery.PlCall($"cell2({coords.col}, {coords.row}, {element})");
     }
 
     public List<string> CheckCell(Coordinates coords)
