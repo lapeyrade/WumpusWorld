@@ -102,167 +102,159 @@ next_action(Action):-
 %%%%%%%%%% GAME RULES %%%%%%%%%%
 % Define Stench & Wumpus attributes
 
-% in_limits(Col, Row) :-
-% 	ground([Col, Row]),
-%     cell2(ColAgent, RowAgent, agent),
-%     MaxCol is ColAgent + 3,
-%     MinCol is ColAgent - 3,
-%     MaxRow is RowAgent + 3,
-%     MinRow is RowAgent - 3,
-%     Col > MinCol,
-%     Col < MaxCol,
-%     Row > MinRow,
-%     Row < MaxRow.
+in_limits(Col, Row) :-
+	ground([Col, Row]),
+    cell2(ColAgent, RowAgent, agent),
+    MaxCol is ColAgent + 3,
+    MinCol is ColAgent - 3,
+    MaxRow is RowAgent + 3,
+    MinRow is RowAgent - 3,
+    Col > MinCol,
+    Col < MaxCol,
+    Row > MinRow,
+    Row < MaxRow.
 
-% % Right
-% cell2(Col, Row, stenchyes) :-
-%     in_limits(Col, Row),
-%     NewCol is Col+1,
-%    	cell2(NewCol, Row, wumpusyes).
+% Right
+cell2(Col, Row, stenchyes) :-
+    in_limits(Col, Row),
+    NewCol is Col+1,
+   	cell2(NewCol, Row, wumpusyes).
 
-% % Left
-% cell2(Col, Row, stenchyes) :-
-%     in_limits(Col, Row),
-%     NewCol is Col-1,
-%    	cell2(NewCol, Row, wumpusyes).
+% Left
+cell2(Col, Row, stenchyes) :-
+    in_limits(Col, Row),
+    NewCol is Col-1,
+   	cell2(NewCol, Row, wumpusyes).
 
-% % Up
-% cell2(Col, Row, stenchyes) :-
-%     in_limits(Col, Row),
-%     NewRow is Row+1,
-%    	cell2(Col, NewRow, wumpusyes).
+% Up
+cell2(Col, Row, stenchyes) :-
+    in_limits(Col, Row),
+    NewRow is Row+1,
+   	cell2(Col, NewRow, wumpusyes).
 
-% % Down
-% cell2(Col, Row, stenchyes) :-
-%     in_limits(Col, Row), 
-%     NewRow is Row-1,
-%    	cell2(Col, NewRow, wumpusyes).
+% Down
+cell2(Col, Row, stenchyes) :-
+    in_limits(Col, Row), 
+    NewRow is Row-1,
+   	cell2(Col, NewRow, wumpusyes).
 
-% cell2(Col, Row, stenchno) :-
-%     in_limits(Col, Row),
-%     RightCol is Col+1,
-%     LeftCol is Col-1,
-%     UpRow is Row+1,
-%     DownRow is Row-1,
-% 	cell2(RightCol, Row, wumpusno),
-% 	cell2(LeftCol, Row, wumpusno),
-% 	cell2(Col, UpRow, wumpusno),
-% 	cell2(Col, DownRow, wumpusno).
+cell2(Col, Row, stenchno) :-
+    in_limits(Col, Row),
+    RightCol is Col+1,
+    LeftCol is Col-1,
+    UpRow is Row+1,
+    DownRow is Row-1,
+	cell2(RightCol, Row, wumpusno),
+	cell2(LeftCol, Row, wumpusno),
+	cell2(Col, UpRow, wumpusno),
+	cell2(Col, DownRow, wumpusno).
 
-% % Right
-% cell2(Col, Row, wumpusno) :-
-%     in_limits(Col, Row),
-%     NewCol is Col+1,
-%    	cell2(NewCol, Row, stenchno),
-%     cell2(NewCol, Row, wumpusno).
+% Right
+cell2(Col, Row, wumpusno) :-
+    in_limits(Col, Row),
+    NewCol is Col+1,
+   	cell2(NewCol, Row, stenchno),
+    cell2(NewCol, Row, wumpusno).
 
-% % Left
-% cell2(Col, Row, wumpusno) :-
-%     in_limits(Col, Row),
-%     NewCol is Col-1,
-%    	cell2(NewCol, Row, stenchno).
+% Left
+cell2(Col, Row, wumpusno) :-
+    in_limits(Col, Row),
+    NewCol is Col-1,
+   	cell2(NewCol, Row, stenchno).
 
-% % Up
-% cell2(Col, Row, wumpusno) :-
-%     in_limits(Col, Row),
-%     NewRow is Row+1,
-%    	cell2(Col, NewRow, stenchno).
+% Up
+cell2(Col, Row, wumpusno) :-
+    in_limits(Col, Row),
+    NewRow is Row+1,
+   	cell2(Col, NewRow, stenchno).
 
-% % Down
-% cell2(Col, Row, wumpusno) :-
-%     in_limits(Col, Row),
-%     NewRow is Row-1,
-%     cell2(Col, NewRow, stenchno).
+% Down
+cell2(Col, Row, wumpusno) :-
+    in_limits(Col, Row),
+    NewRow is Row-1,
+    cell2(Col, NewRow, stenchno).
 
-% % Right
-% cell2(Col, Row, wumpusyes) :-
-%     % write(Col), writeln(Row),
-%     in_limits(Col, Row),
-%     RightCol is Col+1,
-%     LeftCol is Col-1,
-%     UpRow is Row+1,
-%     DownRow is Row-1,
-%     cell2(RightCol, Row, stenchyes),
-% 	% tnot(cell2(RightCol, Row, wumpusyes)),
-% 	tnot(cell2(LeftCol, Row, wumpusyes)),
-% 	tnot(cell2(Col, UpRow, wumpusyes)),
-% 	tnot(cell2(Col, DownRow, wumpusyes)).
+% Right
+cell2(Col, Row, wumpusyes) :-
+    % in_limits(Col, Row),
+    RightCol is Col+1,
+    FarRightCol is Col+2,
+    UpRow is Row+1,
+    DownRow is Row-1,
+    cell2(RightCol, Row, stenchyes),
+	cell2(FarRightCol, Row, wumpusno),
+	cell2(RightCol, UpRow, wumpusno),
+	cell2(RightCol, DownRow, wumpusno).
 
-% %2 Left
-% cell2(Col, Row, wumpusyes) :-
-%     % write(Col), writeln(Row),
-%     in_limits(Col, Row),
-%     RightCol is Col+1,
-%     LeftCol is Col-1,
-%     UpRow is Row+1,
-%     DownRow is Row-1,
-%     cell2(LeftCol, Row, stenchyes),
-% 	tnot(cell2(RightCol, Row, wumpusyes)),
-% 	% tnot(cell2(LeftCol, Row, wumpusyes)),
-% 	tnot(cell2(Col, UpRow, wumpusyes)),
-% 	tnot(cell2(Col, DownRow, wumpusyes)).
+% Left
+cell2(Col, Row, wumpusyes) :-
+    % in_limits(Col, Row),
+    LeftCol is Col-1,
+    FarLeftCol is Col-2,
+    UpRow is Row+1,
+    DownRow is Row-1,
+    cell2(LeftCol, Row, stenchyes),
+	cell2(FarLeftCol, Row, wumpusno),
+	cell2(LeftCol, UpRow, wumpusno),
+	cell2(LeftCol, DownRow, wumpusno).
 
-% % Up
-% cell2(Col, Row, wumpusyes) :-
-%     % write(Col), writeln(Row), 
-%     in_limits(Col, Row),
-%     RightCol is Col+1,
-%     LeftCol is Col-1,
-%     UpRow is Row+1,
-%     DownRow is Row-1,
-%     cell2(Col, UpRow, stenchyes),
-% 	tnot(cell2(RightCol, Row, wumpusyes)),
-% 	tnot(cell2(LeftCol, Row, wumpusyes)),
-% 	% tnot(cell2(Col, UpRow, wumpusyes)),
-% 	tnot(cell2(Col, DownRow, wumpusyes)).
+% Up
+cell2(Col, Row, wumpusyes) :-
+    % in_limits(Col, Row),
+    UpRow is Row+1,
+    FarUpRow is Row+2,
+    RightCol is Col+1,
+    LeftCol is Col-1,
+    cell2(Col, UpRow, stenchyes),
+	cell2(Col, FarUpRow, wumpusno),
+	cell2(LeftCol, UpRow, wumpusno),
+	cell2(RightCol, UpRow, wumpusno).
 
-% % Down
-% cell2(Col, Row, wumpusyes) :-
-%     % write(Col), writeln(Row),
-%     in_limits(Col, Row),
-%     RightCol is Col+1,
-%     LeftCol is Col-1,
-%     UpRow is Row+1,
-%     DownRow is Row-1,
-%     cell2(Col, DownRow, stenchyes),
-% 	tnot(cell2(RightCol, Row, wumpusyes)),
-% 	tnot(cell2(LeftCol, Row, wumpusyes)),
-% 	tnot(cell2(Col, UpRow, wumpusyes)).
-% 	% tnot(cell2(Col, DownRow, wumpusyes)).
+% Down
+cell2(Col, Row, wumpusyes) :-
+    % in_limits(Col, Row),
+    DownRow is Row-1,
+    FarDownRow is Row-2,
+    RightCol is Col+1,
+    LeftCol is Col-1,
+    cell2(Col, DownRow, stenchyes),
+	cell2(Col, FarDownRow, wumpusno),
+	cell2(LeftCol, DownRow, wumpusno),
+	cell2(RightCol, DownRow, wumpusno).
 
-% cell2(Col, Row, wumpus):-
-%     in_limits(Col, Row),
-%     cell2(Col, Row, wumpusyes),
-%     tnot(cell2(Col, Row, wumpusno)).
+cell2(Col, Row, wumpus):-
+    % in_limits(Col, Row),
+    cell2(Col, Row, wumpusyes),
+    tnot(cell2(Col, Row, wumpusno)).
 
-% cell2(Col, Row, wumpus):-
-%     in_limits(Col, Row),
-%     tnot(cell2(Col, Row, wumpusyes)),
-%     tnot(cell2(Col, Row, wumpusno)),
-%     tnot(cell2(Col, Row, wumpus)).
+cell2(Col, Row, wumpus):-
+    % in_limits(Col, Row),
+    tnot(cell2(Col, Row, wumpusyes)),
+    tnot(cell2(Col, Row, wumpusno)),
+    tnot(cell2(Col, Row, wumpus)).
 
-% cell2(Col, Row, wumpus):-
-%     in_limits(Col, Row),
-%     cell2(Col, Row, wumpusyes),
-%     cell2(Col, Row, wumpusno),
-%     tnot(cell2(Col, Row, wumpus)).
+cell2(Col, Row, wumpus):-
+    % in_limits(Col, Row),
+    cell2(Col, Row, wumpusyes),
+    cell2(Col, Row, wumpusno),
+    tnot(cell2(Col, Row, wumpus)).
 
-% cell2(Col, Row, stench):-
-%     in_limits(Col, Row),
-%     cell2(Col, Row, stenchyes),
-%     tnot(cell2(Col, Row, stenchno)).
+cell2(Col, Row, stench):-
+    % in_limits(Col, Row),
+    cell2(Col, Row, stenchyes),
+    tnot(cell2(Col, Row, stenchno)).
 
-% cell2(Col, Row, stench):-
-%     in_limits(Col, Row),
-%     tnot(cell2(Col, Row, stenchyes)),
-%     tnot(cell2(Col, Row, stenchno)),
-%     tnot(cell2(Col, Row, stench)).
+cell2(Col, Row, stench):-
+    % in_limits(Col, Row),
+    tnot(cell2(Col, Row, stenchyes)),
+    tnot(cell2(Col, Row, stenchno)),
+    tnot(cell2(Col, Row, stench)).
 
-% cell2(Col, Row, stench):-
-%     in_limits(Col, Row),
-%     cell2(Col, Row, stenchyes),
-%     cell2(Col, Row, stenchno),
-%     tnot(cell2(Col, Row, stench)).
+cell2(Col, Row, stench):-
+    % in_limits(Col, Row),
+    cell2(Col, Row, stenchyes),
+    cell2(Col, Row, stenchno),
+    tnot(cell2(Col, Row, stench)).
 
 cell2(Col, Row, safe):-
     RightCol is Col+1,
