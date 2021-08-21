@@ -97,6 +97,11 @@ public class PrologInterface : MonoBehaviour
         return PlQuery.PlCall($"cell2({coords.col}, {coords.row}, {element})");
     }
 
+    public Boolean CheckCellElementFalse(Coordinates coords, string element)
+    {
+        return PlQuery.PlCall($"tnot(cell2({coords.col}, {coords.row}, {element}))");
+    }
+
     public List<string> CheckCell(Coordinates coords)
     {
         List<string> cellContent = new List<string>();

@@ -101,14 +101,13 @@ next_action(Action):-
 
 %%%%%%%%%% GAME RULES %%%%%%%%%%
 % Define Stench & Wumpus attributes
-
 in_limits(Col, Row) :-
 	ground([Col, Row]),
     cell2(ColAgent, RowAgent, agent),
-    MaxCol is ColAgent + 3,
-    MinCol is ColAgent - 3,
-    MaxRow is RowAgent + 3,
-    MinRow is RowAgent - 3,
+    MaxCol is ColAgent + 1,
+    MinCol is ColAgent - 1,
+    MaxRow is RowAgent + 1,
+    MinRow is RowAgent - 1,
     Col > MinCol,
     Col < MaxCol,
     Row > MinRow,
@@ -117,26 +116,26 @@ in_limits(Col, Row) :-
 % Right
 cell2(Col, Row, stenchyes) :-
     in_limits(Col, Row),
-    NewCol is Col+1,
-   	cell2(NewCol, Row, wumpusyes).
+    RightCol is Col+1,
+   	cell2(RightCol, Row, wumpusyes).
 
 % Left
 cell2(Col, Row, stenchyes) :-
     in_limits(Col, Row),
-    NewCol is Col-1,
-   	cell2(NewCol, Row, wumpusyes).
+    LeftCol is Col-1,
+   	cell2(LeftCol, Row, wumpusyes).
 
 % Up
 cell2(Col, Row, stenchyes) :-
     in_limits(Col, Row),
-    NewRow is Row+1,
-   	cell2(Col, NewRow, wumpusyes).
+    UpRow is Row+1,
+   	cell2(Col, UpRow, wumpusyes).
 
 % Down
 cell2(Col, Row, stenchyes) :-
-    in_limits(Col, Row), 
-    NewRow is Row-1,
-   	cell2(Col, NewRow, wumpusyes).
+    in_limits(Col, Row),
+    DownRow is Row-1,
+   	cell2(Col, DownRow, wumpusyes).
 
 cell2(Col, Row, stenchno) :-
     in_limits(Col, Row),
@@ -149,28 +148,44 @@ cell2(Col, Row, stenchno) :-
 	cell2(Col, UpRow, wumpusno),
 	cell2(Col, DownRow, wumpusno).
 
+cell2(Col, Row, stench):-
+    in_limits(Col, Row),
+    cell2(Col, Row, stenchyes),
+    tnot(cell2(Col, Row, stenchno)).
+
+cell2(Col, Row, stench):-
+    in_limits(Col, Row),
+    tnot(cell2(Col, Row, stenchyes)),
+    tnot(cell2(Col, Row, stenchno)),
+    tnot(cell2(Col, Row, stench)).
+
+cell2(Col, Row, stench):-
+    in_limits(Col, Row),
+    cell2(Col, Row, stenchyes),
+    cell2(Col, Row, stenchno),
+    tnot(cell2(Col, Row, stench)).
+
 % Right
 cell2(Col, Row, wumpusno) :-
-    in_limits(Col, Row),
+    % in_limits(Col, Row),
     NewCol is Col+1,
-   	cell2(NewCol, Row, stenchno),
-    cell2(NewCol, Row, wumpusno).
+   	cell2(NewCol, Row, stenchno).
 
 % Left
 cell2(Col, Row, wumpusno) :-
-    in_limits(Col, Row),
+    % in_limits(Col, Row),
     NewCol is Col-1,
    	cell2(NewCol, Row, stenchno).
 
 % Up
 cell2(Col, Row, wumpusno) :-
-    in_limits(Col, Row),
+    % in_limits(Col, Row),
     NewRow is Row+1,
    	cell2(Col, NewRow, stenchno).
 
 % Down
 cell2(Col, Row, wumpusno) :-
-    in_limits(Col, Row),
+    % in_limits(Col, Row),
     NewRow is Row-1,
     cell2(Col, NewRow, stenchno).
 
@@ -239,23 +254,6 @@ cell2(Col, Row, wumpus):-
     cell2(Col, Row, wumpusno),
     tnot(cell2(Col, Row, wumpus)).
 
-cell2(Col, Row, stench):-
-    % in_limits(Col, Row),
-    cell2(Col, Row, stenchyes),
-    tnot(cell2(Col, Row, stenchno)).
-
-cell2(Col, Row, stench):-
-    % in_limits(Col, Row),
-    tnot(cell2(Col, Row, stenchyes)),
-    tnot(cell2(Col, Row, stenchno)),
-    tnot(cell2(Col, Row, stench)).
-
-cell2(Col, Row, stench):-
-    % in_limits(Col, Row),
-    cell2(Col, Row, stenchyes),
-    cell2(Col, Row, stenchno),
-    tnot(cell2(Col, Row, stench)).
-
 cell2(Col, Row, safe):-
     RightCol is Col+1,
     LeftCol is Col-1,
@@ -275,13 +273,3 @@ cell2(Col, Row, safe):-
         cell2(Col, UpRow, breezeno);
         cell2(Col, DownRow, breezeno) 
     ).
-
-% cell2(2, 3, wumpusyes):-
-%     cell2(1, 1, agent).
-
-% cell2(3, 3, wumpusyes):-
-%     cell2(1, 1, agent).
-
-% cell2(X, Y, safe):-
-%     tnot(cell2(Col, Row, wumpus)),
-%     tnot(cell2(Col, Row, pit)).

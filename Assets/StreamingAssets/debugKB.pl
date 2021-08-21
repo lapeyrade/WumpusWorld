@@ -7,9 +7,9 @@ nb_wumpus_dead(0).
 nb_arrow(1).
 nb_arrow_used(0).
 nb_gold(1).
-nb_gold_agent(1).
+nb_gold_agent(0).
 % ------------------
-% [1, 1], 
+% [5, 7], [6, 7], [7, 7], [7, 6], [6, 6], [6, 5], [7, 5], [7, 4], [7, 3], [6, 3], [5, 3], [5, 2], [6, 2], [7, 2], [7, 1], [6, 1], [5, 1], [4, 1], [3, 1], [2, 1], [1, 1], 
 cell(1,1,start).
 cell(1,1,visited).
 cell(1,1,stenchno).
@@ -159,14 +159,9 @@ cell(6,7,stenchno).
 cell(6,7,wumpusno).
 cell(6,7,breezeno).
 cell(6,7,pitno).
+cell(5,7,agent).
 cell(5,7,visited).
 cell(5,7,stenchno).
 cell(5,7,wumpusno).
 cell(5,7,breezeno).
 cell(5,7,pitno).
-cell(4,7,visited).
-cell(4,7,stenchno).
-cell(4,7,wumpusno).
-cell(4,7,breezeno).
-cell(4,7,pitno).
-cell(1,1,agent).
