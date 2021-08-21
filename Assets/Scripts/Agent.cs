@@ -52,17 +52,7 @@ public class Agent : MonoBehaviour
         world.RemoveFromGrids(coords.col, coords.row, "gold", true, true);
         nbGold += 1;
     }
-
-    public void CheckForWumpus()
-    {
-        // Debug.Log("Agent Function: Check For Wumpus");
-    }
-
-    public void CheckForPit()
-    {
-        // Debug.Log("Agent Function: Check For Pits");
-    }
-
+    
     public void HitWall()
     {
         world.RemoveFromGrids(coords.col, coords.row, "agent", true, true);

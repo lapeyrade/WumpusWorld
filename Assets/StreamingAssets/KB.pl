@@ -89,14 +89,6 @@ next_action(Action):-
     Action = "TakeGold", !.
 
 next_action(Action):-
-    wumpus_checked(false),
-    Action = "CheckForWumpus",
-    retractall(wumpus_checked(_)),
-    assertz(wumpus_checked(true)), !.
-
-next_action(Action):-
-    retractall(wumpus_checked(_)),
-    assertz(wumpus_checked(false)),
     Action = "MoveNextCell", !.
 
 %%%%%%%%%% GAME RULES %%%%%%%%%%

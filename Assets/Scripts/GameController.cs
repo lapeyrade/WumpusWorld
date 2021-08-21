@@ -185,19 +185,6 @@ public class GameController : MonoBehaviour
                     prologInterface.RemoveFromKB("nb_gold_agent(_)");
                     prologInterface.AddToKB($"nb_gold_agent({agent.nbGold})");
                     break;
-                case "CheckForWumpus":
-                    // for (int row = agent.coords.row - 1; row < agent.coords.row + 2; row++)
-                    // {
-                    //     for (int col = agent.coords.col - 1; col < agent.coords.col + 2; col++)
-                    //     {
-                    //         if (!prologInterface.CheckCellElementFalse(new Coordinates(col, row), "wumpus"))
-                    //             world.AddToGrids(col, row, "wumpus", true, false);
-                    //     }
-                    // }
-                    break;
-                case "CheckForPit":
-                    agent.CheckForPit();
-                    break;
                 case "MoveNextCell":
                     ActionLeftToDo = false;
                     break;
