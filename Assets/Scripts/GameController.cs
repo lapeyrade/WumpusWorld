@@ -107,11 +107,6 @@ public class GameController : MonoBehaviour
 
     public void SenseCell()
     {
-        foreach (string element in agent.map[agent.coords.col, agent.coords.row].Keys.ToList())
-        {
-            prologInterface.AddCellContentKB(new Coordinates(agent.coords.col, agent.coords.row), element);
-        }
-
         foreach (string element in world.map[agent.coords.col, agent.coords.row].Keys.ToList())
         {
             if (!agent.map[agent.coords.col, agent.coords.row].Keys.ToList().Contains(element))
@@ -124,24 +119,24 @@ public class GameController : MonoBehaviour
 
         if (!cellContent.Contains("wall"))
         {
+            prologInterface.AddCellContentKB(new Coordinates(agent.coords.col, agent.coords.row), "visited");
+
             if (!cellContent.Contains("stenchyes"))
                 prologInterface.AddCellContentKB(new Coordinates(agent.coords.col, agent.coords.row), "stenchno");
 
             if (!cellContent.Contains("wumpusyes"))
                 prologInterface.AddCellContentKB(new Coordinates(agent.coords.col, agent.coords.row), "wumpusno");
 
-            if (prologInterface.CheckCellElement(new Coordinates(agent.coords.col, agent.coords.row), "safe"))
-            {
-                world.AddToGrids(agent.coords.col, agent.coords.row, "safe", true, false);
-                world.AddToGrids(agent.coords.col + 1, agent.coords.row, "safe", true, false);
-                world.AddToGrids(agent.coords.col - 1, agent.coords.row, "safe", true, false);
-                world.AddToGrids(agent.coords.col, agent.coords.row + 1, "safe", true, false);
-                world.AddToGrids(agent.coords.col, agent.coords.row - 1, "safe", true, false);
-            }
+            if (!cellContent.Contains("breezeyes"))
+                prologInterface.AddCellContentKB(new Coordinates(agent.coords.col, agent.coords.row), "breezeno");
+
+            if (!cellContent.Contains("pityes"))
+                prologInterface.AddCellContentKB(new Coordinates(agent.coords.col, agent.coords.row), "pitno");
+
+            checkCellsSafety();
 
             if (cellContent.Contains("emptyCell") && cellContent.Count > 1)
                 world.RemoveFromGrids(agent.coords.col, agent.coords.row, "emptyCell", true, false);
-
 
             if (cellContent.Contains("start") && agent.nbGold == world.nbGold)
                 SetGameOver("Game Won!", false);
@@ -150,6 +145,30 @@ public class GameController : MonoBehaviour
                 SetGameOver("Game Lost!", false);
         }
 
+    }
+
+    void checkCellsSafety()
+    {
+        if (prologInterface.CheckCellElement(agent.coords, "safe"))
+        {
+            world.AddToGrids(agent.coords.col, agent.coords.row, "safe", true, false);
+        }
+        if (prologInterface.CheckCellElement(new Coordinates(agent.coords.col + 1, agent.coords.row), "safe"))
+        {
+            world.AddToGrids(agent.coords.col + 1, agent.coords.row, "safe", true, false);
+        }
+        if (prologInterface.CheckCellElement(new Coordinates(agent.coords.col - 1, agent.coords.row), "safe"))
+        {
+            world.AddToGrids(agent.coords.col - 1, agent.coords.row, "safe", true, false);
+        }
+        if (prologInterface.CheckCellElement(new Coordinates(agent.coords.col, agent.coords.row + 1), "safe"))
+        {
+            world.AddToGrids(agent.coords.col, agent.coords.row + 1, "safe", true, false);
+        }
+        if (prologInterface.CheckCellElement(new Coordinates(agent.coords.col, agent.coords.row - 1), "safe"))
+        {
+            world.AddToGrids(agent.coords.col, agent.coords.row - 1, "safe", true, false);
+        }
     }
 
     public void ActionCell()
@@ -172,13 +191,13 @@ public class GameController : MonoBehaviour
                     break;
                 case "CheckForWumpus":
                     // for (int row = agent.coords.row - 4; row < agent.coords.row + 4; row++)
-                    {
-                        // for (int col = agent.coords.col - 4; col < agent.coords.col + 4; col++)
-                        {
-                            // Debug.Log(col + " " + row + " " + prologInterface.CheckCellElement(new Coordinates(col, row), "wumpusyes"));
-                            // Debug.Log(col + " " + row + " " + prologInterface.CheckCellElement(new Coordinates(col, row), "wumpus"));
-                        }
-                    }
+                    // {
+                    //     for (int col = agent.coords.col - 4; col < agent.coords.col + 4; col++)
+                    //     {
+                    //         Debug.Log(col + " " + row + " " + prologInterface.CheckCellElement(new Coordinates(col, row), "wumpusyes"));
+                    //         Debug.Log(col + " " + row + " " + prologInterface.CheckCellElement(new Coordinates(col, row), "wumpus"));
+                    //     }
+                    // }
                     break;
                 case "CheckForPit":
                     agent.CheckForPit();

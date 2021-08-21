@@ -10,7 +10,10 @@
             nb_gold/1, nb_gold_agent/1, wumpus_checked/1],
             [incremental(true)]).
 
-:- discontiguous cell/3.
+:- discontiguous cell2/3.
+
+% Intermediate Predicate
+cell2(Col, Row, Element):- cell(Col, Row, Element).
 
 %%%%%%%%%% NEXT MOVE %%%%%%%%%%
 
@@ -20,35 +23,35 @@ next_move(Move):-
     Move = "MoveBack", !.
 
 next_move(Move):-
-    cell(Col, Row, agent),
+    cell2(Col, Row, agent),
     RightCol is Col+1,
-    cell(RightCol, Row, safe),
-    \+(cell(RightCol, Row, visited)),
-    \+(cell(RightCol, Row, wall)),
+    cell2(RightCol, Row, safe),
+    \+(cell2(RightCol, Row, visited)),
+    \+(cell2(RightCol, Row, wall)),
     Move = "MoveRight", !.
 
 next_move(Move):-
-    cell(Col, Row, agent),
+    cell2(Col, Row, agent),
     LeftCol is Col-1,
-    cell(LeftCol, Row, safe),
-    \+(cell(LeftCol, Row, visited)),
-    \+(cell(LeftCol, Row, wall)),
+    cell2(LeftCol, Row, safe),
+    \+(cell2(LeftCol, Row, visited)),
+    \+(cell2(LeftCol, Row, wall)),
     Move = "MoveLeft", !.
 
 next_move(Move):-
-    cell(Col, Row, agent),
+    cell2(Col, Row, agent),
     UpRow is Row+1,
-    cell(Col, UpRow, safe),
-    \+(cell(Col, UpRow, visited)),
-    \+(cell(Col, UpRow, wall)),
+    cell2(Col, UpRow, safe),
+    \+(cell2(Col, UpRow, visited)),
+    \+(cell2(Col, UpRow, wall)),
     Move = "MoveUp", !.
 
 next_move(Move):-
-    cell(Col, Row, agent),
+    cell2(Col, Row, agent),
     DownRow is Row-1,
-    cell(Col, DownRow, safe),
-    \+(cell(Col, DownRow, visited)),
-    \+(cell(Col, DownRow, wall)),
+    cell2(Col, DownRow, safe),
+    \+(cell2(Col, DownRow, visited)),
+    \+(cell2(Col, DownRow, wall)),
     Move = "MoveDown", !.
 
 next_move(Move):-
@@ -76,25 +79,14 @@ move(4, Move):-
 %%%%%%%%%% NEXT ACTION %%%%%%%%%%
 
 next_action(Action):-
-    cell(Col, Row, agent),
-    cell(Col, Row, wall),
+    cell2(Col, Row, agent),
+    cell2(Col, Row, wall),
     Action = "HitWall", !.
 
 next_action(Action):-
-    cell(Col, Row, agent),
-    cell(Col, Row, gold),
+    cell2(Col, Row, agent),
+    cell2(Col, Row, gold),
     Action = "TakeGold", !.
-
-% cell(2, 3, wumpusyes):-
-%     cell(1, 1, agent).
-
-% cell(3, 3, wumpusyes):-
-%     cell(1, 1, agent).
-
-% cell(X, Y, safe):-
-%     tnot(cell(Col, Row, wumpus)),
-%     tnot(cell(Col, Row, pit)).
-
 
 next_action(Action):-
     wumpus_checked(false),
@@ -110,175 +102,194 @@ next_action(Action):-
 %%%%%%%%%% GAME RULES %%%%%%%%%%
 % Define Stench & Wumpus attributes
 
-in_limits(Col, Row) :-
-	ground([Col, Row]),
-    cell(ColAgent, RowAgent, agent),
-    MaxCol is ColAgent + 3,
-    MinCol is ColAgent - 3,
-    MaxRow is RowAgent + 3,
-    MinRow is RowAgent - 3,
-    Col > MinCol,
-    Col < MaxCol,
-    Row > MinRow,
-    Row < MaxRow.
+% in_limits(Col, Row) :-
+% 	ground([Col, Row]),
+%     cell2(ColAgent, RowAgent, agent),
+%     MaxCol is ColAgent + 3,
+%     MinCol is ColAgent - 3,
+%     MaxRow is RowAgent + 3,
+%     MinRow is RowAgent - 3,
+%     Col > MinCol,
+%     Col < MaxCol,
+%     Row > MinRow,
+%     Row < MaxRow.
 
-% Right
-cell(Col, Row, stenchyes) :-
-    in_limits(Col, Row),
-    NewCol is Col+1,
-   	cell(NewCol, Row, wumpusyes).
+% % Right
+% cell2(Col, Row, stenchyes) :-
+%     in_limits(Col, Row),
+%     NewCol is Col+1,
+%    	cell2(NewCol, Row, wumpusyes).
 
-% Left
-cell(Col, Row, stenchyes) :-
-    in_limits(Col, Row),
-    NewCol is Col-1,
-   	cell(NewCol, Row, wumpusyes).
+% % Left
+% cell2(Col, Row, stenchyes) :-
+%     in_limits(Col, Row),
+%     NewCol is Col-1,
+%    	cell2(NewCol, Row, wumpusyes).
 
-% Up
-cell(Col, Row, stenchyes) :-
-    in_limits(Col, Row),
-    NewRow is Row+1,
-   	cell(Col, NewRow, wumpusyes).
+% % Up
+% cell2(Col, Row, stenchyes) :-
+%     in_limits(Col, Row),
+%     NewRow is Row+1,
+%    	cell2(Col, NewRow, wumpusyes).
 
-% Down
-cell(Col, Row, stenchyes) :-
-    in_limits(Col, Row), 
-    NewRow is Row-1,
-   	cell(Col, NewRow, wumpusyes).
+% % Down
+% cell2(Col, Row, stenchyes) :-
+%     in_limits(Col, Row), 
+%     NewRow is Row-1,
+%    	cell2(Col, NewRow, wumpusyes).
 
-cell(Col, Row, stenchno) :-
-    in_limits(Col, Row),
-    RightCol is Col+1,
-    LeftCol is Col-1,
-    UpRow is Row+1,
-    DownRow is Row-1,
-	cell(RightCol, Row, wumpusno),
-	cell(LeftCol, Row, wumpusno),
-	cell(Col, UpRow, wumpusno),
-	cell(Col, DownRow, wumpusno).
+% cell2(Col, Row, stenchno) :-
+%     in_limits(Col, Row),
+%     RightCol is Col+1,
+%     LeftCol is Col-1,
+%     UpRow is Row+1,
+%     DownRow is Row-1,
+% 	cell2(RightCol, Row, wumpusno),
+% 	cell2(LeftCol, Row, wumpusno),
+% 	cell2(Col, UpRow, wumpusno),
+% 	cell2(Col, DownRow, wumpusno).
 
-% Right
-cell(Col, Row, wumpusno) :-
-    in_limits(Col, Row),
-    NewCol is Col+1,
-   	cell(NewCol, Row, stenchno),
-    cell(NewCol, Row, wumpusno).
+% % Right
+% cell2(Col, Row, wumpusno) :-
+%     in_limits(Col, Row),
+%     NewCol is Col+1,
+%    	cell2(NewCol, Row, stenchno),
+%     cell2(NewCol, Row, wumpusno).
 
-% Left
-cell(Col, Row, wumpusno) :-
-    in_limits(Col, Row),
-    NewCol is Col-1,
-   	cell(NewCol, Row, stenchno).
+% % Left
+% cell2(Col, Row, wumpusno) :-
+%     in_limits(Col, Row),
+%     NewCol is Col-1,
+%    	cell2(NewCol, Row, stenchno).
 
-% Up
-cell(Col, Row, wumpusno) :-
-    in_limits(Col, Row),
-    NewRow is Row+1,
-   	cell(Col, NewRow, stenchno).
+% % Up
+% cell2(Col, Row, wumpusno) :-
+%     in_limits(Col, Row),
+%     NewRow is Row+1,
+%    	cell2(Col, NewRow, stenchno).
 
-% Down
-cell(Col, Row, wumpusno) :-
-    in_limits(Col, Row),
-    NewRow is Row-1,
-    cell(Col, NewRow, stenchno).
+% % Down
+% cell2(Col, Row, wumpusno) :-
+%     in_limits(Col, Row),
+%     NewRow is Row-1,
+%     cell2(Col, NewRow, stenchno).
 
-% Right
-cell(Col, Row, wumpusyes) :-
-    % write(Col), writeln(Row),
-    in_limits(Col, Row),
-    RightCol is Col+1,
-    LeftCol is Col-1,
-    UpRow is Row+1,
-    DownRow is Row-1,
-    cell(RightCol, Row, stenchyes),
-	% tnot(cell(RightCol, Row, wumpusyes)),
-	tnot(cell(LeftCol, Row, wumpusyes)),
-	tnot(cell(Col, UpRow, wumpusyes)),
-	tnot(cell(Col, DownRow, wumpusyes)).
+% % Right
+% cell2(Col, Row, wumpusyes) :-
+%     % write(Col), writeln(Row),
+%     in_limits(Col, Row),
+%     RightCol is Col+1,
+%     LeftCol is Col-1,
+%     UpRow is Row+1,
+%     DownRow is Row-1,
+%     cell2(RightCol, Row, stenchyes),
+% 	% tnot(cell2(RightCol, Row, wumpusyes)),
+% 	tnot(cell2(LeftCol, Row, wumpusyes)),
+% 	tnot(cell2(Col, UpRow, wumpusyes)),
+% 	tnot(cell2(Col, DownRow, wumpusyes)).
 
-% Left
-cell(Col, Row, wumpusyes) :-
-    % write(Col), writeln(Row),
-    in_limits(Col, Row),
-    RightCol is Col+1,
-    LeftCol is Col-1,
-    UpRow is Row+1,
-    DownRow is Row-1,
-    cell(LeftCol, Row, stenchyes),
-	tnot(cell(RightCol, Row, wumpusyes)),
-	% tnot(cell(LeftCol, Row, wumpusyes)),
-	tnot(cell(Col, UpRow, wumpusyes)),
-	tnot(cell(Col, DownRow, wumpusyes)).
+% %2 Left
+% cell2(Col, Row, wumpusyes) :-
+%     % write(Col), writeln(Row),
+%     in_limits(Col, Row),
+%     RightCol is Col+1,
+%     LeftCol is Col-1,
+%     UpRow is Row+1,
+%     DownRow is Row-1,
+%     cell2(LeftCol, Row, stenchyes),
+% 	tnot(cell2(RightCol, Row, wumpusyes)),
+% 	% tnot(cell2(LeftCol, Row, wumpusyes)),
+% 	tnot(cell2(Col, UpRow, wumpusyes)),
+% 	tnot(cell2(Col, DownRow, wumpusyes)).
 
-% Up
-cell(Col, Row, wumpusyes) :-
-    % write(Col), writeln(Row), 
-    in_limits(Col, Row),
-    RightCol is Col+1,
-    LeftCol is Col-1,
-    UpRow is Row+1,
-    DownRow is Row-1,
-    cell(Col, UpRow, stenchyes),
-	tnot(cell(RightCol, Row, wumpusyes)),
-	tnot(cell(LeftCol, Row, wumpusyes)),
-	% tnot(cell(Col, UpRow, wumpusyes)),
-	tnot(cell(Col, DownRow, wumpusyes)).
+% % Up
+% cell2(Col, Row, wumpusyes) :-
+%     % write(Col), writeln(Row), 
+%     in_limits(Col, Row),
+%     RightCol is Col+1,
+%     LeftCol is Col-1,
+%     UpRow is Row+1,
+%     DownRow is Row-1,
+%     cell2(Col, UpRow, stenchyes),
+% 	tnot(cell2(RightCol, Row, wumpusyes)),
+% 	tnot(cell2(LeftCol, Row, wumpusyes)),
+% 	% tnot(cell2(Col, UpRow, wumpusyes)),
+% 	tnot(cell2(Col, DownRow, wumpusyes)).
 
-% Down
-cell(Col, Row, wumpusyes) :-
-    % write(Col), writeln(Row),
-    in_limits(Col, Row),
-    RightCol is Col+1,
-    LeftCol is Col-1,
-    UpRow is Row+1,
-    DownRow is Row-1,
-    cell(Col, DownRow, stenchyes),
-	tnot(cell(RightCol, Row, wumpusyes)),
-	tnot(cell(LeftCol, Row, wumpusyes)),
-	tnot(cell(Col, UpRow, wumpusyes)).
-	% tnot(cell(Col, DownRow, wumpusyes)).
+% % Down
+% cell2(Col, Row, wumpusyes) :-
+%     % write(Col), writeln(Row),
+%     in_limits(Col, Row),
+%     RightCol is Col+1,
+%     LeftCol is Col-1,
+%     UpRow is Row+1,
+%     DownRow is Row-1,
+%     cell2(Col, DownRow, stenchyes),
+% 	tnot(cell2(RightCol, Row, wumpusyes)),
+% 	tnot(cell2(LeftCol, Row, wumpusyes)),
+% 	tnot(cell2(Col, UpRow, wumpusyes)).
+% 	% tnot(cell2(Col, DownRow, wumpusyes)).
 
-cell(Col, Row, wumpus):-
-    in_limits(Col, Row),
-    cell(Col, Row, wumpusyes),
-    tnot(cell(Col, Row, wumpusno)).
+% cell2(Col, Row, wumpus):-
+%     in_limits(Col, Row),
+%     cell2(Col, Row, wumpusyes),
+%     tnot(cell2(Col, Row, wumpusno)).
 
-cell(Col, Row, wumpus):-
-    in_limits(Col, Row),
-    tnot(cell(Col, Row, wumpusyes)),
-    tnot(cell(Col, Row, wumpusno)),
-    tnot(cell(Col, Row, wumpus)).
+% cell2(Col, Row, wumpus):-
+%     in_limits(Col, Row),
+%     tnot(cell2(Col, Row, wumpusyes)),
+%     tnot(cell2(Col, Row, wumpusno)),
+%     tnot(cell2(Col, Row, wumpus)).
 
-cell(Col, Row, wumpus):-
-    in_limits(Col, Row),
-    cell(Col, Row, wumpusyes),
-    cell(Col, Row, wumpusno),
-    tnot(cell(Col, Row, wumpus)).
+% cell2(Col, Row, wumpus):-
+%     in_limits(Col, Row),
+%     cell2(Col, Row, wumpusyes),
+%     cell2(Col, Row, wumpusno),
+%     tnot(cell2(Col, Row, wumpus)).
 
-cell(Col, Row, stench):-
-    in_limits(Col, Row),
-    cell(Col, Row, stenchyes),
-    tnot(cell(Col, Row, stenchno)).
+% cell2(Col, Row, stench):-
+%     in_limits(Col, Row),
+%     cell2(Col, Row, stenchyes),
+%     tnot(cell2(Col, Row, stenchno)).
 
-cell(Col, Row, stench):-
-    in_limits(Col, Row),
-    tnot(cell(Col, Row, stenchyes)),
-    tnot(cell(Col, Row, stenchno)),
-    tnot(cell(Col, Row, stench)).
+% cell2(Col, Row, stench):-
+%     in_limits(Col, Row),
+%     tnot(cell2(Col, Row, stenchyes)),
+%     tnot(cell2(Col, Row, stenchno)),
+%     tnot(cell2(Col, Row, stench)).
 
-cell(Col, Row, stench):-
-    in_limits(Col, Row),
-    cell(Col, Row, stenchyes),
-    cell(Col, Row, stenchno),
-    tnot(cell(Col, Row, stench)).
+% cell2(Col, Row, stench):-
+%     in_limits(Col, Row),
+%     cell2(Col, Row, stenchyes),
+%     cell2(Col, Row, stenchno),
+%     tnot(cell2(Col, Row, stench)).
 
 cell2(Col, Row, safe):-
     RightCol is Col+1,
     LeftCol is Col-1,
     UpRow is Row+1,
     DownRow is Row-1,
-    (cell(Col, Row, wumpusno);
-        cell(RightCol, Row, stenchno);
-        cell(LeftCol, Row, stenchno);
-        cell(Col, UpRow, stenchno);
-        cell(Col, DownRow, stenchno)).
+    (
+        cell2(Col, Row, wumpusno);
+        cell2(RightCol, Row, stenchno);
+        cell2(LeftCol, Row, stenchno);
+        cell2(Col, UpRow, stenchno);
+        cell2(Col, DownRow, stenchno)
+    ),
+    (
+        cell2(Col, Row, pitno);
+        cell2(RightCol, Row, breezeno);
+        cell2(LeftCol, Row, breezeno);
+        cell2(Col, UpRow, breezeno);
+        cell2(Col, DownRow, breezeno) 
+    ).
+
+% cell2(2, 3, wumpusyes):-
+%     cell2(1, 1, agent).
+
+% cell2(3, 3, wumpusyes):-
+%     cell2(1, 1, agent).
+
+% cell2(X, Y, safe):-
+%     tnot(cell2(Col, Row, wumpus)),
+%     tnot(cell2(Col, Row, pit)).

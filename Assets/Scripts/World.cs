@@ -190,7 +190,7 @@ public class World : MonoBehaviour
             }
             AddToGrids(col, row, "pit", false, true);
             RemoveFromGrids(col, row, "emptyCell", false, true);
-            GenerateAroundCell(col, row, "breeze");  // Breeze Generation
+            GenerateAroundCell(col, row, "breezeyes");  // yes Generation
         }
     }
 
