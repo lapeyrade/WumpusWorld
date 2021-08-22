@@ -81,19 +81,6 @@ public class PrologInterface : MonoBehaviour
         return "Default";
     }
 
-    public List<Coordinates> ElementCoordinates(string element)
-    {
-        List<Coordinates> elementCoordinates = new List<Coordinates>();
-        using (PlQuery queryWorld = new PlQuery("cell", new PlTermV(new PlTerm[] { new PlTerm("Col"), new PlTerm("Row"), new PlTerm(element) })))
-        {
-            foreach (PlTermV solution in queryWorld.Solutions)
-            {
-                elementCoordinates.Add(new Coordinates((int)solution[0], (int)solution[1]));
-            }
-        }
-        return elementCoordinates;
-    }
-
     public Boolean CheckCellElement(Coordinates coords, string element)
     {
         return PlQuery.PlCall($"cell2({coords.col}, {coords.row}, {element})");
@@ -102,19 +89,6 @@ public class PrologInterface : MonoBehaviour
     public Boolean CheckCellElementFalse(Coordinates coords, string element)
     {
         return PlQuery.PlCall($"tnot(cell2({coords.col}, {coords.row}, {element}))");
-    }
-
-    public List<string> CheckCell(Coordinates coords)
-    {
-        List<string> cellContent = new List<string>();
-        using (PlQuery queryCell = new PlQuery("cell", new PlTermV(new PlTerm(coords.col), new PlTerm(coords.row), new PlTerm("Element"))))
-        {
-            foreach (PlTermV solution in queryCell.Solutions)
-            {
-                cellContent.Add((string)solution[2]);
-            }
-        }
-        return cellContent;
     }
 
     /***************** KB I/O *****************/
