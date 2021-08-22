@@ -2,6 +2,7 @@
 
 % DYNAMIC PART OF THE KNOWLEDGE BASE
 
+grid_coord(0,0,9,9).
 nb_wumpus(1).
 nb_wumpus_dead(0).
 nb_arrow(1).
@@ -9,7 +10,7 @@ nb_arrow_used(0).
 nb_gold(1).
 nb_gold_agent(0).
 % ------------------
-% [5, 7], [6, 7], [7, 7], [7, 6], [6, 6], [6, 5], [7, 5], [7, 4], [7, 3], [6, 3], [5, 3], [5, 2], [6, 2], [7, 2], [7, 1], [6, 1], [5, 1], [4, 1], [3, 1], [2, 1], [1, 1], 
+% [7, 4], [7, 3], [6, 3], [5, 3], [5, 2], [6, 2], [7, 2], [7, 1], [6, 1], [5, 1], [4, 1], [3, 1], [2, 1], [1, 1], 
 cell(1,1,start).
 cell(1,1,visited).
 cell(1,1,stenchno).
@@ -121,47 +122,4 @@ cell(6,4,visited).
 cell(6,4,stenchno).
 cell(6,4,wumpusno).
 cell(6,4,pitno).
-cell(7,5,visited).
-cell(7,5,stenchno).
-cell(7,5,wumpusno).
-cell(7,5,breezeno).
-cell(7,5,pitno).
-cell(8,5,wall).
-cell(6,5,visited).
-cell(6,5,stenchno).
-cell(6,5,wumpusno).
-cell(6,5,breezeno).
-cell(6,5,pitno).
-cell(5,5,breezeyes).
-cell(5,5,visited).
-cell(5,5,stenchno).
-cell(5,5,wumpusno).
-cell(5,5,pitno).
-cell(6,6,visited).
-cell(6,6,stenchno).
-cell(6,6,wumpusno).
-cell(6,6,breezeno).
-cell(6,6,pitno).
-cell(7,6,visited).
-cell(7,6,stenchno).
-cell(7,6,wumpusno).
-cell(7,6,breezeno).
-cell(7,6,pitno).
-cell(8,6,wall).
-cell(7,7,visited).
-cell(7,7,stenchno).
-cell(7,7,wumpusno).
-cell(7,7,breezeno).
-cell(7,7,pitno).
-cell(8,7,wall).
-cell(6,7,visited).
-cell(6,7,stenchno).
-cell(6,7,wumpusno).
-cell(6,7,breezeno).
-cell(6,7,pitno).
-cell(5,7,agent).
-cell(5,7,visited).
-cell(5,7,stenchno).
-cell(5,7,wumpusno).
-cell(5,7,breezeno).
-cell(5,7,pitno).
+cell(7,4,agent).

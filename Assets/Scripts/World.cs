@@ -70,7 +70,7 @@ public class World : MonoBehaviour
         {
             GenerateAgent();
             GenerateGrid();
-            prologInterface.InitialiseGameKB(startCoords, nbGold, nbWumpus);
+            prologInterface.InitialiseGameKB(gridMin, gridMax, nbGold, nbWumpus);
             GrenerateWall();
             GenerateGold();
             GenerateWumpus();

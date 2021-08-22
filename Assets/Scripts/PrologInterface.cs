@@ -18,12 +18,13 @@ public class PrologInterface : MonoBehaviour
     private string prologFilePath = Path.Combine(Application.streamingAssetsPath, "KB.pl");
     private string debugPrologFilePath = Path.Combine(Application.streamingAssetsPath, "debugKB.pl");
 
-    public void InitialiseGameKB(Coordinates startCoords, int nbGold, int nbWumpus)
+    public void InitialiseGameKB(Coordinates gridMin, Coordinates gridMax, int nbGold, int nbWumpus)
     {
         string[] param = { "-q", "-f", prologFilePath };  // suppressing informational & banner messages
 
         PlEngine.Initialize(param);
         ResetKB();
+        AddToKB($"grid_coord({gridMin.col}, {gridMin.row}, {gridMax.col}, {gridMax.row})");
         AddToKB($"nb_gold({nbGold})");
         AddToKB($"nb_gold_agent({0})");
         AddToKB($"nb_arrow({nbWumpus})");
@@ -34,6 +35,7 @@ public class PrologInterface : MonoBehaviour
     public void ResetKB()
     {
         RemoveFromKB("cell(_, _, _)");
+        RemoveFromKB("grid_coord(_, _, _, _)");
         RemoveFromKB("nb_wumpus(_)");
         RemoveFromKB("nb_wumpus_dead(_)");
         RemoveFromKB("nb_arrow_used(_)");
@@ -150,6 +152,7 @@ public class PrologInterface : MonoBehaviour
 
         // ClearLog();
 
+        PrintGlobalVariables("grid_coord", "Grid Coords: ", debugFileLog, consoleLog);
         PrintGlobalVariables("nb_wumpus", "Initial number of Wumpus: ", debugFileLog, consoleLog);
         PrintGlobalVariables("nb_wumpus_dead", "Wumpus killed: ", debugFileLog, consoleLog);
         PrintGlobalVariables("nb_arrow", "Initial number of arrows: ", debugFileLog, consoleLog);
@@ -197,14 +200,29 @@ public class PrologInterface : MonoBehaviour
 
         void PrintGlobalVariables(string variable, string message, Boolean debugFile, Boolean consoleLog)
         {
-            using (PlQuery queryVariable = new PlQuery(variable, new PlTermV(new PlTerm("Element"))))
+            if (variable != "grid_coord")
             {
-                foreach (PlTermV solution in queryVariable.Solutions)
+                using (PlQuery queryVariable = new PlQuery(variable, new PlTermV(new PlTerm("Element"))))
                 {
-                    if (consoleLog)
-                        Debug.Log(message + solution[0].ToString() + "\n");
-                    if (debugFile)
-                        WriteInDebugKB(variable + "(" + solution[0] + ").");
+                    foreach (PlTermV solution in queryVariable.Solutions)
+                    {
+                        if (consoleLog)
+                            Debug.Log(message + solution[0].ToString() + "\n");
+
+                        if (debugFile)
+                            WriteInDebugKB(variable + "(" + solution[0] + ").");
+                    }
+                }
+            }
+            else if (variable == "grid_coord")
+            {
+                using (PlQuery queryVariable = new PlQuery(variable, new PlTermV(new PlTerm[] { new PlTerm("MinCol"), new PlTerm("MinRow"), new PlTerm("MaxCol"), new PlTerm("MaxRow") })))
+                {
+                    foreach (PlTermV solution in queryVariable.Solutions)
+                    {
+                        if (debugFile)
+                            WriteInDebugKB(variable + "(" + solution[0] + "," + solution[1] + "," + solution[2] + "," + solution[3] + ").");
+                    }
                 }
             }
         }

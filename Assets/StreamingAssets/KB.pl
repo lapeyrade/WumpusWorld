@@ -7,7 +7,7 @@
 
 :- dynamic([cell/3, nb_wumpus/1, nb_wumpus_dead/1,
             nb_arrow/1, nb_arrow_used/1,
-            nb_gold/1, nb_gold_agent/1, wumpus_checked/1],
+            nb_gold/1, nb_gold_agent/1, grid_coord/4],
             [incremental(true)]).
 
 :- discontiguous cell2/3.
@@ -93,13 +93,9 @@ next_action(Action):-
 
 %%%%%%%%%% GAME RULES %%%%%%%%%%
 % Define Stench & Wumpus attributes
+
 in_limits(Col, Row) :-
-	ground([Col, Row]),
-    cell2(ColAgent, RowAgent, agent),
-    MaxCol is ColAgent + 1,
-    MinCol is ColAgent - 1,
-    MaxRow is RowAgent + 1,
-    MinRow is RowAgent - 1,
+    grid_coord(MinCol, MinRow, MaxCol, MaxRow),
     Col > MinCol,
     Col < MaxCol,
     Row > MinRow,
@@ -109,25 +105,25 @@ in_limits(Col, Row) :-
 cell2(Col, Row, stenchyes) :-
     in_limits(Col, Row),
     RightCol is Col+1,
-   	cell2(RightCol, Row, wumpusyes).
+   	cell2(RightCol, Row, wumpusyes), !.
 
 % Left
 cell2(Col, Row, stenchyes) :-
     in_limits(Col, Row),
     LeftCol is Col-1,
-   	cell2(LeftCol, Row, wumpusyes).
+   	cell2(LeftCol, Row, wumpusyes), !.
 
 % Up
 cell2(Col, Row, stenchyes) :-
     in_limits(Col, Row),
     UpRow is Row+1,
-   	cell2(Col, UpRow, wumpusyes).
+   	cell2(Col, UpRow, wumpusyes), !.
 
 % Down
 cell2(Col, Row, stenchyes) :-
     in_limits(Col, Row),
     DownRow is Row-1,
-   	cell2(Col, DownRow, wumpusyes).
+   	cell2(Col, DownRow, wumpusyes), !.
 
 cell2(Col, Row, stenchno) :-
     in_limits(Col, Row),
@@ -159,89 +155,89 @@ cell2(Col, Row, stench):-
 
 % Right
 cell2(Col, Row, wumpusno) :-
-    % in_limits(Col, Row),
+    in_limits(Col, Row),
     NewCol is Col+1,
-   	cell2(NewCol, Row, stenchno).
+   	cell2(NewCol, Row, stenchno), !.
 
 % Left
 cell2(Col, Row, wumpusno) :-
-    % in_limits(Col, Row),
+    in_limits(Col, Row),
     NewCol is Col-1,
-   	cell2(NewCol, Row, stenchno).
+   	cell2(NewCol, Row, stenchno), !.
 
 % Up
 cell2(Col, Row, wumpusno) :-
-    % in_limits(Col, Row),
+    in_limits(Col, Row),
     NewRow is Row+1,
-   	cell2(Col, NewRow, stenchno).
+   	cell2(Col, NewRow, stenchno), !.
 
 % Down
 cell2(Col, Row, wumpusno) :-
-    % in_limits(Col, Row),
+    in_limits(Col, Row),
     NewRow is Row-1,
-    cell2(Col, NewRow, stenchno).
+    cell2(Col, NewRow, stenchno), !.
 
 % Right
 cell2(Col, Row, wumpusyes) :-
-    % in_limits(Col, Row),
+    in_limits(Col, Row),
     RightCol is Col+1,
     FarRightCol is Col+2,
     UpRow is Row+1,
     DownRow is Row-1,
-    cell2(RightCol, Row, stenchyes),
 	cell2(FarRightCol, Row, wumpusno),
 	cell2(RightCol, UpRow, wumpusno),
-	cell2(RightCol, DownRow, wumpusno).
+	cell2(RightCol, DownRow, wumpusno), 
+    cell2(RightCol, Row, stenchyes), !.
 
 % Left
 cell2(Col, Row, wumpusyes) :-
-    % in_limits(Col, Row),
+    in_limits(Col, Row),
     LeftCol is Col-1,
     FarLeftCol is Col-2,
     UpRow is Row+1,
     DownRow is Row-1,
-    cell2(LeftCol, Row, stenchyes),
 	cell2(FarLeftCol, Row, wumpusno),
-	cell2(LeftCol, UpRow, wumpusno),
-	cell2(LeftCol, DownRow, wumpusno).
+	cell2(LeftCol, UpRow, wumpusno), 
+	cell2(LeftCol, DownRow, wumpusno), 
+    cell2(LeftCol, Row, stenchyes), !.
 
 % Up
 cell2(Col, Row, wumpusyes) :-
-    % in_limits(Col, Row),
+    in_limits(Col, Row),
     UpRow is Row+1,
     FarUpRow is Row+2,
     RightCol is Col+1,
     LeftCol is Col-1,
-    cell2(Col, UpRow, stenchyes),
 	cell2(Col, FarUpRow, wumpusno),
 	cell2(LeftCol, UpRow, wumpusno),
-	cell2(RightCol, UpRow, wumpusno).
+	cell2(RightCol, UpRow, wumpusno),
+    cell2(Col, UpRow, stenchyes), !.
 
 % Down
 cell2(Col, Row, wumpusyes) :-
-    % in_limits(Col, Row),
+    in_limits(Col, Row),
     DownRow is Row-1,
     FarDownRow is Row-2,
     RightCol is Col+1,
     LeftCol is Col-1,
-    cell2(Col, DownRow, stenchyes),
 	cell2(Col, FarDownRow, wumpusno),
 	cell2(LeftCol, DownRow, wumpusno),
-	cell2(RightCol, DownRow, wumpusno).
+	cell2(RightCol, DownRow, wumpusno),
+    cell2(Col, DownRow, stenchyes), !.
 
 cell2(Col, Row, wumpus):-
-    % in_limits(Col, Row),
+    in_limits(Col, Row),
     cell2(Col, Row, wumpusyes),
     tnot(cell2(Col, Row, wumpusno)).
 
 cell2(Col, Row, wumpus):-
-    % in_limits(Col, Row),
+    in_limits(Col, Row),
     tnot(cell2(Col, Row, wumpusyes)),
     tnot(cell2(Col, Row, wumpusno)),
     tnot(cell2(Col, Row, wumpus)).
 
 cell2(Col, Row, wumpus):-
-    % in_limits(Col, Row),
+    in_limits(Col, Row),
     cell2(Col, Row, wumpusyes),
     cell2(Col, Row, wumpusno),
     tnot(cell2(Col, Row, wumpus)).
