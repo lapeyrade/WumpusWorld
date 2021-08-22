@@ -92,8 +92,6 @@ next_action(Action):-
     Action = "MoveNextCell", !.
 
 %%%%%%%%%% GAME RULES %%%%%%%%%%
-% Define Stench & Wumpus attributes
-
 in_limits(Col, Row) :-
     grid_coord(MinCol, MinRow, MaxCol, MaxRow),
     Col > MinCol,
@@ -101,6 +99,27 @@ in_limits(Col, Row) :-
     Row > MinRow,
     Row < MaxRow.
 
+cell2(Col, Row, safe):-
+    RightCol is Col+1,
+    LeftCol is Col-1,
+    UpRow is Row+1,
+    DownRow is Row-1,
+    (
+        cell2(Col, Row, wumpusno);
+        cell2(RightCol, Row, stenchno);
+        cell2(LeftCol, Row, stenchno);
+        cell2(Col, UpRow, stenchno);
+        cell2(Col, DownRow, stenchno)
+    ),
+    (
+        cell2(Col, Row, pitno);
+        cell2(RightCol, Row, breezeno);
+        cell2(LeftCol, Row, breezeno);
+        cell2(Col, UpRow, breezeno);
+        cell2(Col, DownRow, breezeno) 
+    ).
+
+%%% Define Stench & Wumpus attributes %%%
 % Right
 cell2(Col, Row, stenchyes) :-
     in_limits(Col, Row),
@@ -242,22 +261,143 @@ cell2(Col, Row, wumpus):-
     cell2(Col, Row, wumpusno),
     tnot(cell2(Col, Row, wumpus)).
 
-cell2(Col, Row, safe):-
+%%% Define Breeze & Pit attributes %%%
+cell2(Col, Row, breezeyes) :-
+    in_limits(Col, Row),
+    RightCol is Col+1,
+   	cell2(RightCol, Row, pityes), !.
+
+% Left
+cell2(Col, Row, breezeyes) :-
+    in_limits(Col, Row),
+    LeftCol is Col-1,
+   	cell2(LeftCol, Row, pityes), !.
+
+% Up
+cell2(Col, Row, breezeyes) :-
+    in_limits(Col, Row),
+    UpRow is Row+1,
+   	cell2(Col, UpRow, pityes), !.
+
+% Down
+cell2(Col, Row, breezeyes) :-
+    in_limits(Col, Row),
+    DownRow is Row-1,
+   	cell2(Col, DownRow, pityes), !.
+
+cell2(Col, Row, breezeno) :-
+    in_limits(Col, Row),
     RightCol is Col+1,
     LeftCol is Col-1,
     UpRow is Row+1,
     DownRow is Row-1,
-    (
-        cell2(Col, Row, wumpusno);
-        cell2(RightCol, Row, stenchno);
-        cell2(LeftCol, Row, stenchno);
-        cell2(Col, UpRow, stenchno);
-        cell2(Col, DownRow, stenchno)
-    ),
-    (
-        cell2(Col, Row, pitno);
-        cell2(RightCol, Row, breezeno);
-        cell2(LeftCol, Row, breezeno);
-        cell2(Col, UpRow, breezeno);
-        cell2(Col, DownRow, breezeno) 
-    ).
+	cell2(RightCol, Row, pitno),
+	cell2(LeftCol, Row, pitno),
+	cell2(Col, UpRow, pitno),
+	cell2(Col, DownRow, pitno).
+
+cell2(Col, Row, breeze):-
+    in_limits(Col, Row),
+    cell2(Col, Row, breezeyes),
+    tnot(cell2(Col, Row, breezeno)).
+
+cell2(Col, Row, breeze):-
+    in_limits(Col, Row),
+    tnot(cell2(Col, Row, breezeyes)),
+    tnot(cell2(Col, Row, breezeno)),
+    tnot(cell2(Col, Row, breeze)).
+
+cell2(Col, Row, breeze):-
+    in_limits(Col, Row),
+    cell2(Col, Row, breezeyes),
+    cell2(Col, Row, breezeno),
+    tnot(cell2(Col, Row, breeze)).
+
+% Right
+cell2(Col, Row, pitno) :-
+    in_limits(Col, Row),
+    NewCol is Col+1,
+   	cell2(NewCol, Row, breezeno), !.
+
+% Left
+cell2(Col, Row, pitno) :-
+    in_limits(Col, Row),
+    NewCol is Col-1,
+   	cell2(NewCol, Row, breezeno), !.
+
+% Up
+cell2(Col, Row, pitno) :-
+    in_limits(Col, Row),
+    NewRow is Row+1,
+   	cell2(Col, NewRow, breezeno), !.
+
+% Down
+cell2(Col, Row, pitno) :-
+    in_limits(Col, Row),
+    NewRow is Row-1,
+    cell2(Col, NewRow, breezeno), !.
+
+% Right
+cell2(Col, Row, pityes) :-
+    in_limits(Col, Row),
+    RightCol is Col+1,
+    FarRightCol is Col+2,
+    UpRow is Row+1,
+    DownRow is Row-1,
+	cell2(FarRightCol, Row, pitno),
+	cell2(RightCol, UpRow, pitno),
+	cell2(RightCol, DownRow, pitno), 
+    cell2(RightCol, Row, breezeyes), !.
+
+% Left
+cell2(Col, Row, pityes) :-
+    in_limits(Col, Row),
+    LeftCol is Col-1,
+    FarLeftCol is Col-2,
+    UpRow is Row+1,
+    DownRow is Row-1,
+	cell2(FarLeftCol, Row, pitno),
+	cell2(LeftCol, UpRow, pitno), 
+	cell2(LeftCol, DownRow, pitno), 
+    cell2(LeftCol, Row, breezeyes), !.
+
+% Up
+cell2(Col, Row, pityes) :-
+    in_limits(Col, Row),
+    UpRow is Row+1,
+    FarUpRow is Row+2,
+    RightCol is Col+1,
+    LeftCol is Col-1,
+	cell2(Col, FarUpRow, pitno),
+	cell2(LeftCol, UpRow, pitno),
+	cell2(RightCol, UpRow, pitno),
+    cell2(Col, UpRow, breezeyes), !.
+
+% Down
+cell2(Col, Row, pityes) :-
+    in_limits(Col, Row),
+    DownRow is Row-1,
+    FarDownRow is Row-2,
+    RightCol is Col+1,
+    LeftCol is Col-1,
+	cell2(Col, FarDownRow, pitno),
+	cell2(LeftCol, DownRow, pitno),
+	cell2(RightCol, DownRow, pitno),
+    cell2(Col, DownRow, breezeyes), !.
+
+cell2(Col, Row, pit):-
+    in_limits(Col, Row),
+    cell2(Col, Row, pityes),
+    tnot(cell2(Col, Row, pitno)).
+
+cell2(Col, Row, pit):-
+    in_limits(Col, Row),
+    tnot(cell2(Col, Row, pityes)),
+    tnot(cell2(Col, Row, pitno)),
+    tnot(cell2(Col, Row, pit)).
+
+cell2(Col, Row, pit):-
+    in_limits(Col, Row),
+    cell2(Col, Row, pityes),
+    cell2(Col, Row, pitno),
+    tnot(cell2(Col, Row, pit)).
