@@ -144,7 +144,6 @@ public class GameController : MonoBehaviour
             else if (cellContent.Contains("pit") || cellContent.Contains("wumpus"))
                 SetGameOver("Game Lost!", false);
         }
-
     }
 
     void makeInferences()
@@ -185,6 +184,18 @@ public class GameController : MonoBehaviour
                     prologInterface.RemoveFromKB("nb_gold_agent(_)");
                     prologInterface.AddToKB($"nb_gold_agent({agent.nbGold})");
                     break;
+                case "ShotRight":
+                    world.ShotArrow("right");
+                    break;
+                case "ShotLeft":
+                    world.ShotArrow("left");
+                    break;
+                case "ShotUp":
+                    world.ShotArrow("up");
+                    break;   
+                case "ShotDown":
+                    world.ShotArrow("down");
+                    break;      
                 case "MoveNextCell":
                     ActionLeftToDo = false;
                     break;
@@ -198,7 +209,6 @@ public class GameController : MonoBehaviour
     {
         gameOver = true;
         Debug.Log(message);
-
         if (exitApp)
         {
             Application.Quit();

@@ -3,6 +3,7 @@
 % :- use_module(library(reif)).
 
 % :- set_prolog_flag(double_quotes, chars).
+:- set_prolog_flag(toplevel_list_wfs_residual_program, false).
 :- table cell2/3 as incremental.
 
 :- dynamic([cell/3, nb_wumpus/1, nb_wumpus_dead/1,
@@ -25,33 +26,33 @@ next_move(Move):-
 next_move(Move):-
     cell2(Col, Row, agent),
     RightCol is Col+1,
-    cell2(RightCol, Row, safe),
     \+(cell2(RightCol, Row, visited)),
     \+(cell2(RightCol, Row, wall)),
+    cell2(RightCol, Row, safe),
     Move = "MoveRight", !.
 
 next_move(Move):-
     cell2(Col, Row, agent),
     LeftCol is Col-1,
-    cell2(LeftCol, Row, safe),
     \+(cell2(LeftCol, Row, visited)),
     \+(cell2(LeftCol, Row, wall)),
+    cell2(LeftCol, Row, safe),
     Move = "MoveLeft", !.
 
 next_move(Move):-
     cell2(Col, Row, agent),
     UpRow is Row+1,
-    cell2(Col, UpRow, safe),
     \+(cell2(Col, UpRow, visited)),
     \+(cell2(Col, UpRow, wall)),
+    cell2(Col, UpRow, safe),
     Move = "MoveUp", !.
 
 next_move(Move):-
     cell2(Col, Row, agent),
     DownRow is Row-1,
-    cell2(Col, DownRow, safe),
     \+(cell2(Col, DownRow, visited)),
     \+(cell2(Col, DownRow, wall)),
+    cell2(Col, DownRow, safe),
     Move = "MoveDown", !.
 
 next_move(Move):-
@@ -81,15 +82,67 @@ move(4, Move):-
 next_action(Action):-
     cell2(Col, Row, agent),
     cell2(Col, Row, wall),
-    Action = "HitWall", !.
+    Action = "HitWall".
 
 next_action(Action):-
     cell2(Col, Row, agent),
     cell2(Col, Row, gold),
-    Action = "TakeGold", !.
+    Action = "TakeGold".
 
 next_action(Action):-
-    Action = "MoveNextCell", !.
+    cell2(Col, Row, agent),
+    kill_wumpus_right(Col, Row),
+    Action = "ShotRight".
+
+next_action(Action):-
+    cell2(Col, Row, agent),
+    kill_wumpus_left(Col, Row),
+    Action = "ShotLeft".
+
+next_action(Action):-
+    cell2(Col, Row, agent),
+    kill_wumpus_up(Col, Row),
+    Action = "ShotUp".
+
+next_action(Action):-
+    cell2(Col, Row, agent),
+    kill_wumpus_down(Col, Row),
+    Action = "ShotDown".
+
+next_action(Action):-
+    Action = "MoveNextCell".
+
+kill_wumpus_right(Col, Row):-
+    cell2(Col, Row, wumpusyes).
+
+kill_wumpus_right(Col, Row):-
+    in_limits(Col, Row),
+    RightCol is Col+1,
+    kill_wumpus_right(RightCol, Row).
+
+kill_wumpus_left(Col, Row):-
+    cell2(Col, Row, wumpusyes).
+
+kill_wumpus_left(Col, Row):-
+    in_limits(Col, Row),
+    LeftCol is Col-1,
+    kill_wumpus_left(LeftCol, Row).
+
+kill_wumpus_up(Col, Row):-
+    cell2(Col, Row, wumpusyes).
+
+kill_wumpus_up(Col, Row):-
+    in_limits(Col, Row),
+    UpRow is Row+1,
+    kill_wumpus_up(Col, UpRow).
+
+kill_wumpus_down(Col, Row):-
+    cell2(Col, Row, wumpusyes).
+
+kill_wumpus_down(Col, Row):-
+    in_limits(Col, Row),
+    Down is Row-1,
+    kill_wumpus_down(Col, Down).
 
 %%%%%%%%%% GAME RULES %%%%%%%%%%
 in_limits(Col, Row) :-
@@ -105,11 +158,11 @@ cell2(Col, Row, safe):-
     UpRow is Row+1,
     DownRow is Row-1,
     (
-        cell2(Col, Row, wumpusno);
-        cell2(RightCol, Row, stenchno);
-        cell2(LeftCol, Row, stenchno);
-        cell2(Col, UpRow, stenchno);
-        cell2(Col, DownRow, stenchno)
+            cell2(Col, Row, wumpusno);
+            cell2(RightCol, Row, stenchno);
+            cell2(LeftCol, Row, stenchno);
+            cell2(Col, UpRow, stenchno);
+            cell2(Col, DownRow, stenchno)
     ),
     (
         cell2(Col, Row, pitno);
@@ -124,25 +177,25 @@ cell2(Col, Row, safe):-
 cell2(Col, Row, stenchyes) :-
     in_limits(Col, Row),
     RightCol is Col+1,
-   	cell2(RightCol, Row, wumpusyes), !.
+   	cell2(RightCol, Row, wumpusyes).
 
 % Left
 cell2(Col, Row, stenchyes) :-
     in_limits(Col, Row),
     LeftCol is Col-1,
-   	cell2(LeftCol, Row, wumpusyes), !.
+   	cell2(LeftCol, Row, wumpusyes).
 
 % Up
 cell2(Col, Row, stenchyes) :-
     in_limits(Col, Row),
     UpRow is Row+1,
-   	cell2(Col, UpRow, wumpusyes), !.
+   	cell2(Col, UpRow, wumpusyes).
 
 % Down
 cell2(Col, Row, stenchyes) :-
     in_limits(Col, Row),
     DownRow is Row-1,
-   	cell2(Col, DownRow, wumpusyes), !.
+   	cell2(Col, DownRow, wumpusyes).
 
 cell2(Col, Row, stenchno) :-
     in_limits(Col, Row),
@@ -176,28 +229,29 @@ cell2(Col, Row, stench):-
 cell2(Col, Row, wumpusno) :-
     in_limits(Col, Row),
     NewCol is Col+1,
-   	cell2(NewCol, Row, stenchno), !.
+   	cell2(NewCol, Row, stenchno).
 
 % Left
 cell2(Col, Row, wumpusno) :-
     in_limits(Col, Row),
     NewCol is Col-1,
-   	cell2(NewCol, Row, stenchno), !.
+   	cell2(NewCol, Row, stenchno).
 
 % Up
 cell2(Col, Row, wumpusno) :-
     in_limits(Col, Row),
     NewRow is Row+1,
-   	cell2(Col, NewRow, stenchno), !.
+   	cell2(Col, NewRow, stenchno).
 
 % Down
 cell2(Col, Row, wumpusno) :-
     in_limits(Col, Row),
     NewRow is Row-1,
-    cell2(Col, NewRow, stenchno), !.
+    cell2(Col, NewRow, stenchno).
 
 % Right
 cell2(Col, Row, wumpusyes) :-
+    \+(cell2(Col, Row, wumpusDead)),
     in_limits(Col, Row),
     RightCol is Col+1,
     FarRightCol is Col+2,
@@ -206,10 +260,11 @@ cell2(Col, Row, wumpusyes) :-
 	cell2(FarRightCol, Row, wumpusno),
 	cell2(RightCol, UpRow, wumpusno),
 	cell2(RightCol, DownRow, wumpusno), 
-    cell2(RightCol, Row, stenchyes), !.
+    cell2(RightCol, Row, stenchyes).
 
 % Left
 cell2(Col, Row, wumpusyes) :-
+    \+(cell2(Col, Row, wumpusDead)),
     in_limits(Col, Row),
     LeftCol is Col-1,
     FarLeftCol is Col-2,
@@ -218,10 +273,11 @@ cell2(Col, Row, wumpusyes) :-
 	cell2(FarLeftCol, Row, wumpusno),
 	cell2(LeftCol, UpRow, wumpusno), 
 	cell2(LeftCol, DownRow, wumpusno), 
-    cell2(LeftCol, Row, stenchyes), !.
+    cell2(LeftCol, Row, stenchyes).
 
 % Up
 cell2(Col, Row, wumpusyes) :-
+    \+(cell2(Col, Row, wumpusDead)),
     in_limits(Col, Row),
     UpRow is Row+1,
     FarUpRow is Row+2,
@@ -230,10 +286,11 @@ cell2(Col, Row, wumpusyes) :-
 	cell2(Col, FarUpRow, wumpusno),
 	cell2(LeftCol, UpRow, wumpusno),
 	cell2(RightCol, UpRow, wumpusno),
-    cell2(Col, UpRow, stenchyes), !.
+    cell2(Col, UpRow, stenchyes).
 
 % Down
 cell2(Col, Row, wumpusyes) :-
+    \+(cell2(Col, Row, wumpusDead)),
     in_limits(Col, Row),
     DownRow is Row-1,
     FarDownRow is Row-2,
@@ -242,7 +299,7 @@ cell2(Col, Row, wumpusyes) :-
 	cell2(Col, FarDownRow, wumpusno),
 	cell2(LeftCol, DownRow, wumpusno),
 	cell2(RightCol, DownRow, wumpusno),
-    cell2(Col, DownRow, stenchyes), !.
+    cell2(Col, DownRow, stenchyes).
 
 cell2(Col, Row, wumpus):-
     in_limits(Col, Row),
@@ -265,25 +322,25 @@ cell2(Col, Row, wumpus):-
 cell2(Col, Row, breezeyes) :-
     in_limits(Col, Row),
     RightCol is Col+1,
-   	cell2(RightCol, Row, pityes), !.
+   	cell2(RightCol, Row, pityes).
 
 % Left
 cell2(Col, Row, breezeyes) :-
     in_limits(Col, Row),
     LeftCol is Col-1,
-   	cell2(LeftCol, Row, pityes), !.
+   	cell2(LeftCol, Row, pityes).
 
 % Up
 cell2(Col, Row, breezeyes) :-
     in_limits(Col, Row),
     UpRow is Row+1,
-   	cell2(Col, UpRow, pityes), !.
+   	cell2(Col, UpRow, pityes).
 
 % Down
 cell2(Col, Row, breezeyes) :-
     in_limits(Col, Row),
     DownRow is Row-1,
-   	cell2(Col, DownRow, pityes), !.
+   	cell2(Col, DownRow, pityes).
 
 cell2(Col, Row, breezeno) :-
     in_limits(Col, Row),
@@ -317,25 +374,25 @@ cell2(Col, Row, breeze):-
 cell2(Col, Row, pitno) :-
     in_limits(Col, Row),
     NewCol is Col+1,
-   	cell2(NewCol, Row, breezeno), !.
+   	cell2(NewCol, Row, breezeno).
 
 % Left
 cell2(Col, Row, pitno) :-
     in_limits(Col, Row),
     NewCol is Col-1,
-   	cell2(NewCol, Row, breezeno), !.
+   	cell2(NewCol, Row, breezeno).
 
 % Up
 cell2(Col, Row, pitno) :-
     in_limits(Col, Row),
     NewRow is Row+1,
-   	cell2(Col, NewRow, breezeno), !.
+   	cell2(Col, NewRow, breezeno).
 
 % Down
 cell2(Col, Row, pitno) :-
     in_limits(Col, Row),
     NewRow is Row-1,
-    cell2(Col, NewRow, breezeno), !.
+    cell2(Col, NewRow, breezeno).
 
 % Right
 cell2(Col, Row, pityes) :-
@@ -347,7 +404,7 @@ cell2(Col, Row, pityes) :-
 	cell2(FarRightCol, Row, pitno),
 	cell2(RightCol, UpRow, pitno),
 	cell2(RightCol, DownRow, pitno), 
-    cell2(RightCol, Row, breezeyes), !.
+    cell2(RightCol, Row, breezeyes).
 
 % Left
 cell2(Col, Row, pityes) :-
@@ -359,7 +416,7 @@ cell2(Col, Row, pityes) :-
 	cell2(FarLeftCol, Row, pitno),
 	cell2(LeftCol, UpRow, pitno), 
 	cell2(LeftCol, DownRow, pitno), 
-    cell2(LeftCol, Row, breezeyes), !.
+    cell2(LeftCol, Row, breezeyes).
 
 % Up
 cell2(Col, Row, pityes) :-
@@ -371,7 +428,7 @@ cell2(Col, Row, pityes) :-
 	cell2(Col, FarUpRow, pitno),
 	cell2(LeftCol, UpRow, pitno),
 	cell2(RightCol, UpRow, pitno),
-    cell2(Col, UpRow, breezeyes), !.
+    cell2(Col, UpRow, breezeyes).
 
 % Down
 cell2(Col, Row, pityes) :-
@@ -383,7 +440,7 @@ cell2(Col, Row, pityes) :-
 	cell2(Col, FarDownRow, pitno),
 	cell2(LeftCol, DownRow, pitno),
 	cell2(RightCol, DownRow, pitno),
-    cell2(Col, DownRow, breezeyes), !.
+    cell2(Col, DownRow, breezeyes).
 
 cell2(Col, Row, pit):-
     in_limits(Col, Row),

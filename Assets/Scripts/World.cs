@@ -8,7 +8,7 @@ using System.Collections.Generic;
 public class World : MonoBehaviour
 {
     [SerializeField]
-    private int RandomSeed = 4;
+    private int RandomSeed = 29;
 
     private int minGridCol = 0;
     private int minGridRow = 0;
@@ -23,9 +23,9 @@ public class World : MonoBehaviour
     [SerializeField]
     public float tileSize = 1.05f;
     [SerializeField]
-    private int nbPit = 3;
+    private int nbPit = 4;
     [SerializeField]
-    private int nbWumpus = 1;
+    private int nbWumpus = 2;
     [SerializeField]
     public int nbGold = 1;
     [SerializeField]
@@ -250,5 +250,38 @@ public class World : MonoBehaviour
             Destroy(map[col, row][content]);
             map[col, row].Remove(content);
         }
+    }
+
+    public void ShotArrow(string direction)
+    {
+        switch(direction)
+        {
+            case "right":
+                for(int col = agent.coords.col; col < gridMax.col; col++)
+                    KillWumpus(new Coordinates(col, agent.coords.row));
+                break;
+            case "left":
+                for(int col = gridMin.col; col < agent.coords.col; col++)
+                    KillWumpus(new Coordinates(col, agent.coords.row));
+                break;
+            case "up":
+                for(int row = agent.coords.row; row < gridMax.row; row++)
+                    KillWumpus(new Coordinates(agent.coords.col, row));
+                break;
+            case "down":
+                for(int row = gridMin.row; row < agent.coords.row; row++)
+                    KillWumpus(new Coordinates(agent.coords.col, row));
+                break;
+        }
+    }
+
+    void KillWumpus(Coordinates coords)
+    {
+        if(map[coords.col, coords.row].ContainsKey("wumpus"))
+            {
+                RemoveFromGrids(coords.col, coords.row, "wumpus", true, true);
+                AddToGrids(coords.col, coords.row, "wumpusDead", true, true);
+                prologInterface.AddToKB($"cell({coords.col}, {coords.row}, wumpusDead)");
+            }
     }
 }

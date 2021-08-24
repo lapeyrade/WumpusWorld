@@ -32,6 +32,7 @@ public class PrologInterface : MonoBehaviour
         AddToKB($"nb_wumpus({nbWumpus})");
         AddToKB($"nb_wumpus_dead({0})");
     }
+
     public void ResetKB()
     {
         RemoveFromKB("cell(_, _, _)");
