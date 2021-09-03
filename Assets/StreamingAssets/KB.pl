@@ -153,23 +153,29 @@ in_limits(Col, Row) :-
     Row < MaxRow.
 
 cell2(Col, Row, safe):-
+    cell2(Col, Row, wall).
+
+% cell2(Col, Row, safe):-
+%     cell2(Col, Row, wumpusDead).
+
+cell2(Col, Row, safe):-
     RightCol is Col+1,
     LeftCol is Col-1,
     UpRow is Row+1,
     DownRow is Row-1,
     (
-            cell2(Col, Row, wumpusno);
-            cell2(RightCol, Row, stenchno);
-            cell2(LeftCol, Row, stenchno);
-            cell2(Col, UpRow, stenchno);
-            cell2(Col, DownRow, stenchno)
+        cell2(Col, Row, wumpusno);
+        cell2(RightCol, Row, stenchno);
+        cell2(LeftCol, Row, stenchno);
+        cell2(Col, UpRow, stenchno);
+        cell2(Col, DownRow, stenchno)
     ),
     (
         cell2(Col, Row, pitno);
         cell2(RightCol, Row, breezeno);
         cell2(LeftCol, Row, breezeno);
         cell2(Col, UpRow, breezeno);
-        cell2(Col, DownRow, breezeno) 
+        cell2(Col, DownRow, breezeno)
     ).
 
 %%% Define Stench & Wumpus attributes %%%
@@ -302,17 +308,20 @@ cell2(Col, Row, wumpusyes) :-
     cell2(Col, DownRow, stenchyes).
 
 cell2(Col, Row, wumpus):-
+    \+(cell2(Col, Row, wumpusDead)),
     in_limits(Col, Row),
     cell2(Col, Row, wumpusyes),
     tnot(cell2(Col, Row, wumpusno)).
 
 cell2(Col, Row, wumpus):-
+    \+(cell2(Col, Row, wumpusDead)),
     in_limits(Col, Row),
     tnot(cell2(Col, Row, wumpusyes)),
     tnot(cell2(Col, Row, wumpusno)),
     tnot(cell2(Col, Row, wumpus)).
 
 cell2(Col, Row, wumpus):-
+    \+(cell2(Col, Row, wumpusDead)),
     in_limits(Col, Row),
     cell2(Col, Row, wumpusyes),
     cell2(Col, Row, wumpusno),

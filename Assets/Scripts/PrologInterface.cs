@@ -43,7 +43,6 @@ public class PrologInterface : MonoBehaviour
         RemoveFromKB("nb_arrow(_)");
         RemoveFromKB("nb_gold(_)");
         RemoveFromKB("nb_gold_agent(_)");
-        RemoveFromKB("wumpus_checked(_)");
     }
 
     public String NextMove()

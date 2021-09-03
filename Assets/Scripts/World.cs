@@ -279,6 +279,7 @@ public class World : MonoBehaviour
     {
         if(map[coords.col, coords.row].ContainsKey("wumpus"))
             {
+                Debug.Log("Shooting");
                 RemoveFromGrids(coords.col, coords.row, "wumpus", true, true);
                 AddToGrids(coords.col, coords.row, "wumpusDead", true, true);
                 prologInterface.AddToKB($"cell({coords.col}, {coords.row}, wumpusDead)");

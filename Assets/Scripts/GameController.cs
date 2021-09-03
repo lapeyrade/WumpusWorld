@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 
 /// <summary>
@@ -15,6 +16,16 @@ public class GameController : MonoBehaviour
 
     private Agent agent;
 
+    [SerializeField]
+    private bool autoMode = false;
+
+    [SerializeField]
+    private float timerInterval = 1;
+
+    private float timer = 0;
+
+    private bool turnFinished = true;
+
     void Awake()
     {
         world = gridManager.GetComponent<World>();
@@ -24,25 +35,48 @@ public class GameController : MonoBehaviour
 
     void Update()
     {
-        if (Input.anyKeyDown && !gameOver)
+        if (autoMode && timer < timerInterval)
+            timer += Time.deltaTime;
+        else if (turnFinished)
+        {
+            turnFinished = false;
+            PlayTurn();
+            timer = 0;
+            turnFinished = true;
+        }
+    }
+
+    private void PlayTurn()
+    {
+        if ((Input.anyKeyDown || autoMode) && !gameOver)
         {
             if (Input.GetKeyDown("escape"))
                 SetGameOver("Exit Game!", true);
             else if (Input.GetKeyDown("return") || Input.GetKeyDown("space") || Input.GetKeyDown("right") ||
-                        Input.GetKeyDown("left") || Input.GetKeyDown("up") || Input.GetKeyDown("down"))
+                        Input.GetKeyDown("left") || Input.GetKeyDown("up") || Input.GetKeyDown("down") || autoMode)
             {
                 MoveCell();
                 SenseCell();
                 ActionCell();
-
                 prologInterface.PrintKB(agent);
             }
         }
     }
+    IEnumerator ExampleCoroutine()
+    {
+        //Print the time of when the function is first called.
+        Debug.Log("Started Coroutine at timestamp : " + Time.time);
+
+        //yield on a new YieldInstruction that waits for 5 seconds.
+        yield return new WaitForSeconds(1);
+        PlayTurn();
+        //After we have waited 5 seconds print the time again.
+        Debug.Log("Finished Coroutine at timestamp : " + Time.time);
+    }
 
     public void MoveCell()
     {
-        if (Input.GetKeyDown("space")) // Prolog Move
+        if (Input.GetKeyDown("space") || autoMode) // Prolog Move
         {
             string nextMove = prologInterface.NextMove();
             switch (nextMove)
@@ -186,16 +220,20 @@ public class GameController : MonoBehaviour
                     break;
                 case "ShotRight":
                     world.ShotArrow("right");
+                    ActionLeftToDo = false;
                     break;
                 case "ShotLeft":
                     world.ShotArrow("left");
+                    ActionLeftToDo = false;
                     break;
                 case "ShotUp":
                     world.ShotArrow("up");
-                    break;   
+                    ActionLeftToDo = false;
+                    break;
                 case "ShotDown":
                     world.ShotArrow("down");
-                    break;      
+                    ActionLeftToDo = false;
+                    break;
                 case "MoveNextCell":
                     ActionLeftToDo = false;
                     break;
