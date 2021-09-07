@@ -240,7 +240,8 @@ public class World : MonoBehaviour
     {
         if (updateMapAgent && agent.map[col, row].ContainsKey(content) == true)
         {
-            Destroy(agent.map[col, row][content]);
+            // Destroy(agent.map[col, row][content]);
+            agent.map[col, row][content].SetActive(false);
             agent.map[col, row].Remove(content);
             prologInterface.RemoveCellContentKB(new Coordinates(col, row), content);
         }

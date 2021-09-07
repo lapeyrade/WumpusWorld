@@ -3,7 +3,9 @@
 % :- use_module(library(reif)).
 
 % :- set_prolog_flag(double_quotes, chars).
+
 :- set_prolog_flag(toplevel_list_wfs_residual_program, false).
+
 :- table cell2/3 as incremental.
 
 :- dynamic([cell/3, nb_wumpus/1, nb_wumpus_dead/1,
@@ -147,10 +149,10 @@ kill_wumpus_down(Col, Row):-
 %%%%%%%%%% GAME RULES %%%%%%%%%%
 in_limits(Col, Row) :-
     grid_coord(MinCol, MinRow, MaxCol, MaxRow),
-    Col > MinCol,
-    Col < MaxCol,
-    Row > MinRow,
-    Row < MaxRow.
+    numlist(MinCol, MaxCol, ListCol),
+    numlist(MinRow, MaxRow, ListRow),
+    member(Col, ListCol),
+    member(Row, ListRow).
 
 cell2(Col, Row, safe):-
     cell2(Col, Row, wall).
@@ -176,6 +178,26 @@ cell2(Col, Row, safe):-
         cell2(LeftCol, Row, breezeno);
         cell2(Col, UpRow, breezeno);
         cell2(Col, DownRow, breezeno)
+    ).
+
+cell2(Col, Row, safe2):-
+    RightCol is Col+1,
+    LeftCol is Col-1,
+    UpRow is Row+1,
+    DownRow is Row-1,
+    (
+        \+(cell2(Col, Row, wumpus));
+        \+(cell2(RightCol, Row, stench));
+        \+(cell2(LeftCol, Row, stench));
+        \+(cell2(Col, UpRow, stench));
+        \+(cell2(Col, DownRow, stench))
+    ),
+    (
+        \+(cell2(Col, Row, pit));
+        \+(cell2(RightCol, Row, breeze));
+        \+(cell2(LeftCol, Row, breeze));
+        \+(cell2(Col, UpRow, breeze));
+        \+(cell2(Col, DownRow, breeze))
     ).
 
 %%% Define Stench & Wumpus attributes %%%
