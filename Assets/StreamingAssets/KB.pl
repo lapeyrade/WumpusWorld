@@ -154,31 +154,30 @@ in_limits(Col, Row) :-
     member(Col, ListCol),
     member(Row, ListRow).
 
+cell2(Col, Row, wumpusno):-
+    cell2(Col, Row, visited),
+    (
+        is_false(cell2(Col, Row, wumpusyes)),
+        is_false(cell2(Col, Row, wumpusDead))
+    ).
+
+cell2(Col, Row, pitno):-
+    cell2(Col, Row, visited),
+    is_false(cell2(Col, Row, pityes)).
+
+cell2(Col, Row, breezeno):-
+    cell2(Col, Row, visited),
+    is_false(cell2(Col, Row, breezeyes)).
+
+cell2(Col, Row, stenchno):-
+    cell2(Col, Row, visited),
+    is_false(cell2(Col, Row, stenchyes)).
+
 cell2(Col, Row, safe):-
     cell2(Col, Row, wall).
 
 cell2(Col, Row, safe):-
     cell2(Col, Row, wumpusDead).
-
-cell2(Col, Row, safe2):-
-    RightCol is Col+1,
-    LeftCol is Col-1,
-    UpRow is Row+1,
-    DownRow is Row-1,
-    (
-        cell2(Col, Row, wumpusno);
-        cell2(RightCol, Row, stenchno);
-        cell2(LeftCol, Row, stenchno);
-        cell2(Col, UpRow, stenchno);
-        cell2(Col, DownRow, stenchno)
-    ),
-    (
-        cell2(Col, Row, pitno);
-        cell2(RightCol, Row, breezeno);
-        cell2(LeftCol, Row, breezeno);
-        cell2(Col, UpRow, breezeno);
-        cell2(Col, DownRow, breezeno)
-    ).
 
 cell2(Col, Row, safe):-
     RightCol is Col+1,

@@ -17,10 +17,10 @@ public class GameController : MonoBehaviour
     private Agent agent;
 
     [SerializeField]
-    private bool autoMode = false;
+    private bool autoMode = true;
 
     [SerializeField]
-    private float timerInterval = 1;
+    private float timerInterval = 0.01f;
 
     private float timer = 0;
 
@@ -154,18 +154,6 @@ public class GameController : MonoBehaviour
         if (!cellContent.Contains("wall"))
         {
             prologInterface.AddCellContentKB(new Coordinates(agent.coords.col, agent.coords.row), "visited");
-
-            if (!cellContent.Contains("stenchyes"))
-                prologInterface.AddCellContentKB(new Coordinates(agent.coords.col, agent.coords.row), "stenchno");
-
-            if (!cellContent.Contains("wumpusyes") && !cellContent.Contains("wumpusDead"))
-                prologInterface.AddCellContentKB(new Coordinates(agent.coords.col, agent.coords.row), "wumpusno");
-
-            if (!cellContent.Contains("breezeyes"))
-                prologInterface.AddCellContentKB(new Coordinates(agent.coords.col, agent.coords.row), "breezeno");
-
-            if (!cellContent.Contains("pityes"))
-                prologInterface.AddCellContentKB(new Coordinates(agent.coords.col, agent.coords.row), "pitno");
 
             makeInferences();
 
