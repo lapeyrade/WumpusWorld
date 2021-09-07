@@ -253,6 +253,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridManager: {fileID: 1979442548}
+  autoMode: 0
+  timerInterval: 0.01
 --- !u!4 &1979442550
 Transform:
   m_ObjectHideFlags: 0
@@ -319,3 +321,5 @@ MonoBehaviour:
   nbGold: 0
   nbArrow: 0
   gridManager: {fileID: 1979442548}
+  spriteAgent: {fileID: 0}
+  spriteAgentWorld: {fileID: 0}

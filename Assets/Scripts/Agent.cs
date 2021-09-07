@@ -17,6 +17,9 @@ public class Agent : MonoBehaviour
 
     public Stack<Coordinates> pastMovements = new Stack<Coordinates>();
 
+    public GameObject spriteAgent;
+    public GameObject spriteAgentWorld;
+
     void Awake()
     {
         world = gridManager.GetComponent<World>();
@@ -24,6 +27,8 @@ public class Agent : MonoBehaviour
 
     public void InitAgent(Coordinates startCoords, int nbWumpus, Coordinates gridMax)
     {
+        spriteAgent = (GameObject)Instantiate(Resources.Load("agent"));
+        spriteAgentWorld = (GameObject)Instantiate(Resources.Load("agent"));
         coords = startCoords;
         nbArrow = nbWumpus;
         map = new Dictionary<string, GameObject>[gridMax.col, gridMax.row];
@@ -56,7 +61,7 @@ public class Agent : MonoBehaviour
     public void HitWall()
     {
         world.RemoveFromGrids(coords.col, coords.row, "agent", true, true);
-        world.RemoveFromGrids(coords.col, coords.row, "visited", true, false);
+        // world.RemoveFromGrids(coords.col, coords.row, "visited", true, false);
         pastMovements.Pop();
         coords = pastMovements.Peek();
         world.AddToGrids(coords.col, coords.row, "agent", true, true);

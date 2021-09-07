@@ -24,7 +24,7 @@ public class PrologInterface : MonoBehaviour
 
         PlEngine.Initialize(param);
         ResetKB();
-        AddToKB($"grid_coord({gridMin.col-1}, {gridMin.row-1}, {gridMax.col}, {gridMax.row})");
+        AddToKB($"grid_coord({gridMin.col}, {gridMin.row}, {gridMax.col}, {gridMax.row})");
         AddToKB($"nb_gold({nbGold})");
         AddToKB($"nb_gold_agent({0})");
         AddToKB($"nb_arrow({nbWumpus})");
@@ -83,13 +83,25 @@ public class PrologInterface : MonoBehaviour
 
     public Boolean CheckCellElement(Coordinates coords, string element)
     {
-        return PlQuery.PlCall($"cell2({coords.col}, {coords.row}, {element})");
+        return PlQuery.PlCall($"is_true(cell2({coords.col}, {coords.row}, {element}))");
     }
 
-    public Boolean CheckCellElementFalse(Coordinates coords, string element)
+    public List<Coordinates> CheckElement(string element)
     {
-        return PlQuery.PlCall($"tnot(cell2({coords.col}, {coords.row}, {element}))");
+        List<Coordinates> listCoordsElement = new List<Coordinates>();
+
+        using (PlQuery checkElement = new PlQuery("list_element", new PlTermV(new PlTerm[] { new PlTerm("Col"), new PlTerm("Row"), new PlTerm(element) })))
+        {
+            foreach (PlTermV solution in checkElement.Solutions)
+            {
+                // if (CheckCellElement(new Coordinates((int)solution[0], (int)solution[1]), element))
+                listCoordsElement.Add(new Coordinates((int)solution[0], (int)solution[1]));
+            }
+        }
+
+        return listCoordsElement;
     }
+
 
     /***************** KB I/O *****************/
     public void AddToKB(string predicate)

@@ -158,7 +158,7 @@ cell2(Col, Row, wumpusno):-
     cell2(Col, Row, visited),
     (
         is_false(cell2(Col, Row, wumpusyes)),
-        is_false(cell2(Col, Row, wumpusDead))
+        is_false(cell2(Col, Row, wumpusdead))
     ).
 
 cell2(Col, Row, pitno):-
@@ -177,9 +177,10 @@ cell2(Col, Row, safe):-
     cell2(Col, Row, wall).
 
 cell2(Col, Row, safe):-
-    cell2(Col, Row, wumpusDead).
+    cell2(Col, Row, wumpusdead).
 
 cell2(Col, Row, safe):-
+    in_limits(Col, Row),
     RightCol is Col+1,
     LeftCol is Col-1,
     UpRow is Row+1,
@@ -248,18 +249,15 @@ cell2(Col, Row, stenchno) :-
 	cell2(Col, DownRow, wumpusno).
 
 cell2(Col, Row, stench):-
-    in_limits(Col, Row),
     cell2(Col, Row, stenchyes),
     tnot(cell2(Col, Row, stenchno)).
 
 cell2(Col, Row, stench):-
-    in_limits(Col, Row),
     tnot(cell2(Col, Row, stenchyes)),
     tnot(cell2(Col, Row, stenchno)),
     tnot(cell2(Col, Row, stench)).
 
 cell2(Col, Row, stench):-
-    in_limits(Col, Row),
     cell2(Col, Row, stenchyes),
     cell2(Col, Row, stenchno),
     tnot(cell2(Col, Row, stench)).
@@ -290,7 +288,7 @@ cell2(Col, Row, wumpusno) :-
 
 % Right
 cell2(Col, Row, wumpusyes) :-
-    \+(cell2(Col, Row, wumpusDead)),
+    \+(cell2(Col, Row, wumpusdead)),
     in_limits(Col, Row),
     RightCol is Col+1,
     FarRightCol is Col+2,
@@ -303,7 +301,7 @@ cell2(Col, Row, wumpusyes) :-
 
 % Left
 cell2(Col, Row, wumpusyes) :-
-    \+(cell2(Col, Row, wumpusDead)),
+    \+(cell2(Col, Row, wumpusdead)),
     in_limits(Col, Row),
     LeftCol is Col-1,
     FarLeftCol is Col-2,
@@ -316,7 +314,7 @@ cell2(Col, Row, wumpusyes) :-
 
 % Up
 cell2(Col, Row, wumpusyes) :-
-    \+(cell2(Col, Row, wumpusDead)),
+    \+(cell2(Col, Row, wumpusdead)),
     in_limits(Col, Row),
     UpRow is Row+1,
     FarUpRow is Row+2,
@@ -329,7 +327,7 @@ cell2(Col, Row, wumpusyes) :-
 
 % Down
 cell2(Col, Row, wumpusyes) :-
-    \+(cell2(Col, Row, wumpusDead)),
+    \+(cell2(Col, Row, wumpusdead)),
     in_limits(Col, Row),
     DownRow is Row-1,
     FarDownRow is Row-2,
@@ -341,18 +339,15 @@ cell2(Col, Row, wumpusyes) :-
     cell2(Col, DownRow, stenchyes).
 
 cell2(Col, Row, wumpus):-
-    in_limits(Col, Row),
     cell2(Col, Row, wumpusyes),
     tnot(cell2(Col, Row, wumpusno)).
 
 cell2(Col, Row, wumpus):-
-    in_limits(Col, Row),
     tnot(cell2(Col, Row, wumpusyes)),
     tnot(cell2(Col, Row, wumpusno)),
     tnot(cell2(Col, Row, wumpus)).
 
 cell2(Col, Row, wumpus):-
-    in_limits(Col, Row),
     cell2(Col, Row, wumpusyes),
     cell2(Col, Row, wumpusno),
     tnot(cell2(Col, Row, wumpus)).
@@ -393,18 +388,15 @@ cell2(Col, Row, breezeno) :-
 	cell2(Col, DownRow, pitno).
 
 cell2(Col, Row, breeze):-
-    in_limits(Col, Row),
     cell2(Col, Row, breezeyes),
     tnot(cell2(Col, Row, breezeno)).
 
 cell2(Col, Row, breeze):-
-    in_limits(Col, Row),
     tnot(cell2(Col, Row, breezeyes)),
     tnot(cell2(Col, Row, breezeno)),
     tnot(cell2(Col, Row, breeze)).
 
 cell2(Col, Row, breeze):-
-    in_limits(Col, Row),
     cell2(Col, Row, breezeyes),
     cell2(Col, Row, breezeno),
     tnot(cell2(Col, Row, breeze)).
@@ -482,18 +474,15 @@ cell2(Col, Row, pityes) :-
     cell2(Col, DownRow, breezeyes).
 
 cell2(Col, Row, pit):-
-    in_limits(Col, Row),
     cell2(Col, Row, pityes),
     tnot(cell2(Col, Row, pitno)).
 
 cell2(Col, Row, pit):-
-    in_limits(Col, Row),
     tnot(cell2(Col, Row, pityes)),
     tnot(cell2(Col, Row, pitno)),
     tnot(cell2(Col, Row, pit)).
 
 cell2(Col, Row, pit):-
-    in_limits(Col, Row),
     cell2(Col, Row, pityes),
     cell2(Col, Row, pitno),
     tnot(cell2(Col, Row, pit)).
@@ -501,3 +490,6 @@ cell2(Col, Row, pit):-
 is_undefined(Atom):- Atom, tnot(Atom).
 is_true(Atom):- Atom, \+ (Atom, tnot(Atom)).
 is_false(Atom):- \+Atom.
+
+list_element(Col, Row, Element):-
+    is_true(cell2(Col, Row, Element)).

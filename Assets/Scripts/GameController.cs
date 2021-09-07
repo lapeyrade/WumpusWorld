@@ -157,8 +157,8 @@ public class GameController : MonoBehaviour
 
             makeInferences();
 
-            if (cellContent.Contains("emptyCell") && cellContent.Count > 1)
-                world.RemoveFromGrids(agent.coords.col, agent.coords.row, "emptyCell", true, false);
+            // if (cellContent.Contains("cell") && cellContent.Count > 1)
+            //     world.RemoveFromGrids(agent.coords.col, agent.coords.row, "cell", true, false);
 
             if (cellContent.Contains("start") && agent.nbGold == world.nbGold)
                 SetGameOver("Game Won!", false);
@@ -170,20 +170,19 @@ public class GameController : MonoBehaviour
 
     void makeInferences()
     {
-        for (int col = world.gridMin.col; col < world.gridMax.col; col++)
+        AddAllElementToGrids("safe", true, false);
+        AddAllElementToGrids("stench", true, false);
+        AddAllElementToGrids("wumpus", true, false);
+        AddAllElementToGrids("breeze", true, false);
+        AddAllElementToGrids("pit", true, false);
+
+
+        void AddAllElementToGrids(string element, bool updateMapAgent, bool updateMap)
         {
-            for (int row = world.gridMin.row; row < world.gridMax.row; row++)
+            foreach (Coordinates coords in prologInterface.CheckElement(element))
             {
-                if (prologInterface.CheckCellElement(new Coordinates(col, row), "safe"))
-                    world.AddToGrids(col, row, "safe", true, false);
-                if (!prologInterface.CheckCellElementFalse(new Coordinates(col, row), "stench"))
-                    world.AddToGrids(col, row, "stenchyes", true, false);
-                if (!prologInterface.CheckCellElementFalse(new Coordinates(col, row), "breeze"))
-                    world.AddToGrids(col, row, "breezeyes", true, false);
-                if (!prologInterface.CheckCellElementFalse(new Coordinates(col, row), "wumpus"))
-                    world.AddToGrids(col, row, "wumpus", true, false);
-                if (!prologInterface.CheckCellElementFalse(new Coordinates(col, row), "pit"))
-                    world.AddToGrids(col, row, "pit", true, false);
+                Debug.Log(coords.ToString());
+                world.AddToGrids(coords.col, coords.row, element, true, false);
             }
         }
     }
