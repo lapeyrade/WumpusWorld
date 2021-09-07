@@ -498,15 +498,6 @@ cell2(Col, Row, pit):-
     cell2(Col, Row, pitno),
     tnot(cell2(Col, Row, pit)).
 
-% is_undefined(Atom):-
-%     call_delays(Atom, Delays), Delays \== true.
-
-% is_true(Atom):-
-%     call_delays(Atom, true).
-
-% is_false(Atom):-
-%     \+ is_true(Atom).
-
-is_undefined(Atom):- Atom,tnot(Atom).
-is_true(Atom):- Atom, \+ (Atom,tnot(Atom)).
+is_undefined(Atom):- Atom, tnot(Atom).
+is_true(Atom):- Atom, \+ (Atom, tnot(Atom)).
 is_false(Atom):- \+Atom.
