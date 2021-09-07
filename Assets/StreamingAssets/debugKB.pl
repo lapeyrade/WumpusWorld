@@ -2,7 +2,7 @@
 
 % DYNAMIC PART OF THE KNOWLEDGE BASE
 
-grid_coord(0,0,9,9).
+grid_coord(-1,-1,9,9).
 nb_wumpus(2).
 nb_wumpus_dead(0).
 nb_arrow(2).
@@ -104,6 +104,11 @@ cell(1,5,wumpusno).
 cell(1,5,breezeno).
 cell(1,5,pitno).
 cell(1,4,wumpusDead).
+cell(1,4,visited).
+cell(1,4,stenchno).
+cell(1,4,breezeno).
+cell(1,4,pitno).
+cell(0,4,wall).
 cell(2,6,visited).
 cell(2,6,stenchno).
 cell(2,6,wumpusno).

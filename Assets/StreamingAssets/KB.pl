@@ -115,7 +115,7 @@ next_action(Action):-
     Action = "MoveNextCell".
 
 kill_wumpus_right(Col, Row):-
-    cell2(Col, Row, wumpusyes).
+    is_true(cell2(Col, Row, wumpus)).
 
 kill_wumpus_right(Col, Row):-
     in_limits(Col, Row),
@@ -123,7 +123,7 @@ kill_wumpus_right(Col, Row):-
     kill_wumpus_right(RightCol, Row).
 
 kill_wumpus_left(Col, Row):-
-    cell2(Col, Row, wumpusyes).
+    is_true(cell2(Col, Row, wumpus)).
 
 kill_wumpus_left(Col, Row):-
     in_limits(Col, Row),
@@ -131,7 +131,7 @@ kill_wumpus_left(Col, Row):-
     kill_wumpus_left(LeftCol, Row).
 
 kill_wumpus_up(Col, Row):-
-    cell2(Col, Row, wumpusyes).
+    is_true(cell2(Col, Row, wumpus)).
 
 kill_wumpus_up(Col, Row):-
     in_limits(Col, Row),
@@ -139,7 +139,7 @@ kill_wumpus_up(Col, Row):-
     kill_wumpus_up(Col, UpRow).
 
 kill_wumpus_down(Col, Row):-
-    cell2(Col, Row, wumpusyes).
+    is_true(cell2(Col, Row, wumpus)).
 
 kill_wumpus_down(Col, Row):-
     in_limits(Col, Row),
@@ -157,10 +157,10 @@ in_limits(Col, Row) :-
 cell2(Col, Row, safe):-
     cell2(Col, Row, wall).
 
-% cell2(Col, Row, safe):-
-%     cell2(Col, Row, wumpusDead).
-
 cell2(Col, Row, safe):-
+    cell2(Col, Row, wumpusDead).
+
+cell2(Col, Row, safe2):-
     RightCol is Col+1,
     LeftCol is Col-1,
     UpRow is Row+1,
@@ -180,24 +180,24 @@ cell2(Col, Row, safe):-
         cell2(Col, DownRow, breezeno)
     ).
 
-cell2(Col, Row, safe2):-
+cell2(Col, Row, safe):-
     RightCol is Col+1,
     LeftCol is Col-1,
     UpRow is Row+1,
     DownRow is Row-1,
     (
-        \+(cell2(Col, Row, wumpus));
-        \+(cell2(RightCol, Row, stench));
-        \+(cell2(LeftCol, Row, stench));
-        \+(cell2(Col, UpRow, stench));
-        \+(cell2(Col, DownRow, stench))
+        is_false(cell2(Col, Row, wumpus));
+        is_false(cell2(RightCol, Row, stench));
+        is_false(cell2(LeftCol, Row, stench));
+        is_false(cell2(Col, UpRow, stench));
+        is_false(cell2(Col, DownRow, stench))
     ),
     (
-        \+(cell2(Col, Row, pit));
-        \+(cell2(RightCol, Row, breeze));
-        \+(cell2(LeftCol, Row, breeze));
-        \+(cell2(Col, UpRow, breeze));
-        \+(cell2(Col, DownRow, breeze))
+        is_false(cell2(Col, Row, pit));
+        is_false(cell2(RightCol, Row, breeze));
+        is_false(cell2(LeftCol, Row, breeze));
+        is_false(cell2(Col, UpRow, breeze));
+        is_false(cell2(Col, DownRow, breeze))
     ).
 
 %%% Define Stench & Wumpus attributes %%%
@@ -205,25 +205,37 @@ cell2(Col, Row, safe2):-
 cell2(Col, Row, stenchyes) :-
     in_limits(Col, Row),
     RightCol is Col+1,
-   	cell2(RightCol, Row, wumpusyes).
+   	(
+        cell2(RightCol, Row, wumpusyes);
+        cell2(RightCol, Row, wumpusdead)
+    ).
 
 % Left
 cell2(Col, Row, stenchyes) :-
     in_limits(Col, Row),
     LeftCol is Col-1,
-   	cell2(LeftCol, Row, wumpusyes).
+    (
+        cell2(LeftCol, Row, wumpusyes);
+        cell2(LeftCol, Row, wumpusdead)
+    ).
 
 % Up
 cell2(Col, Row, stenchyes) :-
     in_limits(Col, Row),
     UpRow is Row+1,
-   	cell2(Col, UpRow, wumpusyes).
+    (
+        cell2(Col, UpRow, wumpusyes);
+        cell2(Col, UpRow, wumpusdead)
+    ).
 
 % Down
 cell2(Col, Row, stenchyes) :-
     in_limits(Col, Row),
     DownRow is Row-1,
-   	cell2(Col, DownRow, wumpusyes).
+    (
+        cell2(Col, DownRow, wumpusyes);
+        cell2(Col, DownRow, wumpusdead)
+    ).
 
 cell2(Col, Row, stenchno) :-
     in_limits(Col, Row),
@@ -330,20 +342,17 @@ cell2(Col, Row, wumpusyes) :-
     cell2(Col, DownRow, stenchyes).
 
 cell2(Col, Row, wumpus):-
-    \+(cell2(Col, Row, wumpusDead)),
     in_limits(Col, Row),
     cell2(Col, Row, wumpusyes),
     tnot(cell2(Col, Row, wumpusno)).
 
 cell2(Col, Row, wumpus):-
-    \+(cell2(Col, Row, wumpusDead)),
     in_limits(Col, Row),
     tnot(cell2(Col, Row, wumpusyes)),
     tnot(cell2(Col, Row, wumpusno)),
     tnot(cell2(Col, Row, wumpus)).
 
 cell2(Col, Row, wumpus):-
-    \+(cell2(Col, Row, wumpusDead)),
     in_limits(Col, Row),
     cell2(Col, Row, wumpusyes),
     cell2(Col, Row, wumpusno),
@@ -489,3 +498,16 @@ cell2(Col, Row, pit):-
     cell2(Col, Row, pityes),
     cell2(Col, Row, pitno),
     tnot(cell2(Col, Row, pit)).
+
+% is_undefined(Atom):-
+%     call_delays(Atom, Delays), Delays \== true.
+
+% is_true(Atom):-
+%     call_delays(Atom, true).
+
+% is_false(Atom):-
+%     \+ is_true(Atom).
+
+is_undefined(Atom):- Atom,tnot(Atom).
+is_true(Atom):- Atom, \+ (Atom,tnot(Atom)).
+is_false(Atom):- \+Atom.

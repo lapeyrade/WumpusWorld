@@ -158,7 +158,7 @@ public class GameController : MonoBehaviour
             if (!cellContent.Contains("stenchyes"))
                 prologInterface.AddCellContentKB(new Coordinates(agent.coords.col, agent.coords.row), "stenchno");
 
-            if (!cellContent.Contains("wumpusyes"))
+            if (!cellContent.Contains("wumpusyes") && !cellContent.Contains("wumpusDead"))
                 prologInterface.AddCellContentKB(new Coordinates(agent.coords.col, agent.coords.row), "wumpusno");
 
             if (!cellContent.Contains("breezeyes"))

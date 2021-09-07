@@ -24,7 +24,7 @@ public class PrologInterface : MonoBehaviour
 
         PlEngine.Initialize(param);
         ResetKB();
-        AddToKB($"grid_coord({gridMin.col}, {gridMin.row}, {gridMax.col}, {gridMax.row})");
+        AddToKB($"grid_coord({gridMin.col-1}, {gridMin.row-1}, {gridMax.col}, {gridMax.row})");
         AddToKB($"nb_gold({nbGold})");
         AddToKB($"nb_gold_agent({0})");
         AddToKB($"nb_arrow({nbWumpus})");
