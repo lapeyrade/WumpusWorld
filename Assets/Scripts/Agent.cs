@@ -10,6 +10,11 @@ public class Agent : MonoBehaviour
     public Coordinates coords;
     public int nbGold = 0;
     public int nbArrow;
+    public int nbArrowUsed = 0;
+
+    public int nbWumpus;
+    public int nbWumpusDead = 0;
+
     public Dictionary<string, GameObject>[,] map;
 
     public GameObject gridManager;
@@ -25,12 +30,13 @@ public class Agent : MonoBehaviour
         world = gridManager.GetComponent<World>();
     }
 
-    public void InitAgent(Coordinates startCoords, int nbWumpus, Coordinates gridMax)
+    public void InitAgent(Coordinates startCoords, int nbTotalWumpus, Coordinates gridMax)
     {
         spriteAgent = (GameObject)Instantiate(Resources.Load("agent"));
         spriteAgentWorld = (GameObject)Instantiate(Resources.Load("agent"));
         coords = startCoords;
-        nbArrow = nbWumpus;
+        nbWumpus = nbTotalWumpus;
+        nbArrow = nbTotalWumpus;
         map = new Dictionary<string, GameObject>[gridMax.col, gridMax.row];
     }
 
@@ -61,7 +67,6 @@ public class Agent : MonoBehaviour
     public void HitWall()
     {
         world.RemoveFromGrids(coords.col, coords.row, "agent", true, true);
-        // world.RemoveFromGrids(coords.col, coords.row, "visited", true, false);
         pastMovements.Pop();
         coords = pastMovements.Peek();
         world.AddToGrids(coords.col, coords.row, "agent", true, true);

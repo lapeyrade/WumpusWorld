@@ -93,21 +93,25 @@ next_action(Action):-
 
 next_action(Action):-
     cell2(Col, Row, agent),
+    nb_arrow(Arrow), Arrow > 0,
     kill_wumpus_right(Col, Row),
     Action = "ShotRight".
 
 next_action(Action):-
     cell2(Col, Row, agent),
+    nb_arrow(Arrow), Arrow > 0,
     kill_wumpus_left(Col, Row),
     Action = "ShotLeft".
 
 next_action(Action):-
     cell2(Col, Row, agent),
+    nb_arrow(Arrow), Arrow > 0,
     kill_wumpus_up(Col, Row),
     Action = "ShotUp".
 
 next_action(Action):-
     cell2(Col, Row, agent),
+    nb_arrow(Arrow), Arrow > 0,
     kill_wumpus_down(Col, Row),
     Action = "ShotDown".
 
@@ -339,15 +343,18 @@ cell2(Col, Row, wumpusyes) :-
     cell2(Col, DownRow, stenchyes).
 
 cell2(Col, Row, wumpus):-
+    in_limits(Col, Row),
     cell2(Col, Row, wumpusyes),
     tnot(cell2(Col, Row, wumpusno)).
 
 cell2(Col, Row, wumpus):-
+    in_limits(Col, Row),
     tnot(cell2(Col, Row, wumpusyes)),
     tnot(cell2(Col, Row, wumpusno)),
     tnot(cell2(Col, Row, wumpus)).
 
 cell2(Col, Row, wumpus):-
+    in_limits(Col, Row),
     cell2(Col, Row, wumpusyes),
     cell2(Col, Row, wumpusno),
     tnot(cell2(Col, Row, wumpus)).
@@ -474,15 +481,18 @@ cell2(Col, Row, pityes) :-
     cell2(Col, DownRow, breezeyes).
 
 cell2(Col, Row, pit):-
+    in_limits(Col, Row),
     cell2(Col, Row, pityes),
     tnot(cell2(Col, Row, pitno)).
 
 cell2(Col, Row, pit):-
+    in_limits(Col, Row),
     tnot(cell2(Col, Row, pityes)),
     tnot(cell2(Col, Row, pitno)),
     tnot(cell2(Col, Row, pit)).
 
 cell2(Col, Row, pit):-
+    in_limits(Col, Row),
     cell2(Col, Row, pityes),
     cell2(Col, Row, pitno),
     tnot(cell2(Col, Row, pit)).
@@ -490,6 +500,10 @@ cell2(Col, Row, pit):-
 is_undefined(Atom):- Atom, tnot(Atom).
 is_true(Atom):- Atom, \+ (Atom, tnot(Atom)).
 is_false(Atom):- \+Atom.
+
+% is_undefined(Atom):- call_delays(Atom, Delays), Delays \== true.
+% is_true(Atom):- call_delays(Atom, true).
+% is_false(Atom):- \+ is_true(Atom).
 
 list_element(Col, Row, Element):-
     is_true(cell2(Col, Row, Element)).

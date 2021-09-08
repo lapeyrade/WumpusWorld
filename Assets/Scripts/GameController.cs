@@ -62,17 +62,6 @@ public class GameController : MonoBehaviour
             }
         }
     }
-    IEnumerator ExampleCoroutine()
-    {
-        //Print the time of when the function is first called.
-        Debug.Log("Started Coroutine at timestamp : " + Time.time);
-
-        //yield on a new YieldInstruction that waits for 5 seconds.
-        yield return new WaitForSeconds(1);
-        PlayTurn();
-        //After we have waited 5 seconds print the time again.
-        Debug.Log("Finished Coroutine at timestamp : " + Time.time);
-    }
 
     public void MoveCell()
     {
@@ -157,9 +146,6 @@ public class GameController : MonoBehaviour
 
             makeInferences();
 
-            // if (cellContent.Contains("cell") && cellContent.Count > 1)
-            //     world.RemoveFromGrids(agent.coords.col, agent.coords.row, "cell", true, false);
-
             if (cellContent.Contains("start") && agent.nbGold == world.nbGold)
                 SetGameOver("Game Won!", false);
 
@@ -168,20 +154,18 @@ public class GameController : MonoBehaviour
         }
     }
 
-    void makeInferences()
+    public void makeInferences()
     {
         AddAllElementToGrids("safe", true, false);
-        AddAllElementToGrids("stench", true, false);
+        AddAllElementToGrids("stenchyes", true, false);
         AddAllElementToGrids("wumpus", true, false);
-        AddAllElementToGrids("breeze", true, false);
+        AddAllElementToGrids("breezeyes", true, false);
         AddAllElementToGrids("pit", true, false);
-
 
         void AddAllElementToGrids(string element, bool updateMapAgent, bool updateMap)
         {
             foreach (Coordinates coords in prologInterface.CheckElement(element))
             {
-                Debug.Log(coords.ToString());
                 world.AddToGrids(coords.col, coords.row, element, true, false);
             }
         }
@@ -207,19 +191,15 @@ public class GameController : MonoBehaviour
                     break;
                 case "ShotRight":
                     world.ShotArrow("right");
-                    ActionLeftToDo = false;
                     break;
                 case "ShotLeft":
                     world.ShotArrow("left");
-                    ActionLeftToDo = false;
                     break;
                 case "ShotUp":
                     world.ShotArrow("up");
-                    ActionLeftToDo = false;
                     break;
                 case "ShotDown":
                     world.ShotArrow("down");
-                    ActionLeftToDo = false;
                     break;
                 case "MoveNextCell":
                     ActionLeftToDo = false;
