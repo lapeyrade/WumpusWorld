@@ -19,6 +19,11 @@
 cell2(Col, Row, Element):- cell(Col, Row, Element).
 
 %%%%%%%%%% NEXT MOVE %%%%%%%%%%
+random_move(MoveList, FinalMoveList):-
+    random_member(RandomNumber, MoveList),
+    delete(MoveList, RandomNumber, NewMoveList),
+    append(FinalMoveList, RandomNumber, FinalMoveListUpdated),
+    random_move(NewMoveList, FinalMoveListUpdated).
 
 next_move(Move):-
     nb_gold(TotalGold), nb_gold_agent(AgentGold),
@@ -152,13 +157,19 @@ kill_wumpus_down(Col, Row):-
 
 %%%%%%%%%% GAME RULES %%%%%%%%%%
 in_limits(Col, Row) :-
-    grid_coord(MinCol, MinRow, MaxCol, MaxRow),
-    numlist(MinCol, MaxCol, ListCol),
-    numlist(MinRow, MaxRow, ListRow),
+    % grid_coord(MinCol, MinRow, MaxCol, MaxRow),
+    % numlist(MinCol, MaxCol, ListCol),
+    % numlist(MinRow, MaxRow, ListRow),
+    cell2(ColAgent, RowAgent, agent),
+    ColMin is ColAgent - 3, ColMax is ColAgent + 3,
+    RowMin is RowAgent - 3, RowMax is RowAgent + 3,
+    numlist(ColMin, ColMax, ListCol),
+    numlist(RowMin, RowMax, ListRow),
     member(Col, ListCol),
     member(Row, ListRow).
 
 cell2(Col, Row, wumpusno):-
+    in_limits(Col, Row),
     cell2(Col, Row, visited),
     (
         is_false(cell2(Col, Row, wumpusyes)),
@@ -166,14 +177,17 @@ cell2(Col, Row, wumpusno):-
     ).
 
 cell2(Col, Row, pitno):-
+    in_limits(Col, Row),
     cell2(Col, Row, visited),
     is_false(cell2(Col, Row, pityes)).
 
 cell2(Col, Row, breezeno):-
+    in_limits(Col, Row),
     cell2(Col, Row, visited),
     is_false(cell2(Col, Row, breezeyes)).
 
 cell2(Col, Row, stenchno):-
+    in_limits(Col, Row),
     cell2(Col, Row, visited),
     is_false(cell2(Col, Row, stenchyes)).
 
@@ -497,13 +511,17 @@ cell2(Col, Row, pit):-
     cell2(Col, Row, pitno),
     tnot(cell2(Col, Row, pit)).
 
-is_undefined(Atom):- Atom, tnot(Atom).
-is_true(Atom):- Atom, \+ (Atom, tnot(Atom)).
-is_false(Atom):- \+Atom.
+% is_undefined(Atom):- Atom, tnot(Atom).
+% is_true(Atom):- Atom, \+ (Atom, tnot(Atom)).
+% is_false(Atom):- \+Atom.
 
-% is_undefined(Atom):- call_delays(Atom, Delays), Delays \== true.
-% is_true(Atom):- call_delays(Atom, true).
+% From Jan Wielemaker
+% https://swi-prolog.discourse.group/t/unexplained-behaviour-wrt-the-well-founded-semantics-part-4/4377/2
+is_undefined(Atom):- call_delays(Atom, Delays), Delays \== true.
+is_true(Atom):- call_delays(Atom, true).
 % is_false(Atom):- \+ is_true(Atom).
+is_false(Atom):- \+Atom.
+% is_false(Atom):- call_delays(Atom, false).
 
 list_element(Col, Row, Element):-
     is_true(cell2(Col, Row, Element)).
