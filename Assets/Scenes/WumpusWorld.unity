@@ -281,14 +281,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1d0afbb961de3c4bb9d7e1e4d8d8eda, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RandomSeed: 30
-  maxGridCol: 30
-  maxGridRow: 30
+  RandomSeed: 29
+  maxGridCol: 10
+  maxGridRow: 10
   startCol: 1
   startRow: 1
   tileSize: 1.05
-  nbPit: 30
-  nbWumpus: 30
+  nbPit: 5
+  nbWumpus: 7
   nbGold: 1
   nbAgent: 1
   gridManager: {fileID: 1979442548}
@@ -305,7 +305,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40687e890277c7440885797e0fca5150, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugFileLog: 0
+  debugFileLog: 1
 --- !u!114 &1979442553
 MonoBehaviour:
   m_ObjectHideFlags: 0

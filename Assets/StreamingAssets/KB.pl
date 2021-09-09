@@ -99,72 +99,38 @@ next_action(Action):-
 next_action(Action):-
     cell2(Col, Row, agent),
     nb_arrow(Arrow), Arrow > 0,
-    kill_wumpus_right(Col, Row),
-    Action = "ShotRight".
-
-next_action(Action):-
-    cell2(Col, Row, agent),
-    nb_arrow(Arrow), Arrow > 0,
-    kill_wumpus_left(Col, Row),
-    Action = "ShotLeft".
-
-next_action(Action):-
-    cell2(Col, Row, agent),
-    nb_arrow(Arrow), Arrow > 0,
-    kill_wumpus_up(Col, Row),
-    Action = "ShotUp".
-
-next_action(Action):-
-    cell2(Col, Row, agent),
-    nb_arrow(Arrow), Arrow > 0,
-    kill_wumpus_down(Col, Row),
-    Action = "ShotDown".
+    kill_wumpus(Col, Row, Action).
 
 next_action(Action):-
     Action = "MoveNextCell".
 
-kill_wumpus_right(Col, Row):-
-    is_true(cell2(Col, Row, wumpus)).
+kill_wumpus(Col, Row, Action):-
+    is_true(cell2(ColWumpus, Row, wumpus)),
+    ColWumpus > Col,
+    Action = "ShotRight".
 
-kill_wumpus_right(Col, Row):-
-    in_limits(Col, Row),
-    RightCol is Col+1,
-    kill_wumpus_right(RightCol, Row).
+kill_wumpus(Col, Row, Action):-
+    is_true(cell2(ColWumpus, Row, wumpus)),
+    ColWumpus < Col,
+    Action = "ShotLeft".
 
-kill_wumpus_left(Col, Row):-
-    is_true(cell2(Col, Row, wumpus)).
+kill_wumpus(Col, Row, Action):-
+    is_true(cell2(Col, RowWumpus, wumpus)),
+    RowWumpus > Row,
+    Action = "ShotUp".
 
-kill_wumpus_left(Col, Row):-
-    in_limits(Col, Row),
-    LeftCol is Col-1,
-    kill_wumpus_left(LeftCol, Row).
-
-kill_wumpus_up(Col, Row):-
-    is_true(cell2(Col, Row, wumpus)).
-
-kill_wumpus_up(Col, Row):-
-    in_limits(Col, Row),
-    UpRow is Row+1,
-    kill_wumpus_up(Col, UpRow).
-
-kill_wumpus_down(Col, Row):-
-    is_true(cell2(Col, Row, wumpus)).
-
-kill_wumpus_down(Col, Row):-
-    in_limits(Col, Row),
-    Down is Row-1,
-    kill_wumpus_down(Col, Down).
+kill_wumpus(Col, Row, Action):-
+    is_true(cell2(Col, RowWumpus, wumpus)),
+    RowWumpus < Row,
+    Action = "ShotDown".
 
 %%%%%%%%%% GAME RULES %%%%%%%%%%
 in_limits(Col, Row) :-
-    % grid_coord(MinCol, MinRow, MaxCol, MaxRow),
-    % numlist(MinCol, MaxCol, ListCol),
-    % numlist(MinRow, MaxRow, ListRow),
     cell2(ColAgent, RowAgent, agent),
-    ColMin is ColAgent - 3, ColMax is ColAgent + 3,
-    RowMin is RowAgent - 3, RowMax is RowAgent + 3,
-    numlist(ColMin, ColMax, ListCol),
-    numlist(RowMin, RowMax, ListRow),
+    MinCol is ColAgent - 3, MaxCol is ColAgent + 3,
+    MinRow is RowAgent - 3, MaxRow is RowAgent + 3,
+    numlist(MinCol, MaxCol, ListCol),
+    numlist(MinRow, MaxRow, ListRow),
     member(Col, ListCol),
     member(Row, ListRow).
 
