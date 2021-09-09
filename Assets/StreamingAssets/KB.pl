@@ -19,18 +19,20 @@
 cell2(Col, Row, Element):- cell(Col, Row, Element).
 
 %%%%%%%%%% NEXT MOVE %%%%%%%%%%
-random_move(MoveList, FinalMoveList):-
-    random_member(RandomNumber, MoveList),
-    delete(MoveList, RandomNumber, NewMoveList),
-    append(FinalMoveList, RandomNumber, FinalMoveListUpdated),
-    random_move(NewMoveList, FinalMoveListUpdated).
-
 next_move(Move):-
     nb_gold(TotalGold), nb_gold_agent(AgentGold),
     TotalGold == AgentGold,
     Move = "MoveBack", !.
 
 next_move(Move):-
+    random_permutation([1, 2, 3, 4], ListDirection),
+    ListDirection = [First, Second, Third, Fourth],
+    move(Move, First);
+    move(Move, Second);
+    move(Move, Third);
+    move(Move, Fourth).
+
+move(Move, 1):-
     cell2(Col, Row, agent),
     RightCol is Col+1,
     \+(cell2(RightCol, Row, visited)),
@@ -38,7 +40,7 @@ next_move(Move):-
     cell2(RightCol, Row, safe),
     Move = "MoveRight", !.
 
-next_move(Move):-
+move(Move, 2):-
     cell2(Col, Row, agent),
     LeftCol is Col-1,
     \+(cell2(LeftCol, Row, visited)),
@@ -46,7 +48,7 @@ next_move(Move):-
     cell2(LeftCol, Row, safe),
     Move = "MoveLeft", !.
 
-next_move(Move):-
+move(Move, 3):-
     cell2(Col, Row, agent),
     UpRow is Row+1,
     \+(cell2(Col, UpRow, visited)),
@@ -54,13 +56,45 @@ next_move(Move):-
     cell2(Col, UpRow, safe),
     Move = "MoveUp", !.
 
-next_move(Move):-
+move(Move, 4):-
     cell2(Col, Row, agent),
     DownRow is Row-1,
     \+(cell2(Col, DownRow, visited)),
     \+(cell2(Col, DownRow, wall)),
     cell2(Col, DownRow, safe),
     Move = "MoveDown", !.
+
+% next_move(Move):-
+%     cell2(Col, Row, agent),
+%     RightCol is Col+1,
+%     \+(cell2(RightCol, Row, visited)),
+%     \+(cell2(RightCol, Row, wall)),
+%     cell2(RightCol, Row, safe),
+%     Move = "MoveRight", !.
+
+% next_move(Move):-
+%     cell2(Col, Row, agent),
+%     LeftCol is Col-1,
+%     \+(cell2(LeftCol, Row, visited)),
+%     \+(cell2(LeftCol, Row, wall)),
+%     cell2(LeftCol, Row, safe),
+%     Move = "MoveLeft", !.
+
+% next_move(Move):-
+%     cell2(Col, Row, agent),
+%     UpRow is Row+1,
+%     \+(cell2(Col, UpRow, visited)),
+%     \+(cell2(Col, UpRow, wall)),
+%     cell2(Col, UpRow, safe),
+%     Move = "MoveUp", !.
+
+% next_move(Move):-
+%     cell2(Col, Row, agent),
+%     DownRow is Row-1,
+%     \+(cell2(Col, DownRow, visited)),
+%     \+(cell2(Col, DownRow, wall)),
+%     cell2(Col, DownRow, safe),
+%     Move = "MoveDown", !.
 
 next_move(Move):-
     Move = "MoveBack", !.

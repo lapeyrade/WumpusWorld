@@ -224,7 +224,6 @@ public class PrologInterface : MonoBehaviour
     }
 #endif
 
-
     /***************** DEBUG FILE *****************/
     private void ResetDebugKB()
     {
@@ -249,20 +248,19 @@ public class PrologInterface : MonoBehaviour
         File.WriteAllText(debugPrologFilePath, newVersion);
     }
 
-
     public void WriteInDebugKB(string prologText)
     {
         if (!File.Exists(debugPrologFilePath))
         {
-            using (StreamWriter sw = File.CreateText(debugPrologFilePath)) // Create a file to write to.
+            using (StreamWriter streamWriter = File.CreateText(debugPrologFilePath)) // Create a file to write to.
             {
-                sw.WriteLine(prologText);
+                streamWriter.WriteLine(prologText);
             }
         }
 
-        using (StreamWriter sw = File.AppendText(debugPrologFilePath)) // Add text to file
+        using (StreamWriter streamWriter = File.AppendText(debugPrologFilePath)) // Add text to file
         {
-            sw.WriteLine(prologText);
+            streamWriter.WriteLine(prologText);
         }
     }
 }

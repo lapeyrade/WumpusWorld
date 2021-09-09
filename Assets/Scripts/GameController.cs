@@ -93,6 +93,7 @@ public class GameController : MonoBehaviour
         else if (Input.GetKeyDown("return")) // Random Move
         {
             string randomMove = prologInterface.RandomMove();
+            Debug.Log(randomMove);
             switch (randomMove)
             {
                 case "MoveBack":
