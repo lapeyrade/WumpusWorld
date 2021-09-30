@@ -7,8 +7,10 @@
 </figure>
 blank line -->
 
+# Demo
+
 <div class="video-fallback">
-  Wumpus World Demo: <a href="https://www.youtube.com/watch?v=NSjmK8mkvkk">Here</a>.
+  <a href="https://www.youtube.com/watch?v=NSjmK8mkvkk">Click here</a> to see a video illustrating the Wumpus World.
 </div>
 <figure class="video-container">
   <iframe src="https://www.youtube.com/embed/NSjmK8mkvkk" frameborder="0" allowfullscreen="true"> </iframe>
