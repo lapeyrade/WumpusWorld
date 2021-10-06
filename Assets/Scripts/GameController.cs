@@ -65,36 +65,22 @@ public class GameController : MonoBehaviour
 
     public void MoveCell()
     {
-        if (Input.GetKeyDown("space") || autoMode) // Prolog Move
+        if (Input.GetKeyDown("space") || autoMode || Input.GetKeyDown("return"))
         {
-            string nextMove = prologInterface.NextMove();
-            switch (nextMove)
-            {
-                case "MoveBack":
-                    agent.MoveBack();
-                    break;
-                case "MoveRight":
-                    agent.Move(new Coordinates(agent.coords.col + 1, agent.coords.row));
-                    break;
-                case "MoveLeft":
-                    agent.Move(new Coordinates(agent.coords.col - 1, agent.coords.row));
-                    break;
-                case "MoveUp":
-                    agent.Move(new Coordinates(agent.coords.col, agent.coords.row + 1));
-                    break;
-                case "MoveDown":
-                    agent.Move(new Coordinates(agent.coords.col, agent.coords.row - 1));
-                    break;
-                default:
-                    break;
-            }
-        }
+            string move = "";
 
-        else if (Input.GetKeyDown("return")) // Random Move
-        {
-            string randomMove = prologInterface.RandomMove();
-            Debug.Log(randomMove);
-            switch (randomMove)
+            if (Input.GetKeyDown("space") || autoMode) // Prolog Move
+            {
+                move = prologInterface.NextMove();
+                Debug.Log(move);
+            }
+            else if (Input.GetKeyDown("return")) // Random Move
+            {
+                move = prologInterface.RandomMove();
+                Debug.Log(move);
+            }
+
+            switch (move)
             {
                 case "MoveBack":
                     agent.MoveBack();

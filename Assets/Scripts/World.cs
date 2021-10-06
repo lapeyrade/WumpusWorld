@@ -70,7 +70,7 @@ public class World : MonoBehaviour
         {
             GenerateAgent();
             GenerateGrid();
-            prologInterface.InitialiseGameKB(gridMin, gridMax, nbGold, nbWumpus);
+            prologInterface.InitialiseGameKB(gridMin, gridMax, nbGold, nbWumpus, agent.personalities);
             GrenerateWall();
             GenerateGold();
             GenerateWumpus();
@@ -372,11 +372,8 @@ public class World : MonoBehaviour
 
         void KillWumpus(Coordinates coords)
         {
-            agent.nbWumpus--;
             agent.nbWumpusDead++;
-            prologInterface.RemoveFromKB("nb_wumpus(_)");
             prologInterface.RemoveFromKB("nb_wumpus_dead(_)");
-            prologInterface.AddToKB($"nb_wumpus({agent.nbWumpus})");
             prologInterface.AddToKB($"nb_wumpus_dead({agent.nbWumpusDead})");
 
             RemoveFromGrids(coords.col, coords.row, "wumpus", true, true);

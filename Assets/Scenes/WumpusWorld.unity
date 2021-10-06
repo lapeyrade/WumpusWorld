@@ -253,8 +253,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridManager: {fileID: 1979442548}
-  autoMode: 0
-  timerInterval: 0.01
+  autoMode: 1
+  timerInterval: 0.25
 --- !u!4 &1979442550
 Transform:
   m_ObjectHideFlags: 0
@@ -281,14 +281,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1d0afbb961de3c4bb9d7e1e4d8d8eda, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RandomSeed: 40
-  maxGridCol: 25
-  maxGridRow: 25
+  RandomSeed: 29
+  maxGridCol: 20
+  maxGridRow: 20
   startCol: 1
   startRow: 1
   tileSize: 1.05
-  nbPit: 20
-  nbWumpus: 20
+  nbPit: 10
+  nbWumpus: 10
   nbGold: 1
   nbAgent: 1
   gridManager: {fileID: 1979442548}
@@ -305,7 +305,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40687e890277c7440885797e0fca5150, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugFileLog: 1
+  debugFileLog: 0
 --- !u!114 &1979442553
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -326,3 +326,6 @@ MonoBehaviour:
   gridManager: {fileID: 1979442548}
   spriteAgent: {fileID: 2523759607134309415, guid: d864db25dd8e9b74694442c9074cfbd4, type: 3}
   spriteAgentWorld: {fileID: 2523759607134309415, guid: d864db25dd8e9b74694442c9074cfbd4, type: 3}
+  personalities:
+  - stochastic
+  - hunter

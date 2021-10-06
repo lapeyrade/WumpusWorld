@@ -25,6 +25,11 @@ public class Agent : MonoBehaviour
     public GameObject spriteAgent;
     public GameObject spriteAgentWorld;
 
+    [SerializeField]
+    public string[] personalities = new string[] { "determinist", "hunter"};
+
+    private string[] possiblePersonalities = new string[] { "determinist", "stochastic", "hunter", "pacifist"};
+
     void Awake()
     {
         world = gridManager.GetComponent<World>();
@@ -63,7 +68,7 @@ public class Agent : MonoBehaviour
         world.RemoveFromGrids(coords.col, coords.row, "gold", true, true);
         nbGold += 1;
     }
-    
+
     public void HitWall()
     {
         world.RemoveFromGrids(coords.col, coords.row, "agent", true, true);

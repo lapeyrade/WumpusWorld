@@ -10,10 +10,11 @@
 
 :- dynamic([cell/3, nb_wumpus/1, nb_wumpus_dead/1,
             nb_arrow/1, nb_arrow_used/1,
-            nb_gold/1, nb_gold_agent/1, grid_coord/4],
+            nb_gold/1, nb_gold_agent/1, grid_coord/4, personality/1],
             [incremental(true)]).
 
 :- discontiguous cell2/3.
+:- discontiguous move/2.
 
 % Intermediate Predicate
 cell2(Col, Row, Element):- cell(Col, Row, Element).
@@ -22,17 +23,27 @@ cell2(Col, Row, Element):- cell(Col, Row, Element).
 next_move(Move):-
     nb_gold(TotalGold), nb_gold_agent(AgentGold),
     TotalGold == AgentGold,
+    ( 
+        \+(personality(hunter))
+        ;
+        (
+            personality(hunter),
+            nb_wumpus(TotalWumpus),
+            nb_wumpus_dead(WumpusDead),
+            TotalWumpus == WumpusDead
+        )
+    ),
     Move = "MoveBack", !.
 
 next_move(Move):-
+    personality(stochastic),
     random_permutation([1, 2, 3, 4], ListDirection),
     ListDirection = [First, Second, Third, Fourth],
-    move(Move, First);
-    move(Move, Second);
-    move(Move, Third);
-    move(Move, Fourth).
+    member(X, ListDirection),
+    move(X, Move).
 
-move(Move, 1):-
+next_move(Move):-
+    personality(determinist),
     cell2(Col, Row, agent),
     RightCol is Col+1,
     \+(cell2(RightCol, Row, visited)),
@@ -40,7 +51,8 @@ move(Move, 1):-
     cell2(RightCol, Row, safe),
     Move = "MoveRight", !.
 
-move(Move, 2):-
+next_move(Move):-
+    personality(determinist),
     cell2(Col, Row, agent),
     LeftCol is Col-1,
     \+(cell2(LeftCol, Row, visited)),
@@ -48,7 +60,8 @@ move(Move, 2):-
     cell2(LeftCol, Row, safe),
     Move = "MoveLeft", !.
 
-move(Move, 3):-
+next_move(Move):-
+    personality(determinist),
     cell2(Col, Row, agent),
     UpRow is Row+1,
     \+(cell2(Col, UpRow, visited)),
@@ -56,7 +69,8 @@ move(Move, 3):-
     cell2(Col, UpRow, safe),
     Move = "MoveUp", !.
 
-move(Move, 4):-
+next_move(Move):-
+    personality(determinist),
     cell2(Col, Row, agent),
     DownRow is Row-1,
     \+(cell2(Col, DownRow, visited)),
@@ -64,58 +78,58 @@ move(Move, 4):-
     cell2(Col, DownRow, safe),
     Move = "MoveDown", !.
 
-% next_move(Move):-
-%     cell2(Col, Row, agent),
-%     RightCol is Col+1,
-%     \+(cell2(RightCol, Row, visited)),
-%     \+(cell2(RightCol, Row, wall)),
-%     cell2(RightCol, Row, safe),
-%     Move = "MoveRight", !.
-
-% next_move(Move):-
-%     cell2(Col, Row, agent),
-%     LeftCol is Col-1,
-%     \+(cell2(LeftCol, Row, visited)),
-%     \+(cell2(LeftCol, Row, wall)),
-%     cell2(LeftCol, Row, safe),
-%     Move = "MoveLeft", !.
-
-% next_move(Move):-
-%     cell2(Col, Row, agent),
-%     UpRow is Row+1,
-%     \+(cell2(Col, UpRow, visited)),
-%     \+(cell2(Col, UpRow, wall)),
-%     cell2(Col, UpRow, safe),
-%     Move = "MoveUp", !.
-
-% next_move(Move):-
-%     cell2(Col, Row, agent),
-%     DownRow is Row-1,
-%     \+(cell2(Col, DownRow, visited)),
-%     \+(cell2(Col, DownRow, wall)),
-%     cell2(Col, DownRow, safe),
-%     Move = "MoveDown", !.
-
 next_move(Move):-
     Move = "MoveBack", !.
+
+move(1, Move):-
+    cell2(Col, Row, agent),
+    RightCol is Col+1,
+    \+(cell2(RightCol, Row, visited)),
+    \+(cell2(RightCol, Row, wall)),
+    cell2(RightCol, Row, safe),
+    Move = "MoveRight".
+
+move(2, Move):-
+    cell2(Col, Row, agent),
+    LeftCol is Col-1,
+    \+(cell2(LeftCol, Row, visited)),
+    \+(cell2(LeftCol, Row, wall)),
+    cell2(LeftCol, Row, safe),
+    Move = "MoveLeft".
+
+move(3, Move):-
+    cell2(Col, Row, agent),
+    UpRow is Row+1,
+    \+(cell2(Col, UpRow, visited)),
+    \+(cell2(Col, UpRow, wall)),
+    cell2(Col, UpRow, safe),
+    Move = "MoveUp".
+
+move(4, Move):-
+    cell2(Col, Row, agent),
+    DownRow is Row-1,
+    \+(cell2(Col, DownRow, visited)),
+    \+(cell2(Col, DownRow, wall)),
+    cell2(Col, DownRow, safe),
+    Move = "MoveDown".
 
 % %%%% RANDOM MOVEMENT %%%%
 % % Move randomly to a side cell
 
 random_move(Move):-
     random_between(1, 4, Random),
-    move(Random, Move).
+    move_random(Random, Move).
 
-move(1, Move):-
+move_random(1, Move):-
     Move = "MoveRight".
 
-move(2, Move):-
+move_random(2, Move):-
     Move = "MoveLeft".
 
-move(3, Move):-
+move_random(3, Move):-
     Move = "MoveUp".
 
-move(4, Move):-
+move_random(4, Move):-
     Move = "MoveDown".
 
 %%%%%%%%%% NEXT ACTION %%%%%%%%%%
@@ -131,6 +145,7 @@ next_action(Action):-
     Action = "TakeGold".
 
 next_action(Action):-
+    \+(personality(pacifist)),
     cell2(Col, Row, agent),
     nb_arrow(Arrow), Arrow > 0,
     kill_wumpus(Col, Row, Action).

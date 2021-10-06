@@ -18,7 +18,7 @@ public class PrologInterface : MonoBehaviour
     private string prologFilePath = Path.Combine(Application.streamingAssetsPath, "KB.pl");
     private string debugPrologFilePath = Path.Combine(Application.streamingAssetsPath, "debugKB.pl");
 
-    public void InitialiseGameKB(Coordinates gridMin, Coordinates gridMax, int nbGold, int nbWumpus)
+    public void InitialiseGameKB(Coordinates gridMin, Coordinates gridMax, int nbGold, int nbWumpus, string[] personalities)
     {
         string[] param = { "-q", "-f", prologFilePath };  // suppressing informational & banner messages
 
@@ -31,6 +31,8 @@ public class PrologInterface : MonoBehaviour
         AddToKB($"nb_arrow_used({0})");
         AddToKB($"nb_wumpus({nbWumpus})");
         AddToKB($"nb_wumpus_dead({0})");
+        foreach (string personality in personalities)
+            AddToKB($"personality({personality})");
     }
 
     public void ResetKB()
@@ -43,6 +45,7 @@ public class PrologInterface : MonoBehaviour
         RemoveFromKB("nb_arrow(_)");
         RemoveFromKB("nb_gold(_)");
         RemoveFromKB("nb_gold_agent(_)");
+        RemoveFromKB("personality(_)");
     }
 
     public String NextMove()
@@ -145,6 +148,7 @@ public class PrologInterface : MonoBehaviour
         PrintGlobalVariables("nb_arrow_used", "Arrows shot: ", debugFileLog, consoleLog);
         PrintGlobalVariables("nb_gold", "Initial number of gold: ", debugFileLog, consoleLog);
         PrintGlobalVariables("nb_gold_agent", "Number of gold picked up: ", debugFileLog, consoleLog);
+        PrintGlobalVariables("personality", "Personality: ", debugFileLog, consoleLog);
 
         if (consoleLog)
             Debug.Log("------------------\n");
