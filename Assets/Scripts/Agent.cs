@@ -1,31 +1,79 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
+using System.Collections.Generic;
 
+/// <summary>
+/// Contains agent characteristics and actions
+/// </summary>
 
-public class Agent
+public class Agent : MonoBehaviour
 {
-    public Coordinates coords { get; set; }
-    public int nbGold { get; set; }
-    public int nbArrow { get; set; }
+    public Coordinates coords;
+    public int nbGold = 0;
+    public int nbArrow;
+    public int nbArrowUsed = 0;
 
-    public GameObject agentTile;
+    public int nbWumpus;
+    public int nbWumpusDead = 0;
 
-    // public Stack<Coordinates> prevCoords = new Stack<Coordinates>();
+    public Dictionary<string, GameObject>[,] map;
 
-    public Agent(Coordinates startCoords, int arrowsAtStart)
+    public GameObject gridManager;
+    private World world;
+
+    public Stack<Coordinates> pastMovements = new Stack<Coordinates>();
+
+    public GameObject spriteAgent;
+    public GameObject spriteAgentWorld;
+
+    [SerializeField]
+    public string[] personalities = new string[] { "determinist", "hunter"};
+
+    private string[] possiblePersonalities = new string[] { "determinist", "stochastic", "hunter", "pacifist"};
+
+    void Awake()
     {
-        coords = startCoords;
-        nbGold = 0;
-        nbArrow = arrowsAtStart;
+        world = gridManager.GetComponent<World>();
     }
 
-    public void MoveAgent(Coordinates newCoords)
+    public void InitAgent(Coordinates startCoords, int nbTotalWumpus, Coordinates gridMax)
     {
-        coords.col = newCoords.col;
-        coords.row = newCoords.row;
+        spriteAgent = (GameObject)Instantiate(Resources.Load("agent"));
+        spriteAgentWorld = (GameObject)Instantiate(Resources.Load("agent"));
+        coords = startCoords;
+        nbWumpus = nbTotalWumpus;
+        nbArrow = nbTotalWumpus;
+        map = new Dictionary<string, GameObject>[gridMax.col, gridMax.row];
+    }
+
+    public void MoveBack()
+    {
+        if (pastMovements.Count > 1)
+        {
+            pastMovements.Pop();
+            Move(pastMovements.Pop());
+        }
+    }
+
+    public void Move(Coordinates newCoords)
+    {
+        pastMovements.Push(newCoords);
+        world.RemoveFromGrids(coords.col, coords.row, "agent", true, true);
+        coords = newCoords;
+        world.AddToGrids(coords.col, coords.row, "agent", true, true);
+        world.AddToGrids(coords.col, coords.row, "visited", true, false);
+    }
+
+    public void TakeGold()
+    {
+        world.RemoveFromGrids(coords.col, coords.row, "gold", true, true);
+        nbGold += 1;
+    }
+
+    public void HitWall()
+    {
+        world.RemoveFromGrids(coords.col, coords.row, "agent", true, true);
+        pastMovements.Pop();
+        coords = pastMovements.Peek();
+        world.AddToGrids(coords.col, coords.row, "agent", true, true);
     }
 }
-

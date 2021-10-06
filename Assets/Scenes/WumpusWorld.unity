@@ -229,7 +229,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1979442550}
+  - component: {fileID: 1979442551}
   - component: {fileID: 1979442549}
+  - component: {fileID: 1979442552}
+  - component: {fileID: 1979442553}
   m_Layer: 0
   m_Name: GridManager
   m_TagString: Untagged
@@ -249,17 +252,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e146ff4090db454689f20a6b480911f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RandomSeed: 0
-  maxGridCol: 7
-  maxGridRow: 7
-  startCol: 1
-  startRow: 1
-  tileSize: 1.05
-  nbPit: 3
-  nbWumpus: 1
-  nbGold: 1
-  nbAgent: 1
-  debugEnabled: 1
+  gridManager: {fileID: 1979442548}
+  autoMode: 1
+  timerInterval: 0.25
 --- !u!4 &1979442550
 Transform:
   m_ObjectHideFlags: 0
@@ -274,3 +269,63 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1979442551
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1979442548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1d0afbb961de3c4bb9d7e1e4d8d8eda, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RandomSeed: 29
+  maxGridCol: 20
+  maxGridRow: 20
+  startCol: 1
+  startRow: 1
+  tileSize: 1.05
+  nbPit: 10
+  nbWumpus: 10
+  nbGold: 1
+  nbAgent: 1
+  gridManager: {fileID: 1979442548}
+  mainCamera: {fileID: 519420028}
+--- !u!114 &1979442552
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1979442548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40687e890277c7440885797e0fca5150, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  debugFileLog: 0
+--- !u!114 &1979442553
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1979442548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4eb3143f723224347867802eb1422be1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nbGold: 0
+  nbArrow: 0
+  nbArrowUsed: 0
+  nbWumpus: 0
+  nbWumpusDead: 0
+  gridManager: {fileID: 1979442548}
+  spriteAgent: {fileID: 2523759607134309415, guid: d864db25dd8e9b74694442c9074cfbd4, type: 3}
+  spriteAgentWorld: {fileID: 2523759607134309415, guid: d864db25dd8e9b74694442c9074cfbd4, type: 3}
+  personalities:
+  - stochastic
+  - hunter
