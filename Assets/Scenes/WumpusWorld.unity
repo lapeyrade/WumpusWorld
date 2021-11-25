@@ -253,7 +253,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridManager: {fileID: 1979442548}
-  autoMode: 1
+  autoMode: 0
   timerInterval: 0.25
 --- !u!4 &1979442550
 Transform:
@@ -305,7 +305,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40687e890277c7440885797e0fca5150, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugFileLog: 0
+  debugFileLog: 1
 --- !u!114 &1979442553
 MonoBehaviour:
   m_ObjectHideFlags: 0

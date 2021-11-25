@@ -20,6 +20,100 @@
 cell2(Col, Row, Element):- cell(Col, Row, Element).
 
 %%%%%%%%%% NEXT MOVE %%%%%%%%%%
+% personality(brave).
+% personality(fearful).
+% personality(fearful_wumpus).
+personality(fearful_pit).
+personality(combative).
+
+situation(safety):-
+    cell2(Col, Row, agent),
+    RightCol is Col+1, LeftCol is Col-1,
+    UpRow is Row+1, DownRow is Row-1,
+    cell2(RightCol, Row, safe),
+    cell2(LeftCol, Row, safe),
+    cell2(Col, UpRow, safe),
+    cell2(Col, DownRow, safe).
+
+situation(danger_wumpus):-
+    cell2(Col, Row, agent),
+    RightCol is Col+1, LeftCol is Col-1,
+    UpRow is Row+1, DownRow is Row-1,
+    (
+        cell2(RightCol, Row, wumpus);
+        cell2(LeftCol, Row, wumpus);
+        cell2(Col, UpRow, wumpus);
+        cell2(Col, DownRow, wumpus)
+    ).
+
+situation(danger_pit):-
+    cell2(Col, Row, agent),
+    RightCol is Col+1, LeftCol is Col-1,
+    UpRow is Row+1, DownRow is Row-1,
+    (
+        cell2(RightCol, Row, pit);
+        cell2(LeftCol, Row, pit);
+        cell2(Col, UpRow, pit);
+        cell2(Col, DownRow, pit)
+    ).
+
+situation(danger):-
+    situation(danger_wumpus);
+    situation(danger_pit).
+
+sensitive(fearful, danger).
+sensitive(fearful, safety).
+
+sensitive(fearful_wumpus, danger_wumpus).
+sensitive(fearful_pit, danger_pit).
+sensitive(combative, danger_wumpus).
+
+sensitive(combative, safety).
+sensitive(hunter, safety).
+
+feeling(danger_wumpus, bloodlust).
+feeling(danger_wumpus, fear_wumpus).
+feeling(danger_pit, fear_pit).
+feeling(safety, confidence).
+feeling(safety, boredom).
+
+% behaviour(combative, go_forward).
+% behaviour(combative, go_toward_wumpus).
+% behaviour(hunter, find_wumpus).
+% behaviour(fearful_wumpus, go_away_wumpus).
+% behaviour(fearful_pit, go_away_pit).
+
+behaviour(boredom, go_forward).
+behaviour(confidence, go_forward).
+behaviour(fear_wumpus, go_away_wumpus).
+behaviour(fear_pit, go_away_pit).
+behaviour(bloodlust, go_toward_wumpus).
+
+% personality([A, B]):-
+%     personality(A),
+%     personality(B),
+%     \+ is_list(B).
+
+next_action_v2(Situation, Personality, Feeling, Action):-
+    situation(Situation), personality(Personality),
+    sensitive(Personality, Situation),
+    feeling(Situation, Feeling),
+    behaviour(Feeling, Action).
+    
+% next_move(Move):-
+%     emotion(Emotion).
+
+% Combatif & danger = Positif
+
+% emotion(fear):-
+%     cell(X, Y, agent),
+%     cell(X, Y, stench); % + Case autour pas safe
+%     cell(X, Y, breeze). % + Case autour pas safe
+
+
+% next_move(Move):
+%     emotion(EmotionActuelle),
+
 next_move(Move):-
     nb_gold(TotalGold), nb_gold_agent(AgentGold),
     TotalGold == AgentGold,
@@ -38,7 +132,6 @@ next_move(Move):-
 next_move(Move):-
     personality(stochastic),
     random_permutation([1, 2, 3, 4], ListDirection),
-    ListDirection = [First, Second, Third, Fourth],
     member(X, ListDirection),
     move(X, Move).
 
@@ -214,10 +307,8 @@ cell2(Col, Row, safe):-
 
 cell2(Col, Row, safe):-
     in_limits(Col, Row),
-    RightCol is Col+1,
-    LeftCol is Col-1,
-    UpRow is Row+1,
-    DownRow is Row-1,
+    RightCol is Col+1, LeftCol is Col-1,
+    UpRow is Row+1, DownRow is Row-1,
     (
         is_false(cell2(Col, Row, wumpus));
         is_false(cell2(RightCol, Row, stench));
@@ -272,10 +363,8 @@ cell2(Col, Row, stenchyes) :-
 
 cell2(Col, Row, stenchno) :-
     in_limits(Col, Row),
-    RightCol is Col+1,
-    LeftCol is Col-1,
-    UpRow is Row+1,
-    DownRow is Row-1,
+    RightCol is Col+1, LeftCol is Col-1,
+    UpRow is Row+1, DownRow is Row-1,
 	cell2(RightCol, Row, wumpusno),
 	cell2(LeftCol, Row, wumpusno),
 	cell2(Col, UpRow, wumpusno),
@@ -323,10 +412,8 @@ cell2(Col, Row, wumpusno) :-
 cell2(Col, Row, wumpusyes) :-
     \+(cell2(Col, Row, wumpusdead)),
     in_limits(Col, Row),
-    RightCol is Col+1,
-    FarRightCol is Col+2,
-    UpRow is Row+1,
-    DownRow is Row-1,
+    RightCol is Col+1, FarRightCol is Col+2,
+    UpRow is Row+1, DownRow is Row-1,
 	cell2(FarRightCol, Row, wumpusno),
 	cell2(RightCol, UpRow, wumpusno),
 	cell2(RightCol, DownRow, wumpusno), 
@@ -336,10 +423,8 @@ cell2(Col, Row, wumpusyes) :-
 cell2(Col, Row, wumpusyes) :-
     \+(cell2(Col, Row, wumpusdead)),
     in_limits(Col, Row),
-    LeftCol is Col-1,
-    FarLeftCol is Col-2,
-    UpRow is Row+1,
-    DownRow is Row-1,
+    LeftCol is Col-1, FarLeftCol is Col-2,
+    UpRow is Row+1, DownRow is Row-1,
 	cell2(FarLeftCol, Row, wumpusno),
 	cell2(LeftCol, UpRow, wumpusno), 
 	cell2(LeftCol, DownRow, wumpusno), 
@@ -349,10 +434,8 @@ cell2(Col, Row, wumpusyes) :-
 cell2(Col, Row, wumpusyes) :-
     \+(cell2(Col, Row, wumpusdead)),
     in_limits(Col, Row),
-    UpRow is Row+1,
-    FarUpRow is Row+2,
-    RightCol is Col+1,
-    LeftCol is Col-1,
+    UpRow is Row+1, FarUpRow is Row+2,
+    RightCol is Col+1, LeftCol is Col-1,
 	cell2(Col, FarUpRow, wumpusno),
 	cell2(LeftCol, UpRow, wumpusno),
 	cell2(RightCol, UpRow, wumpusno),
@@ -362,10 +445,8 @@ cell2(Col, Row, wumpusyes) :-
 cell2(Col, Row, wumpusyes) :-
     \+(cell2(Col, Row, wumpusdead)),
     in_limits(Col, Row),
-    DownRow is Row-1,
-    FarDownRow is Row-2,
-    RightCol is Col+1,
-    LeftCol is Col-1,
+    DownRow is Row-1, FarDownRow is Row-2,
+    RightCol is Col+1, LeftCol is Col-1,
 	cell2(Col, FarDownRow, wumpusno),
 	cell2(LeftCol, DownRow, wumpusno),
 	cell2(RightCol, DownRow, wumpusno),
@@ -414,10 +495,8 @@ cell2(Col, Row, breezeyes) :-
 
 cell2(Col, Row, breezeno) :-
     in_limits(Col, Row),
-    RightCol is Col+1,
-    LeftCol is Col-1,
-    UpRow is Row+1,
-    DownRow is Row-1,
+    RightCol is Col+1, LeftCol is Col-1,
+    UpRow is Row+1, DownRow is Row-1,
 	cell2(RightCol, Row, pitno),
 	cell2(LeftCol, Row, pitno),
 	cell2(Col, UpRow, pitno),
@@ -464,10 +543,8 @@ cell2(Col, Row, pitno) :-
 % Right
 cell2(Col, Row, pityes) :-
     in_limits(Col, Row),
-    RightCol is Col+1,
-    FarRightCol is Col+2,
-    UpRow is Row+1,
-    DownRow is Row-1,
+    RightCol is Col+1, FarRightCol is Col+2,
+    UpRow is Row+1, DownRow is Row-1,
 	cell2(FarRightCol, Row, pitno),
 	cell2(RightCol, UpRow, pitno),
 	cell2(RightCol, DownRow, pitno), 
@@ -476,10 +553,8 @@ cell2(Col, Row, pityes) :-
 % Left
 cell2(Col, Row, pityes) :-
     in_limits(Col, Row),
-    LeftCol is Col-1,
-    FarLeftCol is Col-2,
-    UpRow is Row+1,
-    DownRow is Row-1,
+    LeftCol is Col-1, FarLeftCol is Col-2,
+    UpRow is Row+1, DownRow is Row-1,
 	cell2(FarLeftCol, Row, pitno),
 	cell2(LeftCol, UpRow, pitno), 
 	cell2(LeftCol, DownRow, pitno), 
@@ -488,10 +563,8 @@ cell2(Col, Row, pityes) :-
 % Up
 cell2(Col, Row, pityes) :-
     in_limits(Col, Row),
-    UpRow is Row+1,
-    FarUpRow is Row+2,
-    RightCol is Col+1,
-    LeftCol is Col-1,
+    UpRow is Row+1, FarUpRow is Row+2,
+    RightCol is Col+1, LeftCol is Col-1,
 	cell2(Col, FarUpRow, pitno),
 	cell2(LeftCol, UpRow, pitno),
 	cell2(RightCol, UpRow, pitno),
@@ -500,10 +573,8 @@ cell2(Col, Row, pityes) :-
 % Down
 cell2(Col, Row, pityes) :-
     in_limits(Col, Row),
-    DownRow is Row-1,
-    FarDownRow is Row-2,
-    RightCol is Col+1,
-    LeftCol is Col-1,
+    DownRow is Row-1, FarDownRow is Row-2,
+    RightCol is Col+1, LeftCol is Col-1,
 	cell2(Col, FarDownRow, pitno),
 	cell2(LeftCol, DownRow, pitno),
 	cell2(RightCol, DownRow, pitno),
