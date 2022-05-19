@@ -26,9 +26,7 @@ public class Agent : MonoBehaviour
     public GameObject spriteAgentWorld;
 
     [SerializeField]
-    public string[] personalities = new string[] { "determinist", "hunter"};
-
-    private string[] possiblePersonalities = new string[] { "determinist", "stochastic", "hunter", "pacifist"};
+    public string[] personalities = new string[] { "determinist" };
 
     void Awake()
     {

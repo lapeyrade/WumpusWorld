@@ -12,49 +12,42 @@ using System.IO;
 public class PrologInterface : MonoBehaviour
 {
     [SerializeField]
-    private bool debugFileLog = true;
+    private bool debugFileLog = true;    /* Clean close of the Prolog Engine */
     private bool consoleLog = false;
 
-    private string prologFilePath = Path.Combine(Application.streamingAssetsPath, "KB.pl");
-    private string debugPrologFilePath = Path.Combine(Application.streamingAssetsPath, "debugKB.pl");
+    private string prologFilePath = Path.Combine(Application.streamingAssetsPath, "kb.pl");
+    private string debugPrologFilePath = Path.Combine(Application.streamingAssetsPath, "debugkb.pl");
+
+    public void OnApplicationQuit()
+    {
+        if (PlEngine.IsInitialized)
+            PlEngine.PlCleanup();
+    }
 
     public void InitialiseGameKB(Coordinates gridMin, Coordinates gridMax, int nbGold, int nbWumpus, string[] personalities)
     {
         string[] param = { "-q", "-f", prologFilePath };  // suppressing informational & banner messages
 
         PlEngine.Initialize(param);
-        ResetKB();
-        AddToKB($"grid_coord({gridMin.col}, {gridMin.row}, {gridMax.col}, {gridMax.row})");
-        AddToKB($"nb_gold({nbGold})");
-        AddToKB($"nb_gold_agent({0})");
-        AddToKB($"nb_arrow({nbWumpus})");
-        AddToKB($"nb_arrow_used({0})");
-        AddToKB($"nb_wumpus({nbWumpus})");
-        AddToKB($"nb_wumpus_dead({0})");
-        foreach (string personality in personalities)
-            AddToKB($"personality({personality})");
-    }
 
-    public void ResetKB()
-    {
-        RemoveFromKB("cell(_, _, _)");
-        RemoveFromKB("grid_coord(_, _, _, _)");
-        RemoveFromKB("nb_wumpus(_)");
-        RemoveFromKB("nb_wumpus_dead(_)");
-        RemoveFromKB("nb_arrow_used(_)");
-        RemoveFromKB("nb_arrow(_)");
-        RemoveFromKB("nb_gold(_)");
-        RemoveFromKB("nb_gold_agent(_)");
-        RemoveFromKB("personality(_)");
+        AddToKB($"grid_coord({gridMin.col}, {gridMin.row}, {gridMax.col}, {gridMax.row})", true);
+        AddToKB($"nb_gold({nbGold})", true);
+        AddToKB($"nb_gold_agent({0})", true);
+        AddToKB($"nb_arrow({nbWumpus})", true);
+        AddToKB($"nb_arrow_used({0})", true);
+        AddToKB($"nb_wumpus({nbWumpus})", true);
+        AddToKB($"nb_wumpus_dead({0})", true);
+        foreach (string personality in personalities)
+            AddToKB($"{personality}(agent)", false);
     }
 
     public String NextMove()
     {
-        using (PlQuery queryNextMove = new PlQuery("next_move", new PlTermV(new PlTerm[] { new PlTerm("Move") })))
+        using (PlQuery queryNextMove = new PlQuery("move", new PlTermV(new PlTerm[] { new PlTerm("agent"), new PlTerm("Move") })))
         {
             foreach (PlTermV solution in queryNextMove.Solutions)
             {
-                return (string)solution[0];
+                return (string)solution[1];
             }
         }
         return "Default";
@@ -62,11 +55,11 @@ public class PrologInterface : MonoBehaviour
 
     public string RandomMove()
     {
-        using (PlQuery queryRandomMove = new PlQuery("random_move", new PlTermV(new PlTerm[] { new PlTerm("Move") })))
+        using (PlQuery queryRandomMove = new PlQuery("random_move", new PlTermV(new PlTerm[] { new PlTerm("agent"), new PlTerm("Move") })))
         {
             foreach (PlTermV solution in queryRandomMove.Solutions)
             {
-                return (string)solution[0];
+                return (string)solution[1];
             }
         }
         return "Default";
@@ -74,11 +67,11 @@ public class PrologInterface : MonoBehaviour
 
     public String NextAction()
     {
-        using (PlQuery queryNextAction = new PlQuery("next_action", new PlTermV(new PlTerm[] { new PlTerm("Action") })))
+        using (PlQuery queryNextAction = new PlQuery("action", new PlTermV(new PlTerm[] { new PlTerm("agent"), new PlTerm("Action") })))
         {
             foreach (PlTermV solution in queryNextAction.Solutions)
             {
-                return (string)solution[0];
+                return (string)solution[1];
             }
         }
         return "Default";
@@ -107,10 +100,15 @@ public class PrologInterface : MonoBehaviour
 
 
     /***************** KB I/O *****************/
-    public void AddToKB(string predicate)
+    public void AddToKB(string predicate, Boolean verifyKB)
     {
         // If fact not already in KB, add it
-        if (PlQuery.PlCall($"{predicate}") == false)
+        if (verifyKB)
+        {
+            if (PlQuery.PlCall($"{predicate}") == false)
+                PlQuery.PlCall($"assertz({predicate})");
+        }
+        else
             PlQuery.PlCall($"assertz({predicate})");
     }
 
@@ -123,15 +121,14 @@ public class PrologInterface : MonoBehaviour
     {
         // If fact not already in KB, add it
         if (PlQuery.PlCall($"cell({coords.col}, {coords.row}, {cellContent})") == false)
-        {
             PlQuery.PlCall($"assertz(cell({coords.col}, {coords.row}, {cellContent}))");
-        }
     }
 
     public void RemoveCellContentKB(Coordinates coords, string cellContent)
     {
         PlQuery.PlCall($"retractall(cell({coords.col}, {coords.row}, {cellContent}))");
     }
+
 
     /***************** LOGS *****************/
     public void PrintKB(Agent agent)
@@ -190,7 +187,30 @@ public class PrologInterface : MonoBehaviour
 
         void PrintGlobalVariables(string variable, string message, Boolean debugFile, Boolean consoleLog)
         {
-            if (variable != "grid_coord")
+            if (variable == "grid_coord")
+            {
+                using (PlQuery queryVariable = new PlQuery(variable, new PlTermV(new PlTerm[] { new PlTerm("MinCol"), new PlTerm("MinRow"), new PlTerm("MaxCol"), new PlTerm("MaxRow") })))
+                {
+                    foreach (PlTermV solution in queryVariable.Solutions)
+                    {
+                        if (debugFile)
+                            WriteInDebugKB(variable + "(" + solution[0] + "," + solution[1] + "," + solution[2] + "," + solution[3] + ").");
+                    }
+                }
+            }
+            else if (variable == "personality")
+            {
+
+                using (PlQuery queryVariable = new PlQuery(variable, new PlTermV(new PlTerm[] { new PlTerm("Element"), new PlTerm("Personality") })))
+                {
+                    foreach (PlTermV solution in queryVariable.Solutions)
+                    {
+                        if (debugFile)
+                            WriteInDebugKB(variable + "(" + solution[0] + "," + solution[1] + ").");
+                    }
+                }
+            }
+            else
             {
                 using (PlQuery queryVariable = new PlQuery(variable, new PlTermV(new PlTerm("Element"))))
                 {
@@ -201,17 +221,6 @@ public class PrologInterface : MonoBehaviour
 
                         if (debugFile)
                             WriteInDebugKB(variable + "(" + solution[0] + ").");
-                    }
-                }
-            }
-            else if (variable == "grid_coord")
-            {
-                using (PlQuery queryVariable = new PlQuery(variable, new PlTermV(new PlTerm[] { new PlTerm("MinCol"), new PlTerm("MinRow"), new PlTerm("MaxCol"), new PlTerm("MaxRow") })))
-                {
-                    foreach (PlTermV solution in queryVariable.Solutions)
-                    {
-                        if (debugFile)
-                            WriteInDebugKB(variable + "(" + solution[0] + "," + solution[1] + "," + solution[2] + "," + solution[3] + ").");
                     }
                 }
             }

@@ -323,8 +323,8 @@ public class World : MonoBehaviour
         agent.nbArrowUsed++;
         prologInterface.RemoveFromKB("nb_arrow(_)");
         prologInterface.RemoveFromKB("nb_arrow_used(_)");
-        prologInterface.AddToKB($"nb_arrow({agent.nbArrow})");
-        prologInterface.AddToKB($"nb_arrow_used({agent.nbArrowUsed})");
+        prologInterface.AddToKB($"nb_arrow({agent.nbArrow})", true);
+        prologInterface.AddToKB($"nb_arrow_used({agent.nbArrowUsed})", true);
 
         switch (direction)
         {
@@ -374,11 +374,11 @@ public class World : MonoBehaviour
         {
             agent.nbWumpusDead++;
             prologInterface.RemoveFromKB("nb_wumpus_dead(_)");
-            prologInterface.AddToKB($"nb_wumpus_dead({agent.nbWumpusDead})");
+            prologInterface.AddToKB($"nb_wumpus_dead({agent.nbWumpusDead})", true);
 
             RemoveFromGrids(coords.col, coords.row, "wumpus", true, true);
             AddToGrids(coords.col, coords.row, "wumpusdead", true, true);
-            prologInterface.AddToKB($"cell({coords.col}, {coords.row}, wumpusdead)");
+            prologInterface.AddToKB($"cell({coords.col}, {coords.row}, wumpusdead)", true);
             gameController.makeInferences();
         }
     }

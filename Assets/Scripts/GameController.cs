@@ -82,19 +82,19 @@ public class GameController : MonoBehaviour
 
             switch (move)
             {
-                case "MoveBack":
+                case "move_back":
                     agent.MoveBack();
                     break;
-                case "MoveRight":
+                case "move_right":
                     agent.Move(new Coordinates(agent.coords.col + 1, agent.coords.row));
                     break;
-                case "MoveLeft":
+                case "move_left":
                     agent.Move(new Coordinates(agent.coords.col - 1, agent.coords.row));
                     break;
-                case "MoveUp":
+                case "move_up":
                     agent.Move(new Coordinates(agent.coords.col, agent.coords.row + 1));
                     break;
-                case "MoveDown":
+                case "move_down":
                     agent.Move(new Coordinates(agent.coords.col, agent.coords.row - 1));
                     break;
                 default:
@@ -166,32 +166,32 @@ public class GameController : MonoBehaviour
             string action = prologInterface.NextAction();
             switch (action)
             {
-                case "HitWall":
+                case "hit_wall":
                     prologInterface.RemoveCellContentKB(agent.coords, "safe");
                     agent.HitWall();
                     prologInterface.AddCellContentKB(agent.coords, "agent");
                     break;
-                case "TakeGold":
+                case "take_gold":
                     agent.TakeGold();
                     prologInterface.RemoveFromKB("nb_gold_agent(_)");
-                    prologInterface.AddToKB($"nb_gold_agent({agent.nbGold})");
+                    prologInterface.AddToKB ($"nb_gold_agent({agent.nbGold})", true);
                     break;
-                case "ShotRight":
+                case "shot_right":
                     world.ShotArrow("right");
                     break;
-                case "ShotLeft":
+                case "shot_left":
                     world.ShotArrow("left");
                     break;
-                case "ShotUp":
+                case "shot_up":
                     world.ShotArrow("up");
                     break;
-                case "ShotDown":
+                case "shot_down":
                     world.ShotArrow("down");
                     break;
-                case "MoveNextCell":
-                    ActionLeftToDo = false;
-                    break;
+                // case "move_next_cell":
+                    // break;
                 default:
+                    ActionLeftToDo = false;
                     break;
             }
         }

@@ -216,6 +216,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -253,7 +254,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridManager: {fileID: 1979442548}
-  autoMode: 1
+  autoMode: 0
   timerInterval: 0.25
 --- !u!4 &1979442550
 Transform:
@@ -265,6 +266,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
@@ -328,4 +330,4 @@ MonoBehaviour:
   spriteAgentWorld: {fileID: 2523759607134309415, guid: d864db25dd8e9b74694442c9074cfbd4, type: 3}
   personalities:
   - stochastic
-  - hunter
+  - determinist
