@@ -3,8 +3,7 @@
 :- table enemy/2.
 
 %%%%% ONTOLOGY ALIGNMENT %%%%%
-% ALIGNMENTS: ALLY, ENEMY or UNALIGNED %
-
+% ALIGNMENTS: ALLY, ENEMY, UNALIGNED
 
 ally(human, dog).
 ally(dog, human).
@@ -33,6 +32,7 @@ alignment_(X, Y):- ally(X, Y).
 alignment_(X, Y):- enemy(X, Y).
 alignment_(X, Y):- unaligned(X, Y).
 
+% QUERY ALIGNMENT
 alignment(X, Y, Alignment):-
     clause(alignment_(X, Y), Align),
     call(Align),

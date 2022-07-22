@@ -284,7 +284,7 @@ public class World : MonoBehaviour
         }
     }
 
-    public void ShotArrow(string direction)
+    public void ShootArrow(string direction)
     {
         Debug.Log("Shooting " + direction);
         human.nbArrow--;

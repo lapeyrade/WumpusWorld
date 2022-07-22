@@ -187,17 +187,17 @@ public class GameController : MonoBehaviour
                     prologInterface.RemoveFromKB("nb_gold_agent(_)");
                     prologInterface.AddToKB($"nb_gold_agent({human.nbGold})", true);
                     break;
-                case "shot_right":
-                    world.ShotArrow("right");
+                case "shoot_right":
+                    world.ShootArrow("right");
                     break;
-                case "shot_left":
-                    world.ShotArrow("left");
+                case "shoot_left":
+                    world.ShootArrow("left");
                     break;
-                case "shot_up":
-                    world.ShotArrow("up");
+                case "shoot_up":
+                    world.ShootArrow("up");
                     break;
-                case "shot_down":
-                    world.ShotArrow("down");
+                case "shoot_down":
+                    world.ShootArrow("down");
                     break;
                 // case "move_next_cell":
                 // break;

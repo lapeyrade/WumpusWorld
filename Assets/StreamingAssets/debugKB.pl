@@ -4,15 +4,15 @@
 
 grid_coord(0,0,12,12).
 nb_wumpus(8).
-nb_wumpus_dead(1).
-nb_arrow(7).
-nb_arrow_used(1).
+nb_wumpus_dead(3).
+nb_arrow(5).
+nb_arrow_used(3).
 nb_gold(1).
 nb_gold_agent(0).
 personality(human,determinist).
 personality(human,hunter).
 % ------------------
-% [5, 3], [4, 3], [4, 2], [5, 2], [6, 2], [7, 2], [8, 2], [8, 1], [7, 1], [6, 1], [5, 1], [4, 1], [3, 1], [2, 1], [1, 1], 
+% [9, 4], [8, 4], [7, 4], [7, 3], [6, 3], [5, 3], [4, 3], [4, 2], [5, 2], [6, 2], [7, 2], [8, 2], [8, 1], [7, 1], [6, 1], [5, 1], [4, 1], [3, 1], [2, 1], [1, 1], 
 cell(1,1,cell).
 cell(1,1,start).
 cell(1,1,visited).
@@ -65,6 +65,22 @@ cell(4,3,breezeyes).
 cell(4,3,visited).
 cell(5,3,cell).
 cell(5,3,stenchyes).
-cell(5,3,human).
 cell(5,3,visited).
 cell(5,4,wumpusdead).
+cell(6,3,cell).
+cell(6,3,visited).
+cell(7,3,cell).
+cell(7,3,visited).
+cell(8,3,cell).
+cell(8,3,stenchyes).
+cell(8,3,visited).
+cell(7,4,cell).
+cell(7,4,visited).
+cell(8,4,cell).
+cell(8,4,visited).
+cell(9,4,cell).
+cell(9,4,stenchyes).
+cell(9,4,human).
+cell(9,4,visited).
+cell(9,3,wumpusdead).
+cell(9,2,wumpusdead).
