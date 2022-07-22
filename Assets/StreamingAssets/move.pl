@@ -1,5 +1,8 @@
 :- module(move, [move/2, random_move/2]).
 
+:- multifile [cell:cell2/3, wellfs:is_undefined/1,
+            objective:objective/2, alignment:alignment/3].
+
 :- use_module(library(random)).
 
 %%%%%%%%%% MOVE ONTOLOGY %%%%%%%%%%
@@ -18,32 +21,33 @@ all_wumpus_killed :-
 
 % cell content is undefined
 unvisited_safe_cell(Col, Row):-
-    \+ cell2(Col, Row, visited),
-    \+ cell2(Col, Row, wall),
-    cell2(Col, Row, safe).
+    \+ cell:cell2(Col, Row, visited),
+    \+ cell:cell2(Col, Row, wall),
+    cell:cell2(Col, Row, safe).
 
 % cell content is undefined
 undefined_cell(Col, Row):-
-    \+ cell2(Col, Row, visited),
-    \+ cell2(Col, Row, wall),
-    is_undefined(cell2(Col, Row, wumpus)),
-    is_undefined(cell2(Col, Row, pit)).
+    \+ cell:cell2(Col, Row, visited),
+    \+ cell:cell2(Col, Row, wall),
+    wellfs:is_undefined(cell2(Col, Row, wumpus)),
+    wellfs:is_undefined(cell2(Col, Row, pit)).
 
 % X move to the last cell visited
 move_back(X):-
-    \+ objective(X, explore_all),
+    \+ objective:objective(X, explore_all),
     (
         (
-            \+ objective(X, gold), nb_gold_agent(1)
+            \+ objective:objective(X, gold),
+            nb_gold_agent(1)
         ),
         (
             all_golds_found
         )
     ),
     ( 
-        \+ objective(X, kill)
+        \+ objective:objective(X, kill)
         ;
-        ( objective(X, kill), all_wumpus_killed )
+        ( objective:objective(X, kill), all_wumpus_killed )
     ), !.
 
 % X move to the last cell visited
@@ -55,25 +59,25 @@ move_back(X):-
 
 % X move to the right cell
 move_right(X):-
-    cell2(Col, Row, X),
+    cell:cell2(Col, Row, X),
     RightCol is Col+1,
     unvisited_safe_cell(RightCol, Row).
 
 % X move to the left cell
 move_left(X):-
-    cell2(Col, Row, X),
+    cell:cell2(Col, Row, X),
     LeftCol is Col-1,
     unvisited_safe_cell(LeftCol, Row).
 
 % X move to the top cell
 move_up(X):-
-    cell2(Col, Row, X),
+    cell:cell2(Col, Row, X),
     UpRow is Row+1,
     unvisited_safe_cell(Col, UpRow).
 
 % X move to the bottom cell
 move_down(X):-
-    cell2(Col, Row, X),
+    cell:cell2(Col, Row, X),
     DownRow is Row-1,
     unvisited_safe_cell(Col, DownRow).
 
@@ -91,12 +95,12 @@ move_(X):- move_down(X).
 
 % QUERY Move
 move(X, Move):-
-    objective(X, determinist_exploration),
+    objective:objective(X, determinist_exploration),
     clause(move_(X), M),
     call(M),
     M =.. [Move, _].
 
 % QUERY Random Move
 move(X, Move):-
-    objective(X, stochastic_exploration),
+    objective:objective(X, stochastic_exploration),
     random_move(X, Move).

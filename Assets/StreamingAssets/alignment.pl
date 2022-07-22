@@ -1,5 +1,7 @@
 :- module(alignment, [alignment/3]).
 
+:- multifile [type:type/2].
+
 :- table enemy/2.
 
 %%%%% ONTOLOGY ALIGNMENT %%%%%
@@ -25,7 +27,7 @@ enemy(X, Y):-
 
 % if not enemy nor ally then unaligned
 unaligned(X, Y):-
-    type(_, X), type(_, Y),
+    type:type(_, X), type:type(_, Y),
     X \= Y, \+ ally(X, Y), \+ enemy(X, Y).
 
 alignment_(X, Y):- ally(X, Y).

@@ -1,5 +1,8 @@
 :- module(cell, [cell2/3, cell/3]).
 
+:- multifile [wellfs:is_false/1, wellfs:is_true/1,
+            wellfs:is_undefined/1, alignment:alignment/3].
+
 :- table cell2/3 as incremental.
 
 :- dynamic([cell/3], [incremental(true)]).
@@ -16,26 +19,26 @@ cell2(Col, Row, agent) :- cell2(Col, Row, human).
 cell2(Col, Row, wumpusno):-
     in_limits(Col, Row, agent),
     cell2(Col, Row, visited),
-    is_false(cell2(Col, Row, wumpusyes)),
-    is_false(cell2(Col, Row, wumpusdead)).
+    wellfs:is_false(cell2(Col, Row, wumpusyes)),
+    wellfs:is_false(cell2(Col, Row, wumpusdead)).
 
 % cell has pitno if visited and no pit
 cell2(Col, Row, pitno):-
     in_limits(Col, Row, agent),
     cell2(Col, Row, visited),
-    is_false(cell2(Col, Row, pityes)).
+    wellfs:is_false(cell2(Col, Row, pityes)).
 
 % cell has breezeno if visited and no breeze
 cell2(Col, Row, breezeno):-
     in_limits(Col, Row, agent),
     cell2(Col, Row, visited),
-    is_false(cell2(Col, Row, breezeyes)).
+    wellfs:is_false(cell2(Col, Row, breezeyes)).
 
 % cell has stenchno if visited and no stench
 cell2(Col, Row, stenchno):-
     in_limits(Col, Row, agent),
     cell2(Col, Row, visited),
-    is_false(cell2(Col, Row, stenchyes)).
+    wellfs:is_false(cell2(Col, Row, stenchyes)).
 
 % cell is safe because it contains a wall
 cell2(Col, Row, safe):-
@@ -52,32 +55,32 @@ cell2(Col, Row, safe):-
     LeftCol is Col-1,
     UpRow is Row+1,
     DownRow is Row-1,
-    alignment(human, Y, enemy),
-    is_false(cell2(Col, Row, Y)),
+    alignment:alignment(human, Y, enemy),
+    wellfs:is_false(cell2(Col, Row, Y)),
     (
-        is_false(cell2(RightCol, Row, stench));
-        is_false(cell2(LeftCol, Row, stench));
-        is_false(cell2(Col, UpRow, stench));
-        is_false(cell2(Col, DownRow, stench))
+        wellfs:is_false(cell2(RightCol, Row, stench));
+        wellfs:is_false(cell2(LeftCol, Row, stench));
+        wellfs:is_false(cell2(Col, UpRow, stench));
+        wellfs:is_false(cell2(Col, DownRow, stench))
     ),
     (
-        is_false(cell2(RightCol, Row, breeze));
-        is_false(cell2(LeftCol, Row, breeze));
-        is_false(cell2(Col, UpRow, breeze));
-        is_false(cell2(Col, DownRow, breeze))
+        wellfs:is_false(cell2(RightCol, Row, breeze));
+        wellfs:is_false(cell2(LeftCol, Row, breeze));
+        wellfs:is_false(cell2(Col, UpRow, breeze));
+        wellfs:is_false(cell2(Col, DownRow, breeze))
     ).
 
 % cell content is undefined, agent doesnt know if there is an enemy 
 cell2(Col, Row, undefined):-
     in_limits(Col, Row, agent),
-    is_undefined(cell2(Col, Row, wumpus)),
-    is_undefined(cell2(Col, Row, pit)).
+    wellfs:is_undefined(cell2(Col, Row, wumpus)),
+    wellfs:is_undefined(cell2(Col, Row, pit)).
 
 % cell is dangerous, agent knows there is an enemy 
 cell2(Col, Row, danger):-
     in_limits(Col, Row, agent),
-    is_true(cell2(Col, Row, pit));
-    is_true(cell2(Col, Row, wumpus)).
+    wellfs:is_true(cell2(Col, Row, pit));
+    wellfs:is_true(cell2(Col, Row, wumpus)).
 
 
 %%% Define Stench & Wumpus attributes %%%

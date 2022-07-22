@@ -17,11 +17,9 @@ is_type(X, Y):-
     is_type(Z, Y).
 
 being(X):-
-    % cell2(_, _, X),
     is_type(X, being).
 
 object(X):-
-    % cell2(_, _, X),
     is_type(X, object).
 
 type_(X) :- being(X).

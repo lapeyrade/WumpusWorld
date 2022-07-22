@@ -346,4 +346,4 @@ MonoBehaviour:
   nbWumpus: 0
   nbWumpusDead: 0
   gridManager: {fileID: 1979442548}
-  personality: 0000000002000000
+  personality: 00000000
