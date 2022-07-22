@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 using SbsSW.SwiPlCs;
+using SbsSW.SwiPlCs.Exceptions;
+using SbsSW.SwiPlCs.Callback;
 using System.Reflection;
 using System;
 using System.IO;
@@ -11,24 +14,56 @@ using System.IO;
 /// </summary>
 public class PrologInterface : MonoBehaviour
 {
-    [SerializeField]
-    private bool debugFileLog = true;    /* Clean close of the Prolog Engine */
+    [SerializeField] private bool debugFileLog = true;
     private bool consoleLog = false;
+    [SerializeField] private string query = "cell(X, Y, Z)";
+    [SerializeField] private string[] args = new string[] { "X", "Y", "Z" };
+    [SerializeField] private bool askQuery = false;
 
     private string prologFilePath = Path.Combine(Application.streamingAssetsPath, "kb.pl");
     private string debugPrologFilePath = Path.Combine(Application.streamingAssetsPath, "debugkb.pl");
 
+    /* Clean close the Prolog Engine */
     public void OnApplicationQuit()
     {
-        if (PlEngine.IsInitialized)
-            PlEngine.PlCleanup();
+        PlEngine.PlCleanup();
     }
 
-    public void InitialiseGameKB(Coordinates gridMin, Coordinates gridMax, int nbGold, int nbWumpus, string[] personalities)
+    void Update()
+    {
+        /* Prolog query inside the Unity Inspector */
+        if (askQuery)
+        {
+            try
+            {
+                using (PlQuery q = new PlQuery(query))
+                {
+                    foreach (PlQueryVariables v in q.SolutionVariables)
+                    {
+                        foreach (string s in args)
+                            Debug.Log(s + " = " + v[s].ToString());
+                    }
+                }
+            }
+            catch (PlException ex)
+            {
+                Debug.Log(ex.ToString());
+            }
+            finally
+            {
+                PlEngine.PlCleanup();
+            }
+
+            askQuery = false;
+        }
+    }
+
+    public void InitialiseGameKB(Coordinates gridMin, Coordinates gridMax, int nbGold, int nbWumpus, Human agent)
     {
         string[] param = { "-q", "-f", prologFilePath };  // suppressing informational & banner messages
 
-        PlEngine.Initialize(param);
+        if (!PlEngine.IsInitialized)
+            PlEngine.Initialize(param);
 
         AddToKB($"grid_coord({gridMin.col}, {gridMin.row}, {gridMax.col}, {gridMax.row})", true);
         AddToKB($"nb_gold({nbGold})", true);
@@ -37,13 +72,14 @@ public class PrologInterface : MonoBehaviour
         AddToKB($"nb_arrow_used({0})", true);
         AddToKB($"nb_wumpus({nbWumpus})", true);
         AddToKB($"nb_wumpus_dead({0})", true);
-        foreach (string personality in personalities)
-            AddToKB($"{personality}(agent)", false);
+
+        foreach (string personality in agent.getAgentPersonalities())
+            AddToKB($"{personality}({agent.agentName})", false);
     }
 
-    public String NextMove()
+    public String NextMove(Human agent)
     {
-        using (PlQuery queryNextMove = new PlQuery("move", new PlTermV(new PlTerm[] { new PlTerm("agent"), new PlTerm("Move") })))
+        using (PlQuery queryNextMove = new PlQuery("move", new PlTermV(new PlTerm[] { new PlTerm(agent.agentName), new PlTerm("Move") })))
         {
             foreach (PlTermV solution in queryNextMove.Solutions)
             {
@@ -53,9 +89,9 @@ public class PrologInterface : MonoBehaviour
         return "Default";
     }
 
-    public string RandomMove()
+    public string RandomMove(Human agent)
     {
-        using (PlQuery queryRandomMove = new PlQuery("random_move", new PlTermV(new PlTerm[] { new PlTerm("agent"), new PlTerm("Move") })))
+        using (PlQuery queryRandomMove = new PlQuery("random_move", new PlTermV(new PlTerm[] { new PlTerm(agent.agentName), new PlTerm("Move") })))
         {
             foreach (PlTermV solution in queryRandomMove.Solutions)
             {
@@ -65,9 +101,9 @@ public class PrologInterface : MonoBehaviour
         return "Default";
     }
 
-    public String NextAction()
+    public String NextAction(Human agent)
     {
-        using (PlQuery queryNextAction = new PlQuery("action", new PlTermV(new PlTerm[] { new PlTerm("agent"), new PlTerm("Action") })))
+        using (PlQuery queryNextAction = new PlQuery("action", new PlTermV(new PlTerm[] { new PlTerm(agent.agentName), new PlTerm("Action") })))
         {
             foreach (PlTermV solution in queryNextAction.Solutions)
             {
@@ -90,7 +126,6 @@ public class PrologInterface : MonoBehaviour
         {
             foreach (PlTermV solution in checkElement.Solutions)
             {
-                // if (CheckCellElement(new Coordinates((int)solution[0], (int)solution[1]), element))
                 listCoordsElement.Add(new Coordinates((int)solution[0], (int)solution[1]));
             }
         }
@@ -131,7 +166,7 @@ public class PrologInterface : MonoBehaviour
 
 
     /***************** LOGS *****************/
-    public void PrintKB(Agent agent)
+    public void PrintKB(Human agent)
     {
         if (debugFileLog)
             ResetDebugKB();

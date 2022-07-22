@@ -9,8 +9,11 @@
 % Intermediate Predicate
 cell2(Col, Row, Element):- cell(Col, Row, Element).
 
+cell2(Col, Row, agent) :-
+    cell2(Col, Row, human).
+
 cell2(Col, Row, wumpusno):-
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     cell2(Col, Row, visited),
     (
         is_false(cell2(Col, Row, wumpusyes)),
@@ -18,17 +21,17 @@ cell2(Col, Row, wumpusno):-
     ).
 
 cell2(Col, Row, pitno):-
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     cell2(Col, Row, visited),
     is_false(cell2(Col, Row, pityes)).
 
 cell2(Col, Row, breezeno):-
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     cell2(Col, Row, visited),
     is_false(cell2(Col, Row, breezeyes)).
 
 cell2(Col, Row, stenchno):-
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     cell2(Col, Row, visited),
     is_false(cell2(Col, Row, stenchyes)).
 
@@ -39,30 +42,40 @@ cell2(Col, Row, safe):-
     cell2(Col, Row, wumpusdead).
 
 cell2(Col, Row, safe):-
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     RightCol is Col+1,
     LeftCol is Col-1,
     UpRow is Row+1,
     DownRow is Row-1,
+    alignment(human, Y, enemy),
+    is_false(cell2(Col, Row, Y)),
     (
-        is_false(cell2(Col, Row, wumpus));
         is_false(cell2(RightCol, Row, stench));
         is_false(cell2(LeftCol, Row, stench));
         is_false(cell2(Col, UpRow, stench));
         is_false(cell2(Col, DownRow, stench))
     ),
     (
-        is_false(cell2(Col, Row, pit));
         is_false(cell2(RightCol, Row, breeze));
         is_false(cell2(LeftCol, Row, breeze));
         is_false(cell2(Col, UpRow, breeze));
         is_false(cell2(Col, DownRow, breeze))
     ).
 
+cell2(Col, Row, unknow):-
+    in_limits(Col, Row, agent),
+    is_undefined(cell2(Col, Row, wumpus)),
+    is_undefined(cell2(Col, Row, pit)).
+
+cell2(Col, Row, danger):-
+    in_limits(Col, Row, agent),
+    is_true(cell2(Col, Row, pit));
+    is_true(cell2(Col, Row, wumpus)).
+
 %%% Define Stench & Wumpus attributes %%%
 % Right
 cell2(Col, Row, stenchyes) :-
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     RightCol is Col+1,
    	(
         cell2(RightCol, Row, wumpusyes);
@@ -71,7 +84,7 @@ cell2(Col, Row, stenchyes) :-
 
 % Left
 cell2(Col, Row, stenchyes) :-
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     LeftCol is Col-1,
     (
         cell2(LeftCol, Row, wumpusyes);
@@ -80,7 +93,7 @@ cell2(Col, Row, stenchyes) :-
 
 % Up
 cell2(Col, Row, stenchyes) :-
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     UpRow is Row+1,
     (
         cell2(Col, UpRow, wumpusyes);
@@ -89,7 +102,7 @@ cell2(Col, Row, stenchyes) :-
 
 % Down
 cell2(Col, Row, stenchyes) :-
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     DownRow is Row-1,
     (
         cell2(Col, DownRow, wumpusyes);
@@ -97,7 +110,7 @@ cell2(Col, Row, stenchyes) :-
     ).
 
 cell2(Col, Row, stenchno) :-
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     RightCol is Col+1,
     LeftCol is Col-1,
     UpRow is Row+1,
@@ -123,32 +136,32 @@ cell2(Col, Row, stench):-
 
 % Right
 cell2(Col, Row, wumpusno) :-
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     NewCol is Col+1,
    	cell2(NewCol, Row, stenchno).
 
 % Left
 cell2(Col, Row, wumpusno) :-
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent), 
     NewCol is Col-1,
    	cell2(NewCol, Row, stenchno).
 
 % Up
 cell2(Col, Row, wumpusno) :-
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     NewRow is Row+1,
    	cell2(Col, NewRow, stenchno).
 
 % Down
 cell2(Col, Row, wumpusno) :-
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     NewRow is Row-1,
     cell2(Col, NewRow, stenchno).
 
 % Right
 cell2(Col, Row, wumpusyes) :-
     \+(cell2(Col, Row, wumpusdead)),
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     RightCol is Col+1,
     FarRightCol is Col+2,
     UpRow is Row+1,
@@ -161,7 +174,7 @@ cell2(Col, Row, wumpusyes) :-
 % Left
 cell2(Col, Row, wumpusyes) :-
     \+(cell2(Col, Row, wumpusdead)),
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     LeftCol is Col-1,
     FarLeftCol is Col-2,
     UpRow is Row+1,
@@ -174,7 +187,7 @@ cell2(Col, Row, wumpusyes) :-
 % Up
 cell2(Col, Row, wumpusyes) :-
     \+(cell2(Col, Row, wumpusdead)),
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     UpRow is Row+1,
     FarUpRow is Row+2,
     RightCol is Col+1,
@@ -187,7 +200,7 @@ cell2(Col, Row, wumpusyes) :-
 % Down
 cell2(Col, Row, wumpusyes) :-
     \+(cell2(Col, Row, wumpusdead)),
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     DownRow is Row-1,
     FarDownRow is Row-2,
     RightCol is Col+1,
@@ -198,48 +211,48 @@ cell2(Col, Row, wumpusyes) :-
     cell2(Col, DownRow, stenchyes).
 
 cell2(Col, Row, wumpus):-
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     cell2(Col, Row, wumpusyes),
     tnot(cell2(Col, Row, wumpusno)).
 
 cell2(Col, Row, wumpus):-
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     tnot(cell2(Col, Row, wumpusyes)),
     tnot(cell2(Col, Row, wumpusno)),
     tnot(cell2(Col, Row, wumpus)).
 
 cell2(Col, Row, wumpus):-
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     cell2(Col, Row, wumpusyes),
     cell2(Col, Row, wumpusno),
     tnot(cell2(Col, Row, wumpus)).
 
 %%% Define Breeze & Pit attributes %%%
 cell2(Col, Row, breezeyes) :-
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     RightCol is Col+1,
    	cell2(RightCol, Row, pityes).
 
 % Left
 cell2(Col, Row, breezeyes) :-
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     LeftCol is Col-1,
    	cell2(LeftCol, Row, pityes).
 
 % Up
 cell2(Col, Row, breezeyes) :-
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     UpRow is Row+1,
    	cell2(Col, UpRow, pityes).
 
 % Down
 cell2(Col, Row, breezeyes) :-
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     DownRow is Row-1,
    	cell2(Col, DownRow, pityes).
 
 cell2(Col, Row, breezeno) :-
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     RightCol is Col+1,
     LeftCol is Col-1,
     UpRow is Row+1,
@@ -265,31 +278,31 @@ cell2(Col, Row, breeze):-
 
 % Right
 cell2(Col, Row, pitno) :-
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     NewCol is Col+1,
    	cell2(NewCol, Row, breezeno).
 
 % Left
 cell2(Col, Row, pitno) :-
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     NewCol is Col-1,
    	cell2(NewCol, Row, breezeno).
 
 % Up
 cell2(Col, Row, pitno) :-
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     NewRow is Row+1,
    	cell2(Col, NewRow, breezeno).
 
 % Down
 cell2(Col, Row, pitno) :-
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     NewRow is Row-1,
     cell2(Col, NewRow, breezeno).
 
 % Right
 cell2(Col, Row, pityes) :-
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     RightCol is Col+1,
     FarRightCol is Col+2,
     UpRow is Row+1,
@@ -301,7 +314,7 @@ cell2(Col, Row, pityes) :-
 
 % Left
 cell2(Col, Row, pityes) :-
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     LeftCol is Col-1,
     FarLeftCol is Col-2,
     UpRow is Row+1,
@@ -313,7 +326,7 @@ cell2(Col, Row, pityes) :-
 
 % Up
 cell2(Col, Row, pityes) :-
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     UpRow is Row+1,
     FarUpRow is Row+2,
     RightCol is Col+1,
@@ -325,7 +338,7 @@ cell2(Col, Row, pityes) :-
 
 % Down
 cell2(Col, Row, pityes) :-
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     DownRow is Row-1,
     FarDownRow is Row-2,
     RightCol is Col+1,
@@ -336,24 +349,24 @@ cell2(Col, Row, pityes) :-
     cell2(Col, DownRow, breezeyes).
 
 cell2(Col, Row, pit):-
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     cell2(Col, Row, pityes),
     tnot(cell2(Col, Row, pitno)).
 
 cell2(Col, Row, pit):-
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     tnot(cell2(Col, Row, pityes)),
     tnot(cell2(Col, Row, pitno)),
     tnot(cell2(Col, Row, pit)).
 
 cell2(Col, Row, pit):-
-    in_limits(Col, Row),
+    in_limits(Col, Row, agent),
     cell2(Col, Row, pityes),
     cell2(Col, Row, pitno),
     tnot(cell2(Col, Row, pit)).
 
-in_limits(Col, Row) :-
-    cell2(ColAgent, RowAgent, agent),
+in_limits(Col, Row, X) :-
+    cell2(ColAgent, RowAgent, X),
     MinCol is ColAgent - 3, MaxCol is ColAgent + 3,
     MinRow is RowAgent - 3, MaxRow is RowAgent + 3,
     numlist(MinCol, MaxCol, ListCol),

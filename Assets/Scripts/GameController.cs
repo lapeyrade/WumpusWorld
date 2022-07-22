@@ -14,7 +14,9 @@ public class GameController : MonoBehaviour
     private World world;
     private PrologInterface prologInterface;
 
-    private Agent agent;
+    private Human human;
+    // private Human human2;
+    private Dog dog;
 
     [SerializeField]
     private bool autoMode = true;
@@ -30,7 +32,9 @@ public class GameController : MonoBehaviour
     {
         world = gridManager.GetComponent<World>();
         prologInterface = gridManager.GetComponent<PrologInterface>();
-        agent = gridManager.GetComponent<Agent>();
+        human = gridManager.GetComponent<Human>();
+        // human2 = gridManager.GetComponent<Human>();
+        dog = gridManager.GetComponent<Dog>();
     }
 
     void Update()
@@ -55,15 +59,18 @@ public class GameController : MonoBehaviour
             else if (Input.GetKeyDown("return") || Input.GetKeyDown("space") || Input.GetKeyDown("right") ||
                         Input.GetKeyDown("left") || Input.GetKeyDown("up") || Input.GetKeyDown("down") || autoMode)
             {
-                MoveCell();
-                SenseCell();
-                ActionCell();
-                prologInterface.PrintKB(agent);
+                MoveCell(human);
+                // MoveCell(human2);
+                SenseCell(human);
+                // SenseCell(human2);
+                ActionCell(human);
+                // ActionCell(human2);
+                prologInterface.PrintKB(human);
             }
         }
     }
 
-    public void MoveCell()
+    public void MoveCell(Human agent)
     {
         if (Input.GetKeyDown("space") || autoMode || Input.GetKeyDown("return"))
         {
@@ -71,12 +78,12 @@ public class GameController : MonoBehaviour
 
             if (Input.GetKeyDown("space") || autoMode) // Prolog Move
             {
-                move = prologInterface.NextMove();
+                move = prologInterface.NextMove(agent);
                 Debug.Log(move);
             }
             else if (Input.GetKeyDown("return")) // Random Move
             {
-                move = prologInterface.RandomMove();
+                move = prologInterface.RandomMove(agent);
                 Debug.Log(move);
             }
 
@@ -115,7 +122,7 @@ public class GameController : MonoBehaviour
             agent.Move(new Coordinates(agent.coords.col, agent.coords.row - 1));
     }
 
-    public void SenseCell()
+    public void SenseCell(Human agent)
     {
         foreach (string element in world.map[agent.coords.col, agent.coords.row].Keys.ToList())
         {
@@ -133,10 +140,11 @@ public class GameController : MonoBehaviour
 
             makeInferences();
 
-            if (cellContent.Contains("start") && agent.nbGold == world.nbGold)
+            if (cellContent.Contains("start") && (agent.nbGold == 1 || (agent.getAgentPersonalities().Contains("greedy") && agent.nbGold == world.nbGold)))
                 SetGameOver("Game Won!", false);
 
-            else if (cellContent.Contains("pit") || cellContent.Contains("wumpus"))
+            // else 
+            if (cellContent.Contains("pit") || cellContent.Contains("wumpus"))
                 SetGameOver("Game Lost!", false);
         }
     }
@@ -148,33 +156,36 @@ public class GameController : MonoBehaviour
         AddAllElementToGrids("wumpus", true, false);
         AddAllElementToGrids("breezeyes", true, false);
         AddAllElementToGrids("pit", true, false);
+        AddAllElementToGrids("danger", true, false);
+        AddAllElementToGrids("unknow", true, false);
 
         void AddAllElementToGrids(string element, bool updateMapAgent, bool updateMap)
         {
             foreach (Coordinates coords in prologInterface.CheckElement(element))
             {
-                world.AddToGrids(coords.col, coords.row, element, true, false);
+                if (coords.col >= world.gridMin.col && coords.col < world.gridMax.col && coords.row >= world.gridMin.row && coords.row < world.gridMax.row)
+                    world.AddToGrids(coords.col, coords.row, element, updateMapAgent, updateMap);
             }
         }
     }
 
-    public void ActionCell()
+    public void ActionCell(Human agent)
     {
         bool ActionLeftToDo = true;
         while (ActionLeftToDo)
         {
-            string action = prologInterface.NextAction();
+            string action = prologInterface.NextAction(agent);
             switch (action)
             {
                 case "hit_wall":
                     prologInterface.RemoveCellContentKB(agent.coords, "safe");
                     agent.HitWall();
-                    prologInterface.AddCellContentKB(agent.coords, "agent");
+                    prologInterface.AddCellContentKB(agent.coords, "human");
                     break;
                 case "take_gold":
-                    agent.TakeGold();
+                    human.TakeGold();
                     prologInterface.RemoveFromKB("nb_gold_agent(_)");
-                    prologInterface.AddToKB ($"nb_gold_agent({agent.nbGold})", true);
+                    prologInterface.AddToKB($"nb_gold_agent({human.nbGold})", true);
                     break;
                 case "shot_right":
                     world.ShotArrow("right");
@@ -189,7 +200,7 @@ public class GameController : MonoBehaviour
                     world.ShotArrow("down");
                     break;
                 // case "move_next_cell":
-                    // break;
+                // break;
                 default:
                     ActionLeftToDo = false;
                     break;

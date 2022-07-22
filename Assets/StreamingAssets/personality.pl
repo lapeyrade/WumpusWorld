@@ -2,16 +2,13 @@
 
 %%%%% ONTOLOGY PERSONALITY %%%%%
 
-% PERSONALITY: DETERMINIST, STOCHASTIC, HUNTER, PACIFIST
-% determinist(dog) :- cell2(_, _, dog).
-% stochastic(dog) :- cell2(_, _, dog).
-% pacifist(dog) :- cell2(_, _, dog).
-% hunter(dog) :- cell2(_, _, dog).
-
+% PERSONALITY: DETERMINIST, STOCHASTIC, HUNTER, PACIFIST, EXPLORER, GREEDY
 personality_(X) :- determinist(X).
 personality_(X) :- stochastic(X).
 personality_(X) :- hunter(X).
 personality_(X) :- pacifist(X).
+personality_(X) :- explorer(X).
+personality_(X) :- greedy(X).
 
 % Query PERSONALITY
 personality(X, Personality):-

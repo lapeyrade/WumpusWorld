@@ -1,4 +1,4 @@
-:- use_module([action, cell, move, personality, wellfs]).
+:- use_module([action, alignment, cell, location, move, objective, personality, type, wellfs]).
 
 % Dynamic predicate in main file if not already defined in used modules
 
@@ -8,4 +8,4 @@
     [incremental(true)]).
 
 % Personality 
-:- dynamic([determinist/1, stochastic/1, hunter/1, pacifist/1]).
+:- dynamic([determinist/1, stochastic/1, hunter/1, pacifist/1, explorer/1, greedy/1]).

@@ -13,8 +13,11 @@
 is_undefined(Atom):- call_delays(Atom, Delays), Delays \== true.
 is_true(Atom):- call_delays(Atom, true).
 % is_false(Atom):- \+ is_true(Atom).
-is_false(Atom):- \+Atom.
+is_false(Atom):- \+ Atom.
 % is_false(Atom):- call_delays(Atom, false).
 
 list_element(Col, Row, Element):-
     is_true(cell2(Col, Row, Element)).
+
+list_element(Col, Row, unknow):-
+    is_undefined(cell2(Col, Row, unknow)).
