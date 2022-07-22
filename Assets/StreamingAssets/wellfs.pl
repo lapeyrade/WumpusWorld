@@ -16,8 +16,10 @@ is_true(Atom):- call_delays(Atom, true).
 is_false(Atom):- \+ Atom.
 % is_false(Atom):- call_delays(Atom, false).
 
+% Query cells that contain elements with certitude
 list_element(Col, Row, Element):-
     is_true(cell2(Col, Row, Element)).
 
-list_element(Col, Row, unknow):-
-    is_undefined(cell2(Col, Row, unknow)).
+% Query cells that contain elements with incertainty
+list_element(Col, Row, undefined):-
+    is_undefined(cell2(Col, Row, undefined)).

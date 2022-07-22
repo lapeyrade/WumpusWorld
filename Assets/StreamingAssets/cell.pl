@@ -6,41 +6,46 @@
 
 %%%%%%%%%% CELL ONTOLOGY %%%%%%%%%%
 
-% Intermediate Predicate
+% Intermediate predicate for cell
 cell2(Col, Row, Element):- cell(Col, Row, Element).
 
-cell2(Col, Row, agent) :-
-    cell2(Col, Row, human).
+% agent and human are the same thing for now
+cell2(Col, Row, agent) :- cell2(Col, Row, human).
 
+% cell has wumpusno if visited and no wumpus
 cell2(Col, Row, wumpusno):-
     in_limits(Col, Row, agent),
     cell2(Col, Row, visited),
-    (
-        is_false(cell2(Col, Row, wumpusyes)),
-        is_false(cell2(Col, Row, wumpusdead))
-    ).
+    is_false(cell2(Col, Row, wumpusyes)),
+    is_false(cell2(Col, Row, wumpusdead)).
 
+% cell has pitno if visited and no pit
 cell2(Col, Row, pitno):-
     in_limits(Col, Row, agent),
     cell2(Col, Row, visited),
     is_false(cell2(Col, Row, pityes)).
 
+% cell has breezeno if visited and no breeze
 cell2(Col, Row, breezeno):-
     in_limits(Col, Row, agent),
     cell2(Col, Row, visited),
     is_false(cell2(Col, Row, breezeyes)).
 
+% cell has stenchno if visited and no stench
 cell2(Col, Row, stenchno):-
     in_limits(Col, Row, agent),
     cell2(Col, Row, visited),
     is_false(cell2(Col, Row, stenchyes)).
 
+% cell is safe because it contains a wall
 cell2(Col, Row, safe):-
     cell2(Col, Row, wall).
 
+% cell is safe because it contains a dead wumpus
 cell2(Col, Row, safe):-
     cell2(Col, Row, wumpusdead).
 
+% cell is safe because it contains no enemy of the agent
 cell2(Col, Row, safe):-
     in_limits(Col, Row, agent),
     RightCol is Col+1,
@@ -62,18 +67,22 @@ cell2(Col, Row, safe):-
         is_false(cell2(Col, DownRow, breeze))
     ).
 
-cell2(Col, Row, unknow):-
+% cell content is undefined, agent doesnt know if there is an enemy 
+cell2(Col, Row, undefined):-
     in_limits(Col, Row, agent),
     is_undefined(cell2(Col, Row, wumpus)),
     is_undefined(cell2(Col, Row, pit)).
 
+% cell is dangerous, agent knows there is an enemy 
 cell2(Col, Row, danger):-
     in_limits(Col, Row, agent),
     is_true(cell2(Col, Row, pit));
     is_true(cell2(Col, Row, wumpus)).
 
+
 %%% Define Stench & Wumpus attributes %%%
-% Right
+
+% cell has stenchyes if right cell has a wumpus
 cell2(Col, Row, stenchyes) :-
     in_limits(Col, Row, agent),
     RightCol is Col+1,
@@ -82,7 +91,7 @@ cell2(Col, Row, stenchyes) :-
         cell2(RightCol, Row, wumpusdead)
     ).
 
-% Left
+% cell has stenchyes if left cell has a wumpus
 cell2(Col, Row, stenchyes) :-
     in_limits(Col, Row, agent),
     LeftCol is Col-1,
@@ -91,7 +100,7 @@ cell2(Col, Row, stenchyes) :-
         cell2(LeftCol, Row, wumpusdead)
     ).
 
-% Up
+% cell has stenchyes if up cell has a wumpus
 cell2(Col, Row, stenchyes) :-
     in_limits(Col, Row, agent),
     UpRow is Row+1,
@@ -100,7 +109,7 @@ cell2(Col, Row, stenchyes) :-
         cell2(Col, UpRow, wumpusdead)
     ).
 
-% Down
+% cell has stenchyes if down cell has a wumpus
 cell2(Col, Row, stenchyes) :-
     in_limits(Col, Row, agent),
     DownRow is Row-1,
@@ -109,6 +118,7 @@ cell2(Col, Row, stenchyes) :-
         cell2(Col, DownRow, wumpusdead)
     ).
 
+% cell has stenchno if no adjacent cell has a wumpus
 cell2(Col, Row, stenchno) :-
     in_limits(Col, Row, agent),
     RightCol is Col+1,
@@ -120,45 +130,49 @@ cell2(Col, Row, stenchno) :-
 	cell2(Col, UpRow, wumpusno),
 	cell2(Col, DownRow, wumpusno).
 
+% cell has stench if it has stenchyes and TNOT stenchno
 cell2(Col, Row, stench):-
     cell2(Col, Row, stenchyes),
     tnot(cell2(Col, Row, stenchno)).
 
+% cell has stench if it has TNOT(stenchyes, stenchno & stench)
 cell2(Col, Row, stench):-
     tnot(cell2(Col, Row, stenchyes)),
     tnot(cell2(Col, Row, stenchno)),
     tnot(cell2(Col, Row, stench)).
 
+% cell has stench if it has stenchyes, stenchno and TNOT stench
 cell2(Col, Row, stench):-
     cell2(Col, Row, stenchyes),
     cell2(Col, Row, stenchno),
     tnot(cell2(Col, Row, stench)).
 
-% Right
+% cell has wumpusno if right cell has stenchno
 cell2(Col, Row, wumpusno) :-
     in_limits(Col, Row, agent),
-    NewCol is Col+1,
-   	cell2(NewCol, Row, stenchno).
+    RigtCol is Col+1,
+    cell2(RigtCol, Row, stenchno).
 
-% Left
+% cell has wumpusno if left cell has stenchno
 cell2(Col, Row, wumpusno) :-
     in_limits(Col, Row, agent), 
-    NewCol is Col-1,
-   	cell2(NewCol, Row, stenchno).
+    LeftCol is Col-1,
+    cell2(LeftCol, Row, stenchno).
 
-% Up
+% cell has wumpusno if up cell has stenchno
 cell2(Col, Row, wumpusno) :-
     in_limits(Col, Row, agent),
-    NewRow is Row+1,
-   	cell2(Col, NewRow, stenchno).
+    UpRow is Row+1,
+    cell2(Col, UpRow, stenchno).
 
-% Down
+% cell has wumpusno if down cell has stenchno
 cell2(Col, Row, wumpusno) :-
     in_limits(Col, Row, agent),
-    NewRow is Row-1,
-    cell2(Col, NewRow, stenchno).
+    DownRow is Row-1,
+    cell2(Col, DownRow, stenchno).
 
-% Right
+% cell has wumpusyes if RIGHT cell has stench 
+% and no adjacent cell has wumpus
 cell2(Col, Row, wumpusyes) :-
     \+(cell2(Col, Row, wumpusdead)),
     in_limits(Col, Row, agent),
@@ -171,7 +185,8 @@ cell2(Col, Row, wumpusyes) :-
 	cell2(RightCol, DownRow, wumpusno), 
     cell2(RightCol, Row, stenchyes).
 
-% Left
+% cell has wumpusyes if LEFT cell has stench 
+% and no adjacent cell has wumpus
 cell2(Col, Row, wumpusyes) :-
     \+(cell2(Col, Row, wumpusdead)),
     in_limits(Col, Row, agent),
@@ -184,7 +199,8 @@ cell2(Col, Row, wumpusyes) :-
 	cell2(LeftCol, DownRow, wumpusno), 
     cell2(LeftCol, Row, stenchyes).
 
-% Up
+% cell has wumpusyes if UP cell has stench 
+% and no adjacent cell has wumpus
 cell2(Col, Row, wumpusyes) :-
     \+(cell2(Col, Row, wumpusdead)),
     in_limits(Col, Row, agent),
@@ -197,7 +213,8 @@ cell2(Col, Row, wumpusyes) :-
 	cell2(RightCol, UpRow, wumpusno),
     cell2(Col, UpRow, stenchyes).
 
-% Down
+% cell has wumpusyes if DOWN cell has stench 
+% and no adjacent cell has wumpus
 cell2(Col, Row, wumpusyes) :-
     \+(cell2(Col, Row, wumpusdead)),
     in_limits(Col, Row, agent),
@@ -210,47 +227,54 @@ cell2(Col, Row, wumpusyes) :-
 	cell2(RightCol, DownRow, wumpusno),
     cell2(Col, DownRow, stenchyes).
 
+% cell has wumpus if wumpusyes and TNOT wumpusno
 cell2(Col, Row, wumpus):-
     in_limits(Col, Row, agent),
     cell2(Col, Row, wumpusyes),
     tnot(cell2(Col, Row, wumpusno)).
 
+% cell has wumpus if it has TNOT(wumpusyes, wumpusno & wumpus)
 cell2(Col, Row, wumpus):-
     in_limits(Col, Row, agent),
     tnot(cell2(Col, Row, wumpusyes)),
     tnot(cell2(Col, Row, wumpusno)),
     tnot(cell2(Col, Row, wumpus)).
 
+% cell has wumpus if it has wumpusyes, wumpusno and TNOT wumpus
 cell2(Col, Row, wumpus):-
     in_limits(Col, Row, agent),
     cell2(Col, Row, wumpusyes),
     cell2(Col, Row, wumpusno),
     tnot(cell2(Col, Row, wumpus)).
 
+
 %%% Define Breeze & Pit attributes %%%
+
+% cell has breezeyes if right cell has a pit
 cell2(Col, Row, breezeyes) :-
     in_limits(Col, Row, agent),
     RightCol is Col+1,
    	cell2(RightCol, Row, pityes).
 
-% Left
+% cell has breezeyes if left cell has a pit
 cell2(Col, Row, breezeyes) :-
     in_limits(Col, Row, agent),
     LeftCol is Col-1,
    	cell2(LeftCol, Row, pityes).
 
-% Up
+% cell has breezeyes if up cell has a pit
 cell2(Col, Row, breezeyes) :-
     in_limits(Col, Row, agent),
     UpRow is Row+1,
    	cell2(Col, UpRow, pityes).
 
-% Down
+% cell has breezeyes if down cell has a pit
 cell2(Col, Row, breezeyes) :-
     in_limits(Col, Row, agent),
     DownRow is Row-1,
    	cell2(Col, DownRow, pityes).
 
+% cell has breezeno if no adjacent cell has a pit
 cell2(Col, Row, breezeno) :-
     in_limits(Col, Row, agent),
     RightCol is Col+1,
@@ -262,45 +286,49 @@ cell2(Col, Row, breezeno) :-
 	cell2(Col, UpRow, pitno),
 	cell2(Col, DownRow, pitno).
 
+% cell has breeze if it has breezeyes and TNOT breezeno
 cell2(Col, Row, breeze):-
     cell2(Col, Row, breezeyes),
     tnot(cell2(Col, Row, breezeno)).
 
+% cell has breeze if it has TNOT(breezeyes, breezeno & breeze)
 cell2(Col, Row, breeze):-
     tnot(cell2(Col, Row, breezeyes)),
     tnot(cell2(Col, Row, breezeno)),
     tnot(cell2(Col, Row, breeze)).
 
+% cell has breeze if it has breezeyes, breezeno and TNOT breeze
 cell2(Col, Row, breeze):-
     cell2(Col, Row, breezeyes),
     cell2(Col, Row, breezeno),
     tnot(cell2(Col, Row, breeze)).
 
-% Right
+% cell has pitno if right cell has breezeno
 cell2(Col, Row, pitno) :-
     in_limits(Col, Row, agent),
     NewCol is Col+1,
    	cell2(NewCol, Row, breezeno).
 
-% Left
+% cell has pitno if left cell has breezeno
 cell2(Col, Row, pitno) :-
     in_limits(Col, Row, agent),
     NewCol is Col-1,
    	cell2(NewCol, Row, breezeno).
 
-% Up
+% cell has pitno if up cell has breezeno
 cell2(Col, Row, pitno) :-
     in_limits(Col, Row, agent),
     NewRow is Row+1,
    	cell2(Col, NewRow, breezeno).
 
-% Down
+% cell has pitno if down cell has breezeno
 cell2(Col, Row, pitno) :-
     in_limits(Col, Row, agent),
     NewRow is Row-1,
     cell2(Col, NewRow, breezeno).
 
-% Right
+% cell has pityes if RIGHT cell has stench 
+% and no adjacent cell has breeze
 cell2(Col, Row, pityes) :-
     in_limits(Col, Row, agent),
     RightCol is Col+1,
@@ -312,7 +340,8 @@ cell2(Col, Row, pityes) :-
 	cell2(RightCol, DownRow, pitno), 
     cell2(RightCol, Row, breezeyes).
 
-% Left
+% cell has pityes if LEFT cell has stench 
+% and no adjacent cell has breeze
 cell2(Col, Row, pityes) :-
     in_limits(Col, Row, agent),
     LeftCol is Col-1,
@@ -324,7 +353,8 @@ cell2(Col, Row, pityes) :-
 	cell2(LeftCol, DownRow, pitno), 
     cell2(LeftCol, Row, breezeyes).
 
-% Up
+% cell has pityes if UP cell has stench 
+% and no adjacent cell has breeze
 cell2(Col, Row, pityes) :-
     in_limits(Col, Row, agent),
     UpRow is Row+1,
@@ -336,7 +366,8 @@ cell2(Col, Row, pityes) :-
 	cell2(RightCol, UpRow, pitno),
     cell2(Col, UpRow, breezeyes).
 
-% Down
+% cell has pityes if DOWN cell has stench 
+% and no adjacent cell has breeze
 cell2(Col, Row, pityes) :-
     in_limits(Col, Row, agent),
     DownRow is Row-1,
@@ -348,23 +379,27 @@ cell2(Col, Row, pityes) :-
 	cell2(RightCol, DownRow, pitno),
     cell2(Col, DownRow, breezeyes).
 
+% cell has pit if pityes and TNOT pitno
 cell2(Col, Row, pit):-
     in_limits(Col, Row, agent),
     cell2(Col, Row, pityes),
     tnot(cell2(Col, Row, pitno)).
 
+% cell has pit if it has TNOT(pityes, pitno & pit)
 cell2(Col, Row, pit):-
     in_limits(Col, Row, agent),
     tnot(cell2(Col, Row, pityes)),
     tnot(cell2(Col, Row, pitno)),
     tnot(cell2(Col, Row, pit)).
 
+% cell has pit if it has pityes, pitno and TNOT pit
 cell2(Col, Row, pit):-
     in_limits(Col, Row, agent),
     cell2(Col, Row, pityes),
     cell2(Col, Row, pitno),
     tnot(cell2(Col, Row, pit)).
 
+% Defines the limits of agent reasoning
 in_limits(Col, Row, X) :-
     cell2(ColAgent, RowAgent, X),
     MinCol is ColAgent - 3, MaxCol is ColAgent + 3,

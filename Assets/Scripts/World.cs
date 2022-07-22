@@ -219,7 +219,7 @@ public class World : MonoBehaviour
             case "danger": // Red
                 newColor = Color.red;
                 break;
-            case "unknow": // Orange
+            case "undefined": // Orange
                 newColor = new Color(1.0f, 0.64f, 0.0f);
                 break;
             case "visited": // Cyan
@@ -229,7 +229,7 @@ public class World : MonoBehaviour
                 break;
         }
 
-        if (content == "wall" || content == "safe" || content == "visited"  || content == "danger" || content == "unknow")
+        if (content == "wall" || content == "safe" || content == "visited"  || content == "danger" || content == "undefined")
         {
             if (updateMapAgent && human.map[col, row].ContainsKey(content) == false)
             {

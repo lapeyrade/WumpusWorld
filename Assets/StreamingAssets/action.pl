@@ -3,12 +3,15 @@
 %%%%%%%%%% ACTION ONTOLOGY %%%%%%%%%%
 % ACTION: HIT_WALL, TAKE_GOLD, SHOOT_ARROW, SHOOT_RIGHT/LEFT/UP/DOWM
 
+% agent hits the wall so he cannot enter the cell
 hit_wall(X):-
     cell2(Col, Row, X), cell2(Col, Row, wall).
 
+% agent picks gold
 take_gold(X):-
     cell2(Col, Row, X), cell2(Col, Row, gold).
 
+% agent can shoot arrow in any direction
 can_shoot_arrow(X):-
     nb_arrow(Arrow), Arrow > 0,
     \+ objective(X, avoid).

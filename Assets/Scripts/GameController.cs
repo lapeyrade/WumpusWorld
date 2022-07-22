@@ -157,7 +157,7 @@ public class GameController : MonoBehaviour
         AddAllElementToGrids("breezeyes", true, false);
         AddAllElementToGrids("pit", true, false);
         AddAllElementToGrids("danger", true, false);
-        AddAllElementToGrids("unknow", true, false);
+        AddAllElementToGrids("undefined", true, false);
 
         void AddAllElementToGrids(string element, bool updateMapAgent, bool updateMap)
         {
