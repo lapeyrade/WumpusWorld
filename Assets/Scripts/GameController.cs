@@ -184,8 +184,8 @@ public class GameController : MonoBehaviour
                     break;
                 case "take_gold":
                     human.TakeGold();
-                    prologInterface.RemoveFromKB("nb_gold_agent(_)");
-                    prologInterface.AddToKB($"nb_gold_agent({human.nbGold})", true);
+                    prologInterface.RemoveFromKB("move:nb_gold_agent(_)");
+                    prologInterface.AddToKB($"move:nb_gold_agent({human.nbGold})", true);
                     break;
                 case "shoot_right":
                     world.ShootArrow("right");

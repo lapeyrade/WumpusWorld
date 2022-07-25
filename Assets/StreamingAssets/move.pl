@@ -1,9 +1,13 @@
-:- module(move, [move/2, random_move/2]).
+:- module(move, [move/2, random_move/2, nb_wumpus/1, nb_wumpus_dead/1, nb_gold/1, nb_gold_agent/1]).
+
+:- use_module(library(random)).
+
+:- dynamic([nb_wumpus/1, nb_wumpus_dead/1, nb_gold/1, nb_gold_agent/1],
+    [incremental(true)]).
 
 :- multifile [cell:cell2/3, wellfs:is_undefined/1,
             objective:objective/2, alignment:alignment/3].
 
-:- use_module(library(random)).
 
 %%%%%%%%%% MOVE ONTOLOGY %%%%%%%%%%
 

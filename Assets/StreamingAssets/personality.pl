@@ -1,5 +1,7 @@
 :- module(personality, [personality/2]).
 
+:- dynamic([determinist/1, stochastic/1, hunter/1, pacifist/1, explorer/1, greedy/1]).
+
 %%%%% ONTOLOGY PERSONALITY %%%%%
 
 % PERSONALITY: DETERMINIST, STOCHASTIC, HUNTER, PACIFIST, EXPLORER, GREEDY

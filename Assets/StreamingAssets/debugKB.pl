@@ -1,4 +1,4 @@
-:-include('kb.pl').
+:- include('kb.pl').
 
 % DYNAMIC PART OF THE KNOWLEDGE BASE
 
@@ -6,12 +6,12 @@ grid_coord(0,0,12,12).
 nb_wumpus(8).
 nb_wumpus_dead(4).
 nb_arrow(4).
-nb_arrow_used(4).
+nb_arrow_shot(4).
 nb_gold(1).
-nb_gold_agent(0).
+nb_gold_agent(1).
 personality(human,determinist).
 % ------------------
-% [8, 7], [9, 7], [9, 6], [8, 6], [8, 5], [8, 4], [7, 4], [7, 3], [6, 3], [5, 3], [4, 3], [4, 2], [5, 2], [6, 2], [7, 2], [8, 2], [8, 1], [7, 1], [6, 1], [5, 1], [4, 1], [3, 1], [2, 1], [1, 1], 
+% [1, 1], 
 cell(1,1,cell).
 cell(1,1,start).
 cell(1,1,visited).
@@ -118,5 +118,27 @@ cell(10,7,cell).
 cell(10,7,stenchyes).
 cell(10,7,visited).
 cell(8,7,cell).
-cell(8,7,human).
 cell(8,7,visited).
+cell(7,7,cell).
+cell(7,7,visited).
+cell(6,7,cell).
+cell(6,7,visited).
+cell(5,7,cell).
+cell(5,7,visited).
+cell(4,7,cell).
+cell(4,7,visited).
+cell(3,7,cell).
+cell(3,7,stenchyes).
+cell(3,7,visited).
+cell(4,8,cell).
+cell(4,8,stenchyes).
+cell(4,8,visited).
+cell(5,8,cell).
+cell(5,8,visited).
+cell(6,8,cell).
+cell(6,8,visited).
+cell(7,8,cell).
+cell(7,8,visited).
+cell(8,8,cell).
+cell(8,8,visited).
+cell(1,1,human).

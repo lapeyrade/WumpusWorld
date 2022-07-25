@@ -229,7 +229,7 @@ public class World : MonoBehaviour
                 break;
         }
 
-        if (content == "wall" || content == "safe" || content == "visited"  || content == "danger" || content == "undefined")
+        if (content == "wall" || content == "safe" || content == "visited" || content == "danger" || content == "undefined")
         {
             if (updateMapAgent && human.map[col, row].ContainsKey(content) == false)
             {
@@ -290,9 +290,9 @@ public class World : MonoBehaviour
         human.nbArrow--;
         human.nbArrowUsed++;
         prologInterface.RemoveFromKB("nb_arrow(_)");
-        prologInterface.RemoveFromKB("nb_arrow_used(_)");
+        prologInterface.RemoveFromKB("nb_arrow_shot(_)");
         prologInterface.AddToKB($"nb_arrow({human.nbArrow})", true);
-        prologInterface.AddToKB($"nb_arrow_used({human.nbArrowUsed})", true);
+        prologInterface.AddToKB($"nb_arrow_shot({human.nbArrowUsed})", true);
 
         switch (direction)
         {

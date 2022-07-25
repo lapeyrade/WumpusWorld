@@ -69,12 +69,12 @@ public class PrologInterface : MonoBehaviour
         AddToKB($"nb_gold({nbGold})", true);
         AddToKB($"nb_gold_agent({0})", true);
         AddToKB($"nb_arrow({nbWumpus})", true);
-        AddToKB($"nb_arrow_used({0})", true);
+        AddToKB($"nb_arrow_shot({0})", true);
         AddToKB($"nb_wumpus({nbWumpus})", true);
         AddToKB($"nb_wumpus_dead({0})", true);
 
         foreach (string personality in agent.getAgentPersonalities())
-            AddToKB($"{personality}({agent.agentName})", false);
+            AddToKB($"personality:{personality}({agent.agentName})", false);
     }
 
     public String NextMove(Human agent)
@@ -177,7 +177,7 @@ public class PrologInterface : MonoBehaviour
         PrintGlobalVariables("nb_wumpus", "Initial number of Wumpus: ", debugFileLog, consoleLog);
         PrintGlobalVariables("nb_wumpus_dead", "Wumpus killed: ", debugFileLog, consoleLog);
         PrintGlobalVariables("nb_arrow", "Initial number of arrows: ", debugFileLog, consoleLog);
-        PrintGlobalVariables("nb_arrow_used", "Arrows shot: ", debugFileLog, consoleLog);
+        PrintGlobalVariables("nb_arrow_shot", "Arrows shot: ", debugFileLog, consoleLog);
         PrintGlobalVariables("nb_gold", "Initial number of gold: ", debugFileLog, consoleLog);
         PrintGlobalVariables("nb_gold_agent", "Number of gold picked up: ", debugFileLog, consoleLog);
         PrintGlobalVariables("personality", "Personality: ", debugFileLog, consoleLog);

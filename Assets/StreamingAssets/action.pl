@@ -1,4 +1,7 @@
-:- module(action, [action/2]).
+:- module(action, [action/2, nb_arrow/1]).
+
+:- dynamic([nb_arrow/1], [incremental(true)]).
+
 
 :- multifile [cell:cell2/3, wellfs:is_true/1,
             type:type/2, alignment:alignment/3,
@@ -18,7 +21,7 @@ take_gold(X):-
 % agent can shoot arrow in any direction
 can_shoot_arrow(human):-
     nb_arrow(Arrow), Arrow > 0,
-    \+ objective:objective(X, avoid).
+    \+ objective:objective(human, avoid).
 
 % shoot an arrow to the left
 shoot_right(X):-
