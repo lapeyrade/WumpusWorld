@@ -6,7 +6,7 @@
     [incremental(true)]).
 
 :- multifile [cell:cell2/3, wellfs:is_undefined/1,
-            objective:objective/2, alignment:alignment/3].
+            objective:objective/2].
 
 
 %%%%%%%%%% MOVE ONTOLOGY %%%%%%%%%%

@@ -1,4 +1,4 @@
-:- use_module([action, alignment, cell, location, move, objective, personality, type, wellfs]).
+:- use_module([action, alignment, cell, characteristic, desire, location, move, objective, personality, state, type, wellfs]).
 
 % Dynamic predicate in main file if not already defined in used modules
 :- dynamic([nb_arrow_shot/1, grid_coord/4], [incremental(true)]).
@@ -48,8 +48,6 @@
 
 
 
-
-
 % action_(X) :- shoot_envisageable(X).
 
 % % action envisageable
@@ -57,4 +55,6 @@
 %     situation(X, wumpus_detecte(Col, Row)),
 %     objective(X, tuer_wumpus).
 
-
+% - Faire un schéma
+% - Faire une liste de désir
+% - Générer une liste d'action

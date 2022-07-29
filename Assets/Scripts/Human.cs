@@ -25,9 +25,13 @@ public class Human : MonoBehaviour
         world = gridManager.GetComponent<World>();
     }
 
-    public enum pers { determinist, stochastic, hunter, pacifist, explorer, greedy };
+    [SerializeField] public int intelligence = 6;
+    [SerializeField] public int strength = 5;
+    [SerializeField] public int dexterity = 5;
 
-    [SerializeField] public pers[] personality = new pers[] { pers.determinist };
+    // public enum pers { determinist, stochastic, hunter, pacifist, explorer, greedy, nonmaterialistic };
+
+    // [SerializeField] public pers[] personality = new pers[] { pers.determinist };
 
     public void initAgent(Coordinates startCoords, string name, int nbTotalWumpus, Coordinates gridMax)
     {
@@ -47,15 +51,15 @@ public class Human : MonoBehaviour
         world.AddToGrids(coords.col, coords.row, "visited", true, false);
     }
 
-    public List<string> getAgentPersonalities()
-    {
-        List<string> listPersonalies = new List<string>();
-        foreach (pers p in personality)
-        {
-            listPersonalies.Add(p.ToString());
-        }
-        return listPersonalies;
-    }
+    // public List<string> getAgentPersonalities()
+    // {
+    //     List<string> listPersonalies = new List<string>();
+    //     foreach (pers p in personality)
+    //     {
+    //         listPersonalies.Add(p.ToString());
+    //     }
+    //     return listPersonalies;
+    // }
 
     public void MoveBack()
     {

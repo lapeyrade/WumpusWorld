@@ -72,9 +72,12 @@ public class PrologInterface : MonoBehaviour
         AddToKB($"nb_arrow_shot({0})", true);
         AddToKB($"nb_wumpus({nbWumpus})", true);
         AddToKB($"nb_wumpus_dead({0})", true);
+        AddToKB($"intelligence({agent.agentName}, {agent.intelligence})", true);
+        AddToKB($"strength({agent.agentName}, {agent.strength})", true);
+        AddToKB($"dexterity({agent.agentName}, {agent.dexterity})", true);
 
-        foreach (string personality in agent.getAgentPersonalities())
-            AddToKB($"personality:{personality}({agent.agentName})", false);
+        // foreach (string personality in agent.getAgentPersonalities())
+        // AddToKB($"personality:{personality}({agent.agentName})", false);
     }
 
     public String NextMove(Human agent)
@@ -180,6 +183,9 @@ public class PrologInterface : MonoBehaviour
         PrintGlobalVariables("nb_arrow_shot", "Arrows shot: ", debugFileLog, consoleLog);
         PrintGlobalVariables("nb_gold", "Initial number of gold: ", debugFileLog, consoleLog);
         PrintGlobalVariables("nb_gold_agent", "Number of gold picked up: ", debugFileLog, consoleLog);
+        PrintGlobalVariables("intelligence", "Intelligence: ", debugFileLog, consoleLog);
+        PrintGlobalVariables("strength", "Strength: ", debugFileLog, consoleLog);
+        PrintGlobalVariables("dexterity", "Dexterity: ", debugFileLog, consoleLog);
         PrintGlobalVariables("personality", "Personality: ", debugFileLog, consoleLog);
 
         if (consoleLog)
@@ -237,6 +243,18 @@ public class PrologInterface : MonoBehaviour
             {
 
                 using (PlQuery queryVariable = new PlQuery(variable, new PlTermV(new PlTerm[] { new PlTerm("Element"), new PlTerm("Personality") })))
+                {
+                    foreach (PlTermV solution in queryVariable.Solutions)
+                    {
+                        if (debugFile)
+                            WriteInDebugKB(variable + "(" + solution[0] + "," + solution[1] + ").");
+                    }
+                }
+            }
+            else if (variable == "intelligence" || variable == "strength" || variable == "dexterity")
+            {
+
+                using (PlQuery queryVariable = new PlQuery(variable, new PlTermV(new PlTerm[] { new PlTerm("Element"), new PlTerm("Characteristic") })))
                 {
                     foreach (PlTermV solution in queryVariable.Solutions)
                     {

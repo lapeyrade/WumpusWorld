@@ -12,6 +12,7 @@ ally(dog, human).
 
 enemy(human, wumpus).
 enemy(wumpus, human).
+
 enemy(human, pit).
 enemy(pit, human).
 
@@ -27,7 +28,7 @@ enemy(X, Y):-
 
 % if not enemy nor ally then unaligned
 unaligned(X, Y):-
-    type:type(_, X), type:type(_, Y),
+    type:type(X, _), type:type(Y, _),
     X \= Y, \+ ally(X, Y), \+ enemy(X, Y).
 
 alignment_(X, Y):- ally(X, Y).

@@ -15,7 +15,6 @@ public class GameController : MonoBehaviour
     private PrologInterface prologInterface;
 
     private Human human;
-    // private Human human2;
     private Dog dog;
 
     [SerializeField]
@@ -33,7 +32,6 @@ public class GameController : MonoBehaviour
         world = gridManager.GetComponent<World>();
         prologInterface = gridManager.GetComponent<PrologInterface>();
         human = gridManager.GetComponent<Human>();
-        // human2 = gridManager.GetComponent<Human>();
         dog = gridManager.GetComponent<Dog>();
     }
 
@@ -60,11 +58,8 @@ public class GameController : MonoBehaviour
                         Input.GetKeyDown("left") || Input.GetKeyDown("up") || Input.GetKeyDown("down") || autoMode)
             {
                 MoveCell(human);
-                // MoveCell(human2);
                 SenseCell(human);
-                // SenseCell(human2);
                 ActionCell(human);
-                // ActionCell(human2);
                 prologInterface.PrintKB(human);
             }
         }
@@ -140,7 +135,8 @@ public class GameController : MonoBehaviour
 
             makeInferences();
 
-            if (cellContent.Contains("start") && (agent.nbGold == 1 || (agent.getAgentPersonalities().Contains("greedy") && agent.nbGold == world.nbGold)))
+            // if (cellContent.Contains("start") && (agent.nbGold == 1 || (agent.getAgentPersonalities().Contains("greedy") && agent.nbGold == world.nbGold)))
+            if (cellContent.Contains("start") && (agent.nbGold == 1))
                 SetGameOver("Game Won!", false);
 
             // else 
@@ -199,8 +195,6 @@ public class GameController : MonoBehaviour
                 case "shoot_down":
                     world.ShootArrow("down");
                     break;
-                // case "move_next_cell":
-                // break;
                 default:
                     ActionLeftToDo = false;
                     break;

@@ -8,10 +8,13 @@ nb_wumpus_dead(4).
 nb_arrow(4).
 nb_arrow_shot(4).
 nb_gold(1).
-nb_gold_agent(1).
+nb_gold_agent(0).
+intelligence(human,6).
+strength(human,5).
+dexterity(human,5).
 personality(human,determinist).
 % ------------------
-% [1, 1], 
+% [10, 5], [10, 6], [9, 6], [8, 6], [8, 5], [8, 4], [7, 4], [7, 3], [6, 3], [5, 3], [4, 3], [4, 2], [5, 2], [6, 2], [7, 2], [8, 2], [8, 1], [7, 1], [6, 1], [5, 1], [4, 1], [3, 1], [2, 1], [1, 1], 
 cell(1,1,cell).
 cell(1,1,start).
 cell(1,1,visited).
@@ -105,40 +108,5 @@ cell(10,6,stenchyes).
 cell(10,6,visited).
 cell(10,5,wumpusdead).
 cell(10,5,cell).
+cell(10,5,human).
 cell(10,5,visited).
-cell(11,5,cell).
-cell(11,5,wall).
-cell(11,5,stenchyes).
-cell(10,4,cell).
-cell(10,4,stenchyes).
-cell(10,4,visited).
-cell(9,7,cell).
-cell(9,7,visited).
-cell(10,7,cell).
-cell(10,7,stenchyes).
-cell(10,7,visited).
-cell(8,7,cell).
-cell(8,7,visited).
-cell(7,7,cell).
-cell(7,7,visited).
-cell(6,7,cell).
-cell(6,7,visited).
-cell(5,7,cell).
-cell(5,7,visited).
-cell(4,7,cell).
-cell(4,7,visited).
-cell(3,7,cell).
-cell(3,7,stenchyes).
-cell(3,7,visited).
-cell(4,8,cell).
-cell(4,8,stenchyes).
-cell(4,8,visited).
-cell(5,8,cell).
-cell(5,8,visited).
-cell(6,8,cell).
-cell(6,8,visited).
-cell(7,8,cell).
-cell(7,8,visited).
-cell(8,8,cell).
-cell(8,8,visited).
-cell(1,1,human).

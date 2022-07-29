@@ -1,37 +1,49 @@
 :- module(type, [type/2]).
 
-:- table is_type/2.
+:- table type/2.
 
-%%%%% ONTOLOGY ELEMENT %%%%%
+%%%%% ONTOLOGY TYPE %%%%%
 % TYPE: BEING, OBJECT 
 
-is_type(human, being).
+type(being, element).
+type(object, element).
 
-is_type(wumpus, monster).
-is_type(monster, being).
+type(animal, being).
+type(plant, being).
+type(obstacle, object).
+type(trap, object).
 
-is_type(dog, being).
-is_type(pit, object).
-is_type(wall, object).
+type(monster, animal).
+type(beast, animal).
+type(human, animal).
+type(wall, obstacle).
+type(rock, obstacle).
+type(pit, trap).
+type(cage, trap).
 
-is_type(X, Y):-
-    is_type(X, Z),
-    is_type(Z, Y).
+type(dog, beast).
+type(deer, beast).
+type(wumpus, monster).
+type(dragon, monster).
 
-being(X):-
-    is_type(X, being).
+% X is type of X, Z if type of Y then X is type of Y 
+type(X, Y):- type(X, Z), type(Z, Y).
 
-object(X):-
-    is_type(X, object).
+% X is type of itself
+type(X, X):-  type(X, _).
 
-type_(X) :- being(X).
-type_(X) :- object(X).
+%% Pas définitif
+% type(w1, wumpus).
+% type(w1(X), wumpus).
 
-% Query TYPE
-type(X, Type):-
-    clause(type_(X), Typ),
-    call(Typ),
-    Typ =.. [Type, _].
+% type_(X) :- being(X).
+% type_(X) :- object(X).
+
+% % Query TYPE
+% type(X, Type):-
+%     clause(type_(X), T),
+%     call(T),
+%     T =.. [Type, _].
 
 
 % being(X):- human(X).
@@ -57,7 +69,7 @@ type(X, Type):-
 % being(X) :- wumpus(X).
 
 
-% wumpus(w(X, Y)):- cell2(X, Y, wumpus).
+% wumpus(w(X, Y)):- cl2(X, Y, wumpus).
 
 % being(X):- monster(X).
 % monster(X):- wumpus(X).
