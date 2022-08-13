@@ -25,9 +25,9 @@ public class Human : MonoBehaviour
         world = gridManager.GetComponent<World>();
     }
 
-    [SerializeField] public int intelligence = 6;
-    [SerializeField] public int strength = 5;
-    [SerializeField] public int dexterity = 5;
+    [SerializeField] public int intelligence = 3;
+    [SerializeField] public int strength = 7;
+    [SerializeField] public int dexterity = 7;
 
     // public enum pers { determinist, stochastic, hunter, pacifist, explorer, greedy, nonmaterialistic };
 

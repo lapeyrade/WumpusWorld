@@ -82,6 +82,12 @@ cell2(Col, Row, danger):-
     wellfs:is_true(cell2(Col, Row, pit));
     wellfs:is_true(cell2(Col, Row, wumpus)).
 
+% cell is not visited but known as safe
+cell2(Col, Row, unvisited_safe_cell):-
+    \+ cell:cell2(Col, Row, visited),
+    \+ cell:cell2(Col, Row, wall),
+    cell:cell2(Col, Row, safe).
+
 
 %%% Define Stench & Wumpus attributes %%%
 

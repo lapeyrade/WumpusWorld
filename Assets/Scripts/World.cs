@@ -64,7 +64,7 @@ public class World : MonoBehaviour
             GenerateHuman();
             // GenerateDog();
             GenerateGrid();
-            prologInterface.InitialiseGameKB(gridMin, gridMax, nbGold, nbWumpus, human);
+            prologInterface.InitialiseGameKB(nbWumpus, human);
             GrenerateWall();
             GenerateGold();
             GenerateWumpus();
@@ -289,10 +289,10 @@ public class World : MonoBehaviour
         Debug.Log("Shooting " + direction);
         human.nbArrow--;
         human.nbArrowUsed++;
-        prologInterface.RemoveFromKB("nb_arrow(_)");
-        prologInterface.RemoveFromKB("nb_arrow_shot(_)");
-        prologInterface.AddToKB($"nb_arrow({human.nbArrow})", true);
-        prologInterface.AddToKB($"nb_arrow_shot({human.nbArrowUsed})", true);
+        prologInterface.RemoveFromKB("nb_arrow(_, _)");
+        prologInterface.RemoveFromKB("nb_arrow_shot(_, _)");
+        prologInterface.AddToKB($"nb_arrow({human.agentName}, {human.nbArrow})", true);
+        prologInterface.AddToKB($"nb_arrow_shot({human.agentName},{human.nbArrowUsed})", true);
 
         switch (direction)
         {

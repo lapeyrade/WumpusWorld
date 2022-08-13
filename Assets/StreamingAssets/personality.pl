@@ -2,16 +2,14 @@
 
 :- multifile(characteristic:characteristic/3).
 
-% :- dynamic([determinist/1, stochastic/1, hunter/1, pacifist/1, explorer/1, greedy/1, nonmaterialistic/1]).
-
 %%%%% ONTOLOGY PERSONALITY %%%%%
 % PERSONALITY: DETERMINIST, STOCHASTIC, HUNTER, PACIFIST, EXPLORER, GREEDY, NONMATERIALIST
 
 determinist(X):-
-    characteristic:characteristic(X, intelligence, Value), Value >= 5.
+    characteristic:characteristic(X, dexterity, Value), Value >= 5.
 
 stochastic(X):-
-    characteristic:characteristic(X, intelligence, Value), Value < 5.
+    characteristic:characteristic(X, dexterity, Value), Value < 5.
 
 hunter(X):-
     characteristic:characteristic(X, strength, Value), Value >= 7,

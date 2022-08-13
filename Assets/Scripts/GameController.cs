@@ -173,15 +173,15 @@ public class GameController : MonoBehaviour
             string action = prologInterface.NextAction(agent);
             switch (action)
             {
-                case "hit_wall":
+                case "bump_wall":
                     prologInterface.RemoveCellContentKB(agent.coords, "safe");
                     agent.HitWall();
                     prologInterface.AddCellContentKB(agent.coords, "human");
                     break;
-                case "take_gold":
+                case "pickup_gold":
                     human.TakeGold();
-                    prologInterface.RemoveFromKB("move:nb_gold_agent(_)");
-                    prologInterface.AddToKB($"move:nb_gold_agent({human.nbGold})", true);
+                    prologInterface.RemoveFromKB("nb_gold(_, _)");
+                    prologInterface.AddToKB($"nb_gold({human.agentName}, {human.nbGold})", true);
                     break;
                 case "shoot_right":
                     world.ShootArrow("right");

@@ -3,18 +3,20 @@
 :- multifile [personality:personality/2].
 
 %%%%% ONTOLOGY OBJECTIVE %%%%%
-% OBJECTIVES: GOLD, KILL, AVOID, EXPLORE_ALL, DETERMINISTIC/STOCHASTIC_EXPLORATION
+% OBJECTIVES: FIND_GOLD, KILL_WUMPUS, AVOID_KILLING, EXPLORE_CAVE, DETERMINISTIC/STOCHASTIC_EXPLORATION
 
-kill(X):-
-    personality:personality(X, hunter).
+kill_wumpus(X):-
+    personality:personality(X, hunter),
+    \+ personality:personality(X, pacifist).
 
-gold(X):-
-    personality:personality(X, greedy).
+find_gold(X):-
+    personality:personality(X, greedy),
+    \+ personality:personality(X, nonmaterialistic).
 
-avoid(X):-
+avoid_killing(X):-
     personality:personality(X, pacifist).
 
-explore_all(X):-
+explore_cave(X):-
     personality:personality(X, explorer).
 
 determinist_exploration(X):-
@@ -23,10 +25,10 @@ determinist_exploration(X):-
 stochastic_exploration(X):-
     personality:personality(X, stochastic).
 
-objective_(X):- kill(X).
-objective_(X):- gold(X).
-objective_(X):- avoid(X).
-objective_(X):- explore_all(X).
+objective_(X):- kill_wumpus(X).
+objective_(X):- find_gold(X).
+objective_(X):- avoid_killing(X).
+objective_(X):- explore_cave(X).
 objective_(X):- determinist_exploration(X).
 objective_(X):- stochastic_exploration(X).
 

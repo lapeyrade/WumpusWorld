@@ -58,20 +58,19 @@ public class PrologInterface : MonoBehaviour
         }
     }
 
-    public void InitialiseGameKB(Coordinates gridMin, Coordinates gridMax, int nbGold, int nbWumpus, Human agent)
+    public void InitialiseGameKB(int nbWumpus, Human agent)
     {
         string[] param = { "-q", "-f", prologFilePath };  // suppressing informational & banner messages
 
         if (!PlEngine.IsInitialized)
             PlEngine.Initialize(param);
 
-        AddToKB($"grid_coord({gridMin.col}, {gridMin.row}, {gridMax.col}, {gridMax.row})", true);
-        AddToKB($"nb_gold({nbGold})", true);
-        AddToKB($"nb_gold_agent({0})", true);
-        AddToKB($"nb_arrow({nbWumpus})", true);
-        AddToKB($"nb_arrow_shot({0})", true);
-        AddToKB($"nb_wumpus({nbWumpus})", true);
-        AddToKB($"nb_wumpus_dead({0})", true);
+        // AddToKB($"grid_coord({gridMin.col}, {gridMin.row}, {gridMax.col}, {gridMax.row})", true);
+        // AddToKB($"nb_gold({nbGold})", true);
+        AddToKB($"nb_gold({agent.agentName}, {0})", true);
+        AddToKB($"nb_arrow({agent.agentName}, {nbWumpus})", true);
+        // AddToKB($"nb_wumpus({nbWumpus})", true);
+        // AddToKB($"nb_wumpus_dead({0})", true);
         AddToKB($"intelligence({agent.agentName}, {agent.intelligence})", true);
         AddToKB($"strength({agent.agentName}, {agent.strength})", true);
         AddToKB($"dexterity({agent.agentName}, {agent.dexterity})", true);
@@ -176,13 +175,12 @@ public class PrologInterface : MonoBehaviour
 
         // ClearLog();
 
-        PrintGlobalVariables("grid_coord", "Grid Coords: ", debugFileLog, consoleLog);
-        PrintGlobalVariables("nb_wumpus", "Initial number of Wumpus: ", debugFileLog, consoleLog);
-        PrintGlobalVariables("nb_wumpus_dead", "Wumpus killed: ", debugFileLog, consoleLog);
+        // PrintGlobalVariables("grid_coord", "Grid Coords: ", debugFileLog, consoleLog);
+        // PrintGlobalVariables("nb_wumpus", "Initial number of Wumpus: ", debugFileLog, consoleLog);
+        // PrintGlobalVariables("nb_wumpus_dead", "Wumpus killed: ", debugFileLog, consoleLog);
         PrintGlobalVariables("nb_arrow", "Initial number of arrows: ", debugFileLog, consoleLog);
-        PrintGlobalVariables("nb_arrow_shot", "Arrows shot: ", debugFileLog, consoleLog);
         PrintGlobalVariables("nb_gold", "Initial number of gold: ", debugFileLog, consoleLog);
-        PrintGlobalVariables("nb_gold_agent", "Number of gold picked up: ", debugFileLog, consoleLog);
+        // PrintGlobalVariables("nb_gold_agent", "Number of gold picked up: ", debugFileLog, consoleLog);
         PrintGlobalVariables("intelligence", "Intelligence: ", debugFileLog, consoleLog);
         PrintGlobalVariables("strength", "Strength: ", debugFileLog, consoleLog);
         PrintGlobalVariables("dexterity", "Dexterity: ", debugFileLog, consoleLog);
@@ -228,55 +226,55 @@ public class PrologInterface : MonoBehaviour
 
         void PrintGlobalVariables(string variable, string message, Boolean debugFile, Boolean consoleLog)
         {
-            if (variable == "grid_coord")
-            {
-                using (PlQuery queryVariable = new PlQuery(variable, new PlTermV(new PlTerm[] { new PlTerm("MinCol"), new PlTerm("MinRow"), new PlTerm("MaxCol"), new PlTerm("MaxRow") })))
-                {
-                    foreach (PlTermV solution in queryVariable.Solutions)
-                    {
-                        if (debugFile)
-                            WriteInDebugKB(variable + "(" + solution[0] + "," + solution[1] + "," + solution[2] + "," + solution[3] + ").");
-                    }
-                }
-            }
-            else if (variable == "personality")
-            {
+            // if (variable == "grid_coord")
+            // {
+            //     using (PlQuery queryVariable = new PlQuery(variable, new PlTermV(new PlTerm[] { new PlTerm("MinCol"), new PlTerm("MinRow"), new PlTerm("MaxCol"), new PlTerm("MaxRow") })))
+            //     {
+            //         foreach (PlTermV solution in queryVariable.Solutions)
+            //         {
+            //             if (debugFile)
+            //                 WriteInDebugKB(variable + "(" + solution[0] + "," + solution[1] + "," + solution[2] + "," + solution[3] + ").");
+            //         }
+            //     }
+            // }
+            // else if (variable == "personality")
+            // {
 
-                using (PlQuery queryVariable = new PlQuery(variable, new PlTermV(new PlTerm[] { new PlTerm("Element"), new PlTerm("Personality") })))
-                {
-                    foreach (PlTermV solution in queryVariable.Solutions)
-                    {
-                        if (debugFile)
-                            WriteInDebugKB(variable + "(" + solution[0] + "," + solution[1] + ").");
-                    }
-                }
-            }
-            else if (variable == "intelligence" || variable == "strength" || variable == "dexterity")
-            {
+            //     using (PlQuery queryVariable = new PlQuery(variable, new PlTermV(new PlTerm[] { new PlTerm("Element"), new PlTerm("Personality") })))
+            //     {
+            //         foreach (PlTermV solution in queryVariable.Solutions)
+            //         {
+            //             if (debugFile)
+            //                 WriteInDebugKB(variable + "(" + solution[0] + "," + solution[1] + ").");
+            //         }
+            //     }
+            // }
+            // if (variable == "personality" || variable == "intelligence" || variable == "strength" || variable == "dexterity")
+            // {
 
-                using (PlQuery queryVariable = new PlQuery(variable, new PlTermV(new PlTerm[] { new PlTerm("Element"), new PlTerm("Characteristic") })))
-                {
-                    foreach (PlTermV solution in queryVariable.Solutions)
-                    {
-                        if (debugFile)
-                            WriteInDebugKB(variable + "(" + solution[0] + "," + solution[1] + ").");
-                    }
-                }
-            }
-            else
+            using (PlQuery queryVariable = new PlQuery(variable, new PlTermV(new PlTerm[] { new PlTerm("Element"), new PlTerm("Characteristic") })))
             {
-                using (PlQuery queryVariable = new PlQuery(variable, new PlTermV(new PlTerm("Element"))))
+                foreach (PlTermV solution in queryVariable.Solutions)
                 {
-                    foreach (PlTermV solution in queryVariable.Solutions)
-                    {
-                        if (consoleLog)
-                            Debug.Log(message + solution[0].ToString() + "\n");
-
-                        if (debugFile)
-                            WriteInDebugKB(variable + "(" + solution[0] + ").");
-                    }
+                    if (debugFile)
+                        WriteInDebugKB(variable + "(" + solution[0] + "," + solution[1] + ").");
                 }
             }
+            // }
+            // else
+            // {
+            //     using (PlQuery queryVariable = new PlQuery(variable, new PlTermV(new PlTerm("Element"))))
+            //     {
+            //         foreach (PlTermV solution in queryVariable.Solutions)
+            //         {
+            //             if (consoleLog)
+            //                 Debug.Log(message + solution[0].ToString() + "\n");
+
+            //             if (debugFile)
+            //                 WriteInDebugKB(variable + "(" + solution[0] + ").");
+            //         }
+            //     }
+            // }
         }
     }
 

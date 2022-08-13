@@ -346,4 +346,6 @@ MonoBehaviour:
   nbWumpus: 0
   nbWumpusDead: 0
   gridManager: {fileID: 1979442548}
-  personality: 00000000
+  intelligence: 3
+  strength: 7
+  dexterity: 7

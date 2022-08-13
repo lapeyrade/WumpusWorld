@@ -1,57 +1,18 @@
-:- module(move, [move/2, random_move/2, nb_wumpus/1, nb_wumpus_dead/1, nb_gold/1, nb_gold_agent/1]).
+:- module(move, [move/2, random_move/2]).
 
 :- use_module(library(random)).
 
-:- dynamic([nb_wumpus/1, nb_wumpus_dead/1, nb_gold/1, nb_gold_agent/1],
-    [incremental(true)]).
-
-:- multifile [cell:cell2/3, wellfs:is_undefined/1,
-            objective:objective/2].
-
+:- multifile [cell:cell2/3, objective:objective/2, state:state/2].
 
 %%%%%%%%%% MOVE ONTOLOGY %%%%%%%%%%
 
-% all golds are found by the agent
-all_golds_found :-
-    nb_gold(TotalGold),
-    nb_gold_agent(AgentGold),
-    TotalGold == AgentGold.
-
-% all wumpus are killed by the agent
-all_wumpus_killed :-
-            nb_wumpus(TotalWumpus),
-            nb_wumpus_dead(WumpusDead),
-            TotalWumpus == WumpusDead.
-
-% cell content is undefined
-unvisited_safe_cell(Col, Row):-
-    \+ cell:cell2(Col, Row, visited),
-    \+ cell:cell2(Col, Row, wall),
-    cell:cell2(Col, Row, safe).
-
-% cell content is undefined
-undefined_cell(Col, Row):-
-    \+ cell:cell2(Col, Row, visited),
-    \+ cell:cell2(Col, Row, wall),
-    wellfs:is_undefined(cell2(Col, Row, wumpus)),
-    wellfs:is_undefined(cell2(Col, Row, pit)).
-
 % X move to the last cell visited
 move_back(X):-
-    \+ objective:objective(X, explore_all),
+    \+ objective:objective(X, explore_cave),
+    \+ objective:objective(X, kill_wumpus),
     (
-        (
-            \+ objective:objective(X, gold),
-            nb_gold_agent(1)
-        ),
-        (
-            all_golds_found
-        )
-    ),
-    ( 
-        \+ objective:objective(X, kill)
-        ;
-        ( objective:objective(X, kill), all_wumpus_killed )
+        objective:objective(X, find_gold),
+    state:state(X, gold_found)
     ), !.
 
 % X move to the last cell visited
@@ -65,25 +26,25 @@ move_back(X):-
 move_right(X):-
     cell:cell2(Col, Row, X),
     RightCol is Col+1,
-    unvisited_safe_cell(RightCol, Row).
+    cell:cell2(RightCol, Row, unvisited_safe_cell).
 
 % X move to the left cell
 move_left(X):-
     cell:cell2(Col, Row, X),
     LeftCol is Col-1,
-    unvisited_safe_cell(LeftCol, Row).
+    cell:cell2(LeftCol, Row, unvisited_safe_cell).
 
 % X move to the top cell
 move_up(X):-
     cell:cell2(Col, Row, X),
     UpRow is Row+1,
-    unvisited_safe_cell(Col, UpRow).
+    cell:cell2(Col, UpRow, unvisited_safe_cell).
 
 % X move to the bottom cell
 move_down(X):-
     cell:cell2(Col, Row, X),
     DownRow is Row-1,
-    unvisited_safe_cell(Col, DownRow).
+    cell:cell2(Col, DownRow, unvisited_safe_cell).
 
 % move randomly to a side cell
 random_move(X, Move):-
@@ -107,4 +68,19 @@ move(X, Move):-
 % QUERY Random Move
 move(X, Move):-
     objective:objective(X, stochastic_exploration),
+    objective:
     random_move(X, Move).
+
+
+% cell content is undefined
+% unvisited_safe_cell(Col, Row):-
+    % \+ cell:cell2(Col, Row, visited),
+    % \+ cell:cell2(Col, Row, wall),
+    % cell:cell2(Col, Row, safe).
+
+% % cell content is undefined
+% undefined_cell(Col, Row):-
+%     \+ cell:cell2(Col, Row, visited),
+%     \+ cell:cell2(Col, Row, wall),
+%     wellfs:is_undefined(cell2(Col, Row, wumpus)),
+%     wellfs:is_undefined(cell2(Col, Row, pit)).

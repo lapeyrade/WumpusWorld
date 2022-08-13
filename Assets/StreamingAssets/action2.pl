@@ -1,38 +1,54 @@
-:- module(action, [action/2]).
+:- module(action2, [action2/2]).
 
 :- multifile [cell:cell2/3, wellfs:is_true/1, type:type/2, location:location/3, alignment:alignment/3, state:state/2, objective:objective/2].
 
 %%%%%%%%%% ACTION ONTOLOGY %%%%%%%%%%
 % ACTION: HIT_WALL, pickup_gold, SHOOT_ARROW, SHOOT_RIGHT/LEFT/UP/DOWM
 
+action(X):- shoot_action(X).
+action(X):- hit_obstacle_action(X).
+action(X):- pick_up_action(X).
+action(X):- explore_action(X).
+
+shoot_action(X):-
+    shoot_right(X);
+    shoot_left(X);
+    shoot_up(X);
+    shoot_down(X).
+
+hit_obstacle_action(X):-
+    hit_wall(X);
+    hit_closed_door(X);
+    hit_rock(X).
+
+pick_up_action(X):-
+    pickup_gold(X);
+    pickup_arrow(X);
+    pickup_weapon(X).
+
+pick_up_weapon(X):-
+    pickup_sword(X);
+    pickup_bow(X).
+
+
+
 % agent hits the wall so he cannot enter the cell
-
-% hit_object(X, Y):-
-%     location:location(X, Y, same_cell),
-%     type:type(Y, object).
-
-% hit_obstacle(X, Y):-
-%     hit_object(X, Y),
-%     type:type(Y, obstacle).
-
-% bump_wall(X):- hit_obstacle(X, wall).
-
-
-hit_object(X, Y):- hit_obstacle(X, Y).
-
-hit_obstacle(X, wall):- hit_wall(X).
-hit_obstacle(X, rock):- hit_rock(X).
-hit_obstacle(X, locked_door):- hit_locked_door(X).
-
 hit_wall(X):- location:location(X, wall, same_cell).
-hit_rock(X):- location:location(X, rock, same_cell).
-hit_locked_door(X):- location:location(X, locked_door, same_cell).
-
 
 % agent picks gold
 pickup_gold(X):-
     location:location(X, gold, same_cell),
     objective:objective(X, find_gold).
+
+shoot(X, Y):-
+    shoot_enemy(X, Y);
+    shoot_ally(X, Y).
+
+shoot_enemy(X, Y):-
+    alignment:alignment(X, Y, enemy).
+
+shoot_ally(X, Y):-
+    alignment:alignment(X, Y, ally).
 
 shoot(X, Y):-
     \+ objective:objective(X, avoid_killing),
@@ -63,12 +79,7 @@ shoot_down(X):-
 
 explore(X):- objective:objective(X, explore_cave).
 
-
-action_(X) :- hit_object(X).
-action_(X) :- hit_obstacle(X).
 action_(X) :- hit_wall(X).
-action_(X) :- hit_locked_door(X).
-action_(X) :- hit_rock(X).
 action_(X) :- pickup_gold(X).
 action_(X) :- shoot_right(X).
 action_(X) :- shoot_left(X).
@@ -76,14 +87,10 @@ action_(X) :- shoot_up(X).
 action_(X) :- shoot_down(X).
 action_(X) :- explore(X).
 
+action_(X) :- action(X).
+
 % QUERY Action
 action(X, Action):-
     clause(action_(X), A),
     call(A),
     A =.. [Action,_].
-
-
-% action(human, Action).
-
-% Action = hit_object(human, wall);
-% Action = pickup_gold.
