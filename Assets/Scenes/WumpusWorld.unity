@@ -309,7 +309,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugFileLog: 1
-  query: cell(X, Y, Z)
+  query: ally(human, dog)
   args:
   - X
   - Y

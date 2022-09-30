@@ -1,137 +1,135 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
-using SbsSW.SwiPlCs;
-using SbsSW.SwiPlCs.Exceptions;
-using SbsSW.SwiPlCs.Callback;
 using System.Reflection;
-using System;
 using System.IO;
+using System;
+using System.Linq;
 
-/// <summary>
-/// Interface between the Unity C# code and the Prolog Engine
-/// via the SwiPlCs Plugin
-/// </summary>
 public class PrologInterface : MonoBehaviour
 {
     [SerializeField] private bool debugFileLog = true;
     private bool consoleLog = false;
     [SerializeField] private string query = "cell(X, Y, Z)";
-    [SerializeField] private string[] args = new string[] { "X", "Y", "Z" };
     [SerializeField] private bool askQuery = false;
 
     private string prologFilePath = Path.Combine(Application.streamingAssetsPath, "kb.pl");
     private string debugPrologFilePath = Path.Combine(Application.streamingAssetsPath, "debugkb.pl");
 
-    /* Clean close the Prolog Engine */
-    public void OnApplicationQuit()
-    {
-        PlEngine.PlCleanup();
-    }
+    private PrologMQI mqi;
+    PrologThread prologThread;
 
     void Update()
     {
         /* Prolog query inside the Unity Inspector */
         if (askQuery)
         {
-            try
+            prologThread.query_async(query, false);
+
+            Debug.Log("Query: " + query);
+
+            bool more_results = true;
+
+            while (more_results)
             {
-                using (PlQuery q = new PlQuery(query))
+                foreach (Tuple<string, string> answer in prologThread.query_async_result())
                 {
-                    foreach (PlQueryVariables v in q.SolutionVariables)
-                    {
-                        foreach (string s in args)
-                            Debug.Log(s + " = " + v[s].ToString());
-                    }
+                    if (answer.Item1 == "null" && answer.Item2 == "null")
+                        more_results = false;
+                    else
+                        Debug.Log(answer.Item1 + " = " + answer.Item2);
                 }
             }
-            catch (PlException ex)
-            {
-                Debug.Log(ex.ToString());
-            }
-            finally
-            {
-                PlEngine.PlCleanup();
-            }
-
             askQuery = false;
         }
     }
 
     public void InitialiseGameKB(int nbWumpus, Human agent)
     {
-        string[] param = { "-q", "-f", prologFilePath };  // suppressing informational & banner messages
+        this.mqi = new PrologMQI();
+        this.prologThread = mqi.create_thread();
 
-        if (!PlEngine.IsInitialized)
-            PlEngine.Initialize(param);
+        this.prologThread.query("consult('" + prologFilePath + "')");
 
-        // AddToKB($"grid_coord({gridMin.col}, {gridMin.row}, {gridMax.col}, {gridMax.row})", true);
-        // AddToKB($"nb_gold({nbGold})", true);
         AddToKB($"nb_gold({agent.agentName}, {0})", true);
         AddToKB($"nb_arrow({agent.agentName}, {nbWumpus})", true);
-        // AddToKB($"nb_wumpus({nbWumpus})", true);
-        // AddToKB($"nb_wumpus_dead({0})", true);
         AddToKB($"intelligence({agent.agentName}, {agent.intelligence})", true);
         AddToKB($"strength({agent.agentName}, {agent.strength})", true);
         AddToKB($"dexterity({agent.agentName}, {agent.dexterity})", true);
-
-        // foreach (string personality in agent.getAgentPersonalities())
-        // AddToKB($"personality:{personality}({agent.agentName})", false);
     }
 
     public String NextMove(Human agent)
     {
-        using (PlQuery queryNextMove = new PlQuery("move", new PlTermV(new PlTerm[] { new PlTerm(agent.agentName), new PlTerm("Move") })))
-        {
-            foreach (PlTermV solution in queryNextMove.Solutions)
-            {
-                return (string)solution[1];
-            }
-        }
-        return "Default";
+
+        prologThread.query_async($"move({agent.agentName}, Move)", false);
+
+        List<Tuple<string, string>> result = prologThread.query_async_result();
+
+        if (result.Count == 0)
+            return "Default";
+        else
+            return result.First().Item2;
     }
 
     public string RandomMove(Human agent)
     {
-        using (PlQuery queryRandomMove = new PlQuery("random_move", new PlTermV(new PlTerm[] { new PlTerm(agent.agentName), new PlTerm("Move") })))
-        {
-            foreach (PlTermV solution in queryRandomMove.Solutions)
-            {
-                return (string)solution[1];
-            }
-        }
-        return "Default";
+        prologThread.query_async($"random_move({agent.agentName}, Move)", false);
+
+        List<Tuple<string, string>> result = prologThread.query_async_result();
+
+        if (result.Count == 0)
+            return "Default";
+        else
+            return result.First().Item2;
     }
 
     public String NextAction(Human agent)
     {
-        using (PlQuery queryNextAction = new PlQuery("action", new PlTermV(new PlTerm[] { new PlTerm(agent.agentName), new PlTerm("Action") })))
-        {
-            foreach (PlTermV solution in queryNextAction.Solutions)
-            {
-                return (string)solution[1];
-            }
-        }
-        return "Default";
+        prologThread.query_async($"action({agent.agentName}, Action)", false);
+
+        List<Tuple<string, string>> result = prologThread.query_async_result();
+
+        if (result.Count == 0)
+            return "Default";
+        else
+            return result.First().Item2;
     }
 
     public Boolean CheckCellElement(Coordinates coords, string element)
     {
-        return PlQuery.PlCall($"is_true(cell2({coords.col}, {coords.row}, {element}))");
+        return bool.Parse(prologThread.query($"is_true(cell2({coords.col}, {coords.row}, {element}))").ElementAt(0).Item1);
     }
 
     public List<Coordinates> CheckElement(string element)
     {
         List<Coordinates> listCoordsElement = new List<Coordinates>();
 
-        using (PlQuery checkElement = new PlQuery("list_element", new PlTermV(new PlTerm[] { new PlTerm("Col"), new PlTerm("Row"), new PlTerm(element) })))
+        prologThread.query_async($"list_element(Col, Row, {element})", false);
+
+        bool more_results = true;
+
+        while (more_results)
         {
-            foreach (PlTermV solution in checkElement.Solutions)
+            Coordinates coords = new Coordinates(0, 0);
+            bool colRetrieved = false;
+
+            foreach (Tuple<string, string> answer in prologThread.query_async_result())
             {
-                listCoordsElement.Add(new Coordinates((int)solution[0], (int)solution[1]));
+                if (answer.Item1 == "Col")
+                {
+                    coords.col = int.Parse(answer.Item2);
+                    colRetrieved = true;
+                }
+                else if (answer.Item1 == "Row")
+                {
+                    coords.row = int.Parse(answer.Item2);
+                    if (colRetrieved && coords.col != null && coords.row != null)
+                        listCoordsElement.Add(coords);
+                }
+                else if (answer.Item1 == "null" && answer.Item2 == "null")
+                    more_results = false;
             }
         }
-
         return listCoordsElement;
     }
 
@@ -139,31 +137,23 @@ public class PrologInterface : MonoBehaviour
     /***************** KB I/O *****************/
     public void AddToKB(string predicate, Boolean verifyKB)
     {
-        // If fact not already in KB, add it
-        if (verifyKB)
-        {
-            if (PlQuery.PlCall($"{predicate}") == false)
-                PlQuery.PlCall($"assertz({predicate})");
-        }
-        else
-            PlQuery.PlCall($"assertz({predicate})");
+        if (!verifyKB || (verifyKB && this.prologThread.query(predicate).ElementAt(0).Item1 == "false"))
+            this.prologThread.query($"assertz({predicate})");
     }
 
     public void RemoveFromKB(string predicate)
     {
-        PlQuery.PlCall($"retractall({predicate})");
+        this.prologThread.query($"retractall({predicate})");
     }
 
     public void AddCellContentKB(Coordinates coords, string cellContent)
     {
-        // If fact not already in KB, add it
-        if (PlQuery.PlCall($"cell({coords.col}, {coords.row}, {cellContent})") == false)
-            PlQuery.PlCall($"assertz(cell({coords.col}, {coords.row}, {cellContent}))");
+        AddToKB($"cell({coords.col}, {coords.row}, {cellContent})", true);
     }
 
     public void RemoveCellContentKB(Coordinates coords, string cellContent)
     {
-        PlQuery.PlCall($"retractall(cell({coords.col}, {coords.row}, {cellContent}))");
+        RemoveFromKB($"cell({coords.col}, {coords.row}, {cellContent})");
     }
 
 
@@ -175,12 +165,8 @@ public class PrologInterface : MonoBehaviour
 
         // ClearLog();
 
-        // PrintGlobalVariables("grid_coord", "Grid Coords: ", debugFileLog, consoleLog);
-        // PrintGlobalVariables("nb_wumpus", "Initial number of Wumpus: ", debugFileLog, consoleLog);
-        // PrintGlobalVariables("nb_wumpus_dead", "Wumpus killed: ", debugFileLog, consoleLog);
         PrintGlobalVariables("nb_arrow", "Initial number of arrows: ", debugFileLog, consoleLog);
         PrintGlobalVariables("nb_gold", "Initial number of gold: ", debugFileLog, consoleLog);
-        // PrintGlobalVariables("nb_gold_agent", "Number of gold picked up: ", debugFileLog, consoleLog);
         PrintGlobalVariables("intelligence", "Intelligence: ", debugFileLog, consoleLog);
         PrintGlobalVariables("strength", "Strength: ", debugFileLog, consoleLog);
         PrintGlobalVariables("dexterity", "Dexterity: ", debugFileLog, consoleLog);
@@ -191,7 +177,7 @@ public class PrologInterface : MonoBehaviour
         if (debugFileLog)
             WriteInDebugKB("% ------------------");
 
-        PrintAgentMovements(debugFileLog, consoleLog);
+        // PrintAgentMovements(debugFileLog, consoleLog);
 
         PrintCellContent(debugFileLog, consoleLog);
 
@@ -211,70 +197,73 @@ public class PrologInterface : MonoBehaviour
 
         void PrintCellContent(Boolean debugFile, Boolean consoleLog)
         {
-            // Print Cells
-            using (PlQuery queryCell = new PlQuery("cell", new PlTermV(new PlTerm("Col"), new PlTerm("Row"), new PlTerm("Element"))))
+            prologThread.query_async($"cell(Col, Row, Element)", false);
+
+            List<String> listCol = new List<String>();
+            List<String> listRow = new List<String>();
+            List<String> listElement = new List<String>();
+
+            bool more_results = true;
+
+            while (more_results)
             {
-                foreach (PlTermV solution in queryCell.Solutions)
+                foreach (Tuple<string, string> answer in prologThread.query_async_result())
+                {
+                    if (answer.Item1 == "Col")
+                        listCol.Add(answer.Item2);
+                    else if (answer.Item1 == "Row")
+                        listRow.Add(answer.Item2);
+                    else if (answer.Item1 == "Element")
+                        listElement.Add(answer.Item2);
+                    else if (answer.Item1 == "null" && answer.Item2 == "null")
+                        more_results = false;
+                }
+            }
+
+            if (listCol.Count() == listRow.Count() && listRow.Count() == listElement.Count())
+            {
+                for (int i = 0; i < listCol.Count(); i++)
                 {
                     if (consoleLog)
-                        Debug.Log("Cell= Col: " + solution[0].ToString() + ", Row: " + solution[1].ToString() + " = " + solution[2].ToString() + "\n");
+                        Debug.Log($"cell({listCol[i]}, {listRow[i]}, {listElement[i]}).");
                     if (debugFile)
-                        WriteInDebugKB("cell(" + solution[0] + "," + solution[1] + "," + solution[2] + ").");
+                        WriteInDebugKB($"cell({listCol[i]}, {listRow[i]}, {listElement[i]}).");
                 }
             }
         }
 
         void PrintGlobalVariables(string variable, string message, Boolean debugFile, Boolean consoleLog)
         {
-            // if (variable == "grid_coord")
-            // {
-            //     using (PlQuery queryVariable = new PlQuery(variable, new PlTermV(new PlTerm[] { new PlTerm("MinCol"), new PlTerm("MinRow"), new PlTerm("MaxCol"), new PlTerm("MaxRow") })))
-            //     {
-            //         foreach (PlTermV solution in queryVariable.Solutions)
-            //         {
-            //             if (debugFile)
-            //                 WriteInDebugKB(variable + "(" + solution[0] + "," + solution[1] + "," + solution[2] + "," + solution[3] + ").");
-            //         }
-            //     }
-            // }
-            // else if (variable == "personality")
-            // {
+            prologThread.query_async($"{variable}(Element, Characteristic)", false);
 
-            //     using (PlQuery queryVariable = new PlQuery(variable, new PlTermV(new PlTerm[] { new PlTerm("Element"), new PlTerm("Personality") })))
-            //     {
-            //         foreach (PlTermV solution in queryVariable.Solutions)
-            //         {
-            //             if (debugFile)
-            //                 WriteInDebugKB(variable + "(" + solution[0] + "," + solution[1] + ").");
-            //         }
-            //     }
-            // }
-            // if (variable == "personality" || variable == "intelligence" || variable == "strength" || variable == "dexterity")
-            // {
+            List<String> listElements = new List<String>();
+            List<String> listCharacteristics = new List<String>();
 
-            using (PlQuery queryVariable = new PlQuery(variable, new PlTermV(new PlTerm[] { new PlTerm("Element"), new PlTerm("Characteristic") })))
+            bool more_results = true;
+
+            while (more_results)
             {
-                foreach (PlTermV solution in queryVariable.Solutions)
+                foreach (Tuple<string, string> answer in prologThread.query_async_result())
                 {
-                    if (debugFile)
-                        WriteInDebugKB(variable + "(" + solution[0] + "," + solution[1] + ").");
+                    if (answer.Item1 == "Element")
+                        listElements.Add(answer.Item2);
+                    else if (answer.Item1 == "Characteristic")
+                        listCharacteristics.Add(answer.Item2);
+                    else if (answer.Item1 == "null" && answer.Item2 == "null")
+                        more_results = false;
                 }
             }
-            // }
-            // else
-            // {
-            //     using (PlQuery queryVariable = new PlQuery(variable, new PlTermV(new PlTerm("Element"))))
-            //     {
-            //         foreach (PlTermV solution in queryVariable.Solutions)
-            //         {
-            //             if (consoleLog)
-            //                 Debug.Log(message + solution[0].ToString() + "\n");
 
-            //             if (debugFile)
-            //                 WriteInDebugKB(variable + "(" + solution[0] + ").");
-            //         }
-            //     }
-            // }
+            if (listElements.Count() == listCharacteristics.Count())
+            {
+                for (int i = 0; i < listElements.Count(); i++)
+                {
+                    if (consoleLog)
+                        Debug.Log($"{variable}({listElements[i]}, {listCharacteristics[i]}).");
+                    if (debugFile)
+                        WriteInDebugKB($"{variable}({listElements[i]}, {listCharacteristics[i]}).");
+                }
+            }
         }
     }
 

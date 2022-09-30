@@ -75,7 +75,7 @@ public class Human : MonoBehaviour
         world.RemoveFromGrids(coords.col, coords.row, "gold", true, true);
         nbGold += 1;
     }
-    public void HitWall()
+    public void BumpWall()
     {
         world.RemoveFromGrids(coords.col, coords.row, agentName, true, true);
         pastMovements.Pop();

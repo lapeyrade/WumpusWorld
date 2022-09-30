@@ -175,7 +175,7 @@ public class GameController : MonoBehaviour
             {
                 case "bump_wall":
                     prologInterface.RemoveCellContentKB(agent.coords, "safe");
-                    agent.HitWall();
+                    agent.BumpWall();
                     prologInterface.AddCellContentKB(agent.coords, "human");
                     break;
                 case "pickup_gold":

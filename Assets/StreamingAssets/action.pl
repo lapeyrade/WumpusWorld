@@ -6,28 +6,9 @@
 % ACTION: HIT_WALL, pickup_gold, SHOOT_ARROW, SHOOT_RIGHT/LEFT/UP/DOWM
 
 % agent hits the wall so he cannot enter the cell
-
-% hit_object(X, Y):-
-%     location:location(X, Y, same_cell),
-%     type:type(Y, object).
-
-% hit_obstacle(X, Y):-
-%     hit_object(X, Y),
-%     type:type(Y, obstacle).
-
-% bump_wall(X):- hit_obstacle(X, wall).
-
-
-hit_object(X, Y):- hit_obstacle(X, Y).
-
-hit_obstacle(X, wall):- hit_wall(X).
-hit_obstacle(X, rock):- hit_rock(X).
-hit_obstacle(X, locked_door):- hit_locked_door(X).
-
-hit_wall(X):- location:location(X, wall, same_cell).
-hit_rock(X):- location:location(X, rock, same_cell).
-hit_locked_door(X):- location:location(X, locked_door, same_cell).
-
+bump_wall(X):- location:location(X, wall, same_cell).
+bump_rock(X):- location:location(X, rock, same_cell).
+bump_locked_door(X):- location:location(X, locked_door, same_cell).
 
 % agent picks gold
 pickup_gold(X):-
@@ -64,11 +45,9 @@ shoot_down(X):-
 explore(X):- objective:objective(X, explore_cave).
 
 
-action_(X) :- hit_object(X).
-action_(X) :- hit_obstacle(X).
-action_(X) :- hit_wall(X).
-action_(X) :- hit_locked_door(X).
-action_(X) :- hit_rock(X).
+action_(X) :- bump_locked_door(X).
+action_(X) :- bump_rock(X).
+action_(X) :- bump_wall(X).
 action_(X) :- pickup_gold(X).
 action_(X) :- shoot_right(X).
 action_(X) :- shoot_left(X).
@@ -83,7 +62,60 @@ action(X, Action):-
     A =.. [Action,_].
 
 
-% action(human, Action).
+%%%% V2 %%%%%
+% action(X):- shoot_action(X).
+% action(X):- hit_obstacle_action(X).
+% action(X):- pick_up_action(X).
+% action(X):- explore_action(X).
 
-% Action = hit_object(human, wall);
-% Action = pickup_gold.
+% shoot_action(X):-
+%     shoot_right(X);
+%     shoot_left(X);
+%     shoot_up(X);
+%     shoot_down(X).
+
+% hit_obstacle_action(X):-
+%     hit_wall(X);
+%     hit_closed_door(X);
+%     hit_rock(X).
+
+% pick_up_action(X):-
+%     pickup_gold(X);
+%     pickup_arrow(X);
+%     pickup_weapon(X).
+
+% pick_up_weapon(X):-
+%     pickup_sword(X);
+%     pickup_bow(X).
+
+%%%% V3 %%%%%
+% bump_object(X):- bump_obstacle(X).
+
+% bump_obstacle(X):- bump_wall(X).
+% bump_obstacle(X):- bump_rock(X).
+% bump_obstacle(X):- bump_locked_door(X).
+
+
+% % bump_wall(X):- location:location(X, Y, same_cell), type:type(Y, wall).
+% bump_wall(X):- location:location(X, wall, same_cell).
+% bump_rock(X):- location:location(X, rock, same_cell).
+% bump_locked_door(X):- location:location(X, locked_door, same_cell).
+
+% V4
+% bump(X, Y):- bump_object(X, Y).
+% bump(X, Y):- bump_being(X, Y).
+
+% bump_object(X, Y):- location:location(X, Y, same_cell), type:type(Y, object),
+%                     bump_obstacle(X, Y).
+
+% bump_being(X, Y):- location:location(X, Y, same_cell), type:type(Y, being).
+
+% bump_obstacle(X, Y):- location:location(X, Y, same_cell), type:type(Y, obstacle),
+%                     (bump_wall(X); bump_rock(X); bump_locked_door(X)).
+
+
+% bump_wall(X):-  location:location(X, Y, same_cell), type:type(Y, wall).
+% bump_rock(X):-  location:location(X, Y, same_cell), type:type(Y, rock).
+% bump_locked_door(X):-  location:location(X, Y, same_cell), type:type(Y, locked_door).
+
+% bump(X, Y):- location:location(X, Z, same_cell), type:type(Y, Z).
