@@ -309,11 +309,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugFileLog: 1
-  query: ally(human, dog)
-  args:
-  - X
-  - Y
-  - Z
+  query: type(X, Y)
   askQuery: 0
 --- !u!114 &1979442554
 MonoBehaviour:

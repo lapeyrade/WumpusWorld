@@ -1,6 +1,6 @@
 :- module(action, [action/2]).
 
-:- multifile [cell:cell2/3, wellfs:is_true/1, type:type/2, location:location/3, alignment:alignment/3, state:state/2, objective:objective/2].
+:- multifile [wellfs:is_true/1, type:type/2, location:location/3, alignment:alignment/3, state:state/2, objective:objective/2].
 
 %%%%%%%%%% ACTION ONTOLOGY %%%%%%%%%%
 % ACTION: HIT_WALL, pickup_gold, SHOOT_ARROW, SHOOT_RIGHT/LEFT/UP/DOWM

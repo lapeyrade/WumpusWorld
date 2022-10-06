@@ -1,4 +1,11 @@
-﻿using System;
+﻿/* swiplserver SWI Prolog integration library
+    Author:        Sylvain Lapeyrade
+    E-mail:        sylvain.lapeyrade@uca.fr
+    WWW:           https://www.sylvainlapeyrade.github.io
+    Copyright (c)  2021, Eric Zinda
+*/
+
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Net;
@@ -22,15 +29,15 @@ class PrologError
             jsonResult.GetProperty("args").ToString().Length == 1);
         this._exception_json = jsonResult.GetProperty("args")[0].ToString();
 
-        this.prolog();
+        this.Prolog();
     }
 
-    public string json()
+    public string Json()
     {
         return this._exception_json;
     }
 
-    public string prolog()
+    public string Prolog()
     {
         // return json_to_prolog(this._exception_json);
         return this._exception_json;
@@ -158,9 +165,8 @@ public class PrologMQI
                 launchArgs += " --password=" + this._password;
             if (this._output_file != null)
             {
-                string finalPath = " ";
-                // string finalPath = Create_posix_path(this._output_file);
-                // launchArgs += " --output_file=" + this._output_file;
+                string finalPath = PrologFunctions.CreatePosixPath(this._output_file);
+                launchArgs += " --write_output_to_file =" + this._output_file;
                 Console.WriteLine("Writing all Prolog output to file: " + finalPath);
             }
             if (this._port != null)
@@ -251,7 +257,7 @@ public class PrologThread
 {
     public PrologMQI _prolog_server;
     public Socket? _socket;
-    public string? communication_thread_it;
+    public string? communication_thread_id;
     public string? goal_thread_id;
     public int _heartbeat_count;
     public int? _server_protocol_major;
@@ -261,7 +267,7 @@ public class PrologThread
     {
         this._prolog_server = prologMQI;
         this._socket = null;
-        this.communication_thread_it = null;
+        this.communication_thread_id = null;
         this.goal_thread_id = null;
         this._heartbeat_count = 0;
         this._server_protocol_major = null;
@@ -331,11 +337,10 @@ public class PrologThread
             throw new PrologLaunchError($"Failed to accept password: {jsonResult}");
         else
         {
-            JsonElement threadTerm = jsonResult.GetProperty("args")[0][0][0];
-            this.communication_thread_it = jsonResult.GetProperty("args")[0][0][0].GetProperty("args")[0].ToString();
+            this.communication_thread_id = jsonResult.GetProperty("args")[0][0][0].GetProperty("args")[0].ToString();
             this.goal_thread_id = jsonResult.GetProperty("args")[0][0][0].GetProperty("args")[1].ToString();
 
-            // file.WriteLine("PrologMQI server protocol: " + this.communication_thread_it + " " + this.goal_thread_id);
+            // file.WriteLine("PrologMQI server protocol: " + this.communication_thread_id + " " + this.goal_thread_id);
 
             if (jsonResult.GetProperty("args")[0][0].GetArrayLength() > 1)
             {
@@ -578,29 +583,180 @@ public class PrologThread
         }
         return answerList;
     }
+}
 
-    public bool is_prolog_variable(string json_term)
+
+public static class PrologFunctions
+{
+    public static string CreatePosixPath(string os_path)
     {
-        return typeof(string).IsInstanceOfType(json_term) &&
-            (Char.IsUpper(json_term, 0) || json_term.StartsWith("_"));
+        return os_path.Replace("\\", "/");
     }
 
-
-    public bool is_prolog_atom(string json_term)
+    public static bool IsPrologFunctor(JsonElement json_term)
     {
-        return typeof(string).IsInstanceOfType(json_term) && !this.is_prolog_variable(json_term);
+        return json_term.TryGetProperty("functor", out JsonElement functor) && json_term.TryGetProperty("args", out JsonElement args);
     }
 
-    public string prolog_name(JsonElement json_term)
+    public static bool IsPrologVariable(JsonElement json_term)
     {
-        if (is_prolog_atom(json_term.ToString()) || is_prolog_variable(json_term.ToString()))
-            return json_term.ToString();
+        return json_term.GetProperty("args")[0].ToString() == "test" || json_term[0].GetProperty("args")[0].ToString() == "_";
+    }
+
+    public static bool IsPrologAtom(JsonElement json_term)
+    {
+        return !IsPrologVariable(json_term);
+    }
+
+    public static JsonElement PrologName(JsonElement json_term)
+    {
+        if (IsPrologAtom(json_term) || IsPrologVariable(json_term))
+            return json_term;
         else
-            return json_term.GetProperty("functor").ToString();
+            return json_term.GetProperty("functor");
     }
 
-    public string prolog_args(JsonElement json_term)
+    public static JsonElement PrologArgs(JsonElement json_term)
     {
-        return json_term.GetProperty("args").ToString();
+        return json_term.GetProperty("args");
+    }
+
+    // void quote_prolog_identifier(identifier: str):
+    //     """
+    //     Surround a Prolog identifier with '' if Prolog rules require it.
+    //     """
+    //     if not is_prolog_atom(identifier):
+    //         return identifier
+    //     else:
+    //         mustQuote = is_prolog_atom(identifier) and(
+    //             len(identifier) == 0
+    //             or not identifier[0].isalpha()
+    //             or
+    //             # characters like _ are allowed without quoting
+    //             not identifier.translate({ ord(c): "" for c in "_"}).isalnum()
+    //         )
+
+    //         if mustQuote:
+    //             return f"'{identifier}'"
+    //         else:
+    //             return identifier
+
+
+    // def json_to_prolog(json_term):
+    //     """
+    //     Convert json_term from the Prolog JSON format to a string that represents the term in the Prolog language. See `PrologThread.query` for documentation on the Prolog JSON format.
+    //     """
+    //     if is_prolog_functor(json_term):
+    //         argsString = [json_to_prolog(item) for item in prolog_args(json_term)]
+    //         return f"{quote_prolog_identifier(prolog_name(json_term))}({', '.join(argsString)})"
+    //     elif is_prolog_list(json_term):
+    //         listString = [json_to_prolog(item) for item in json_term]
+    //         return f"[{', '.join(listString)}]"
+    //     else:
+    //         # must be an atom, number or variable
+    //         return str(quote_prolog_identifier(json_term))
+}
+
+
+public class main
+{
+    public static void Main()
+    {
+        PrologMQI mqi = new PrologMQI();
+        PrologThread prologThread = mqi.create_thread();
+
+        /*************************************************************************
+        TEST 0 : Test of the consult command to use a prolog file 
+        *************************************************************************/
+        Console.WriteLine("\n\nTEST 0 : Consult command and query afeter consult\n");
+        Console.WriteLine("Query: consult(test).");
+        Console.WriteLine(prologThread.query("consult(test)").ElementAt(0).Item1);
+        Console.WriteLine("Query: father(bob).");
+        Console.WriteLine(prologThread.query("father(bob)").ElementAt(0).Item1);
+
+        /*************************************************************************
+        TEST 1 : Query with only one answer (i.e. true ou false)
+        *************************************************************************/
+        Console.WriteLine("\n\nTEST 1 : Query with only one answer (i.e. true ou false)\n");
+        Console.WriteLine("Query: assertz(father(michael)).");
+        Console.WriteLine(prologThread.query("assertz(father(michael))").ElementAt(0).Item1);
+        Console.WriteLine("\nQuery: father(michael).");
+        Console.WriteLine(prologThread.query("father(michael)").ElementAt(0).Item1);
+        Console.WriteLine("\nQuery: father(paul).");
+        Console.WriteLine(prologThread.query("father(paul)").ElementAt(0).Item1);
+
+        /*************************************************************************
+        TEST 2 : Query with one atom and multiple answers
+        *************************************************************************/
+        Console.WriteLine("\n\nTEST 2 : Query with one argument and multiple answers\n");
+        Console.WriteLine("Query: father(X)\n");
+        prologThread.query_async("father(X)", false);
+
+        bool test2_more_results = true;
+        while (test2_more_results)
+        {
+            List<Tuple<string, string>> test2_result = prologThread.query_async_result();
+            for (int i = 0; i < test2_result.Count(); i++)
+            {
+                if (test2_result.ElementAt(i).Item1 == "null" && test2_result.ElementAt(i).Item2 == "null")
+                {
+                    Console.WriteLine("No more results");
+                    test2_more_results = false;
+                }
+                else
+                    Console.WriteLine(test2_result.ElementAt(i).Item1 + " = " + test2_result.ElementAt(i).Item2);
+            }
+        }
+
+        /*************************************************************************
+        TEST 3 : Query with two arguments and multiple answers
+        *************************************************************************/
+        Console.WriteLine("\n\nTEST 3 : Query with two arguments and multiple answers\n");
+        Console.WriteLine("Query: mother(X, Y)\n");
+        prologThread.query_async("mother(X, Y)", false);
+
+        bool test1_more_results = true;
+        while (test1_more_results)
+        {
+            List<Tuple<string, string>> test3_results = prologThread.query_async_result();
+            for (int i = 0; i < test3_results.Count(); i++)
+            {
+                if (test3_results.ElementAt(i).Item1 == "null" && test3_results.ElementAt(i).Item2 == "null")
+                {
+                    Console.WriteLine("No more results");
+                    test1_more_results = false;
+                }
+                else
+                    Console.WriteLine(test3_results.ElementAt(i).Item1 + " = " + test3_results.ElementAt(i).Item2);
+            }
+        }
+
+        /*************************************************************************
+        TEST 4 : Queries with threads
+        *************************************************************************/
+        Console.WriteLine("\n\nTEST 4: Queries with threads\n");
+        Console.WriteLine("Query: prolog_thread1.query_async(sleep(2), father(paul))");
+        Console.WriteLine("Query: prolog_thread2.query_async(sleep(1), father(kevin))");
+        PrologThread prologThread1 = mqi.create_thread();
+        PrologThread prologThread2 = mqi.create_thread();
+        prologThread1.query_async("sleep(1), father(michael)", false);
+        prologThread2.query_async("father(kevin)", false);
+
+        Console.WriteLine("Thread 2: " + prologThread2.query_async_result().ElementAt(0).Item1);
+        Console.WriteLine("Thread 1: " + prologThread1.query_async_result().ElementAt(0).Item1);
+
+        /*************************************************************************
+        TEST 5 : Query response time
+        *************************************************************************/
+        Console.WriteLine("\n\nTEST 5: Query response time\n");
+        Console.WriteLine("Query: time(father(bob)).");
+        Stopwatch timer = new Stopwatch();
+        timer.Start();
+        Console.WriteLine(prologThread.query("time(father(bob))").ElementAt(0).Item1);
+        Console.WriteLine("Time elapsed: {0}", timer.Elapsed);
+        timer.Restart();
+        Console.WriteLine(prologThread.query("time(father(bob))").ElementAt(0).Item1);
+        Console.WriteLine("Time elapsed: {0}", timer.Elapsed);
+
     }
 }

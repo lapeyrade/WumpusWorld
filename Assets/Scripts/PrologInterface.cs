@@ -10,7 +10,7 @@ public class PrologInterface : MonoBehaviour
 {
     [SerializeField] private bool debugFileLog = true;
     private bool consoleLog = false;
-    [SerializeField] private string query = "cell(X, Y, Z)";
+    [SerializeField] private string query = "cell([X, Y], Z)";
     [SerializeField] private bool askQuery = false;
 
     private string prologFilePath = Path.Combine(Application.streamingAssetsPath, "kb.pl");
@@ -97,14 +97,14 @@ public class PrologInterface : MonoBehaviour
 
     public Boolean CheckCellElement(Coordinates coords, string element)
     {
-        return bool.Parse(prologThread.query($"is_true(cell2({coords.col}, {coords.row}, {element}))").ElementAt(0).Item1);
+        return bool.Parse(prologThread.query($"is_true(cell2([{coords.col}, {coords.row}], {element}))").ElementAt(0).Item1);
     }
 
     public List<Coordinates> CheckElement(string element)
     {
         List<Coordinates> listCoordsElement = new List<Coordinates>();
 
-        prologThread.query_async($"list_element(Col, Row, {element})", false);
+        prologThread.query_async($"list_element([Col, Row], {element})", false);
 
         bool more_results = true;
 
@@ -148,12 +148,12 @@ public class PrologInterface : MonoBehaviour
 
     public void AddCellContentKB(Coordinates coords, string cellContent)
     {
-        AddToKB($"cell({coords.col}, {coords.row}, {cellContent})", true);
+        AddToKB($"cell([{coords.col}, {coords.row}], {cellContent})", true);
     }
 
     public void RemoveCellContentKB(Coordinates coords, string cellContent)
     {
-        RemoveFromKB($"cell({coords.col}, {coords.row}, {cellContent})");
+        RemoveFromKB($"cell([{coords.col}, {coords.row}], {cellContent})");
     }
 
 
@@ -197,7 +197,7 @@ public class PrologInterface : MonoBehaviour
 
         void PrintCellContent(Boolean debugFile, Boolean consoleLog)
         {
-            prologThread.query_async($"cell(Col, Row, Element)", false);
+            prologThread.query_async($"cell([Col, Row], Element)", false);
 
             List<String> listCol = new List<String>();
             List<String> listRow = new List<String>();
@@ -225,9 +225,9 @@ public class PrologInterface : MonoBehaviour
                 for (int i = 0; i < listCol.Count(); i++)
                 {
                     if (consoleLog)
-                        Debug.Log($"cell({listCol[i]}, {listRow[i]}, {listElement[i]}).");
+                        Debug.Log($"cell([{listCol[i]}, {listRow[i]}], {listElement[i]}).");
                     if (debugFile)
-                        WriteInDebugKB($"cell({listCol[i]}, {listRow[i]}, {listElement[i]}).");
+                        WriteInDebugKB($"cell([{listCol[i]}, {listRow[i]}], {listElement[i]}).");
                 }
             }
         }

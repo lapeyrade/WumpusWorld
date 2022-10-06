@@ -346,7 +346,7 @@ public class World : MonoBehaviour
 
             RemoveFromGrids(coords.col, coords.row, "wumpus", true, true);
             AddToGrids(coords.col, coords.row, "wumpusdead", true, true);
-            prologInterface.AddToKB($"cell({coords.col}, {coords.row}, wumpusdead)", true);
+            prologInterface.AddCellContentKB(coords, "wumpusdead");
             gameController.makeInferences();
         }
     }
