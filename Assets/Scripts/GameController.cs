@@ -85,19 +85,19 @@ public class GameController : MonoBehaviour
             switch (move)
             {
                 case "move_back":
-                    agent.MoveBack();
+                    world.Move(agent, agent.MoveBack());
                     break;
                 case "move_right":
-                    agent.Move(new Coordinates(agent.coords.col + 1, agent.coords.row));
+                    world.Move(agent, new Coordinates(agent.coords.col + 1, agent.coords.row));
                     break;
                 case "move_left":
-                    agent.Move(new Coordinates(agent.coords.col - 1, agent.coords.row));
+                    world.Move(agent, new Coordinates(agent.coords.col - 1, agent.coords.row));
                     break;
                 case "move_up":
-                    agent.Move(new Coordinates(agent.coords.col, agent.coords.row + 1));
+                    world.Move(agent, new Coordinates(agent.coords.col, agent.coords.row + 1));
                     break;
                 case "move_down":
-                    agent.Move(new Coordinates(agent.coords.col, agent.coords.row - 1));
+                    world.Move(agent, new Coordinates(agent.coords.col, agent.coords.row - 1));
                     break;
                 default:
                     break;
@@ -105,29 +105,29 @@ public class GameController : MonoBehaviour
         }
 
         else if (Input.GetKeyDown("right"))
-            agent.Move(new Coordinates(agent.coords.col + 1, agent.coords.row));
+            world.Move(agent, new Coordinates(agent.coords.col + 1, agent.coords.row));
 
         else if (Input.GetKeyDown("left"))
-            agent.Move(new Coordinates(agent.coords.col - 1, agent.coords.row));
+            world.Move(agent, new Coordinates(agent.coords.col - 1, agent.coords.row));
 
         else if (Input.GetKeyDown("up"))
-            agent.Move(new Coordinates(agent.coords.col, agent.coords.row + 1));
+            world.Move(agent, new Coordinates(agent.coords.col, agent.coords.row + 1));
 
         else if (Input.GetKeyDown("down"))
-            agent.Move(new Coordinates(agent.coords.col, agent.coords.row - 1));
+            world.Move(agent, new Coordinates(agent.coords.col, agent.coords.row - 1));
     }
 
     public void SenseCell(Human agent)
     {
         foreach (string element in world.map[agent.coords.col, agent.coords.row].Keys.ToList())
         {
-            if (!agent.map[agent.coords.col, agent.coords.row].Keys.ToList().Contains(element))
+            if (!world.agentMap[agent.coords.col, agent.coords.row].Keys.ToList().Contains(element))
                 world.AddToGrids(agent.coords.col, agent.coords.row, element, true, false);
 
             prologInterface.AddCellContentKB(new Coordinates(agent.coords.col, agent.coords.row), element);
         }
 
-        List<string> cellContent = agent.map[agent.coords.col, agent.coords.row].Keys.ToList();
+        List<string> cellContent = world.agentMap[agent.coords.col, agent.coords.row].Keys.ToList();
 
         if (!cellContent.Contains("wall"))
         {
@@ -175,13 +175,16 @@ public class GameController : MonoBehaviour
             {
                 case "bump_wall":
                     prologInterface.RemoveCellContentKB(agent.coords, "safe");
+                    world.RemoveFromGrids(agent.coords.col, agent.coords.row, agent.agentName, true, true);
                     agent.BumpWall();
+                    world.AddToGrids(agent.coords.col, agent.coords.row, agent.agentName, true, true);
                     prologInterface.AddCellContentKB(agent.coords, "human");
                     break;
                 case "pickup_gold":
-                    human.TakeGold();
+                    agent.TakeGold();
+                    world.RemoveFromGrids(agent.coords.col, agent.coords.row, "gold", true, true);
                     prologInterface.RemoveFromKB("nb_gold(_, _)");
-                    prologInterface.AddToKB($"nb_gold({human.agentName}, {human.nbGold})", true);
+                    prologInterface.AddToKB($"nb_gold({agent.agentName}, {agent.nbGold})", true);
                     break;
                 case "shoot_right":
                     world.ShootArrow("right");

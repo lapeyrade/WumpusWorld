@@ -1,1 +1,1 @@
-:- use_module([action, alignment, cell, characteristic, location, move, objective, personality, state, type, wellfs]).
+:- use_module([action, alignment, characteristic, location, move, objective, personality, situation, state, type, wellfs]).

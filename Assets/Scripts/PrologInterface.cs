@@ -10,7 +10,7 @@ public class PrologInterface : MonoBehaviour
 {
     [SerializeField] private bool debugFileLog = true;
     private bool consoleLog = false;
-    [SerializeField] private string query = "cell([X, Y], Z)";
+    [SerializeField] private string query = "situation([X, Y], Z)";
     [SerializeField] private bool askQuery = false;
 
     private string prologFilePath = Path.Combine(Application.streamingAssetsPath, "kb.pl");
@@ -97,7 +97,7 @@ public class PrologInterface : MonoBehaviour
 
     public Boolean CheckCellElement(Coordinates coords, string element)
     {
-        return bool.Parse(prologThread.query($"is_true(cell2([{coords.col}, {coords.row}], {element}))").ElementAt(0).Item1);
+        return bool.Parse(prologThread.query($"is_true(situation([{coords.col}, {coords.row}], {element}))").ElementAt(0).Item1);
     }
 
     public List<Coordinates> CheckElement(string element)
@@ -130,6 +130,7 @@ public class PrologInterface : MonoBehaviour
                     more_results = false;
             }
         }
+
         return listCoordsElement;
     }
 
@@ -143,7 +144,7 @@ public class PrologInterface : MonoBehaviour
 
     public void RemoveFromKB(string predicate)
     {
-        this.prologThread.query($"retractall({predicate})");
+        this.prologThread.query($"retract({predicate})");
     }
 
     public void AddCellContentKB(Coordinates coords, string cellContent)

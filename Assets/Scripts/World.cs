@@ -25,6 +25,7 @@ public class World : MonoBehaviour
     private Coordinates startCoords;
 
     public Dictionary<string, GameObject>[,] map;
+    public Dictionary<string, GameObject>[,] agentMap;
 
     public GameObject gridManager;
     public GameObject mainCamera;
@@ -32,7 +33,7 @@ public class World : MonoBehaviour
     private CameraController cameraController;
     private PrologInterface prologInterface;
     private Human human;
-    // private Human human2;
+    private Human human2;
     private Dog dog;
 
     void Awake()
@@ -40,7 +41,7 @@ public class World : MonoBehaviour
         gameController = gridManager.GetComponent<GameController>();
         prologInterface = gridManager.GetComponent<PrologInterface>();
         human = gridManager.GetComponent<Human>();
-        // human2 = gridManager.GetComponent<Human>();
+        human2 = gridManager.GetComponent<Human>();
         dog = gridManager.GetComponent<Dog>();
     }
 
@@ -52,6 +53,7 @@ public class World : MonoBehaviour
         startCoords = new Coordinates(startCol, startRow);
 
         map = new Dictionary<string, GameObject>[gridMax.col, gridMax.row];
+        agentMap = new Dictionary<string, GameObject>[gridMax.col, gridMax.row];
 
 
         if ((nbPit + nbWumpus + nbGold + nbAgent) > (gridMax.col * gridMax.row))
@@ -80,6 +82,7 @@ public class World : MonoBehaviour
     private void GenerateHuman()
     {
         human.initAgent(startCoords, "human", nbWumpus, gridMax);
+        human2.initAgent(new Coordinates(2, 2), "human", nbWumpus, gridMax);
     }
 
     private void GenerateGrid()
@@ -88,7 +91,7 @@ public class World : MonoBehaviour
         {
             for (int row = gridMin.row; row < gridMax.row; row++)
             {
-                human.map[col, row] = new Dictionary<string, GameObject>();
+                agentMap[col, row] = new Dictionary<string, GameObject>();
                 map[col, row] = new Dictionary<string, GameObject>();
                 AddToGrids(col, row, "cell", true, true);
             }
@@ -132,7 +135,7 @@ public class World : MonoBehaviour
                 row = Random.Range(gridMin.row, gridMax.row - 1);
             }
             AddToGrids(col, row, "gold", true, true);
-            human.map[col, row]["gold"].SetActive(false);
+            agentMap[col, row]["gold"].SetActive(false);
         }
     }
 
@@ -148,11 +151,11 @@ public class World : MonoBehaviour
                 row = Random.Range(gridMin.row, gridMax.row - 1);
             }
             AddToGrids(col, row, "wumpus", true, true);
-            human.map[col, row]["wumpus"].SetActive(false);
+            agentMap[col, row]["wumpus"].SetActive(false);
 
             AddToGrids(col, row, "wumpusdead", true, true);
             map[col, row]["wumpusdead"].SetActive(false);
-            human.map[col, row]["wumpusdead"].SetActive(false);
+            agentMap[col, row]["wumpusdead"].SetActive(false);
 
             GenerateAroundCell(col, row, "stenchyes");  // Stench Generation
         }
@@ -170,7 +173,7 @@ public class World : MonoBehaviour
                 row = Random.Range(gridMin.row, gridMax.row - 1);
             }
             AddToGrids(col, row, "pit", true, true);
-            human.map[col, row]["pit"].SetActive(false);
+            agentMap[col, row]["pit"].SetActive(false);
             GenerateAroundCell(col, row, "breezeyes");  // yes Generation
         }
     }
@@ -187,7 +190,7 @@ public class World : MonoBehaviour
             if (!map[col, row].ContainsKey(element))
             {
                 AddToGrids(col, row, element, true, true);
-                human.map[col, row][element].SetActive(false);
+                agentMap[col, row][element].SetActive(false);
 
                 if (map[col, row].ContainsKey("wall"))
                     map[col, row][element].SetActive(false);
@@ -197,11 +200,15 @@ public class World : MonoBehaviour
 
     private void InitialiseGame()
     {
-        AddToGrids(startCoords.col, startCoords.row, "human", true, true);
-        human.Move(startCoords);
+        Move(human, startCoords);
         gameController.SenseCell(human);
         gameController.ActionCell(human);
         prologInterface.PrintKB(human);
+
+        // Move(human2, new Coordinates(2, 2));
+        // gameController.SenseCell(human2);
+        // gameController.ActionCell(human2);
+        // prologInterface.PrintKB(human2);
     }
 
     public void AddToGrids(int col, int row, string content, bool updateMapAgent, bool updateMap)
@@ -231,10 +238,10 @@ public class World : MonoBehaviour
 
         if (content == "wall" || content == "safe" || content == "visited" || content == "danger" || content == "undefined")
         {
-            if (updateMapAgent && human.map[col, row].ContainsKey(content) == false)
+            if (updateMapAgent && agentMap[col, row].ContainsKey(content) == false)
             {
-                human.map[col, row].Add(content, null);
-                human.map[col, row]["cell"].GetComponent<SpriteRenderer>().color = newColor;
+                agentMap[col, row].Add(content, null);
+                agentMap[col, row]["cell"].GetComponent<SpriteRenderer>().color = newColor;
             }
 
             if (updateMap && map[col, row].ContainsKey(content) == false)
@@ -247,13 +254,13 @@ public class World : MonoBehaviour
         {
             if (updateMapAgent)
             {
-                if (human.map[col, row].ContainsKey(content) == false)
+                if (agentMap[col, row].ContainsKey(content) == false)
                 {
-                    human.map[col, row].Add(content, (GameObject)Instantiate(Resources.Load(content), transform));
-                    human.map[col, row][content].transform.position = new Vector2((col - gridMax.col / 2 - 0.5f) * tileSize, row * tileSize);
+                    agentMap[col, row].Add(content, (GameObject)Instantiate(Resources.Load(content), transform));
+                    agentMap[col, row][content].transform.position = new Vector2((col - gridMax.col / 2 - 0.5f) * tileSize, row * tileSize);
                 }
                 else
-                    human.map[col, row][content].SetActive(true);
+                    agentMap[col, row][content].SetActive(true);
             }
             if (updateMap)
             {
@@ -270,10 +277,10 @@ public class World : MonoBehaviour
 
     public void RemoveFromGrids(int col, int row, string content, bool updateMapAgent, bool updateMap)
     {
-        if (updateMapAgent && human.map[col, row].ContainsKey(content) == true)
+        if (updateMapAgent && agentMap[col, row].ContainsKey(content) == true)
         {
-            human.map[col, row][content].SetActive(false);
-            human.map[col, row].Remove(content);
+            agentMap[col, row][content].SetActive(false);
+            agentMap[col, row].Remove(content);
             prologInterface.RemoveCellContentKB(new Coordinates(col, row), content);
         }
 
@@ -287,12 +294,8 @@ public class World : MonoBehaviour
     public void ShootArrow(string direction)
     {
         Debug.Log("Shooting " + direction);
-        human.nbArrow--;
-        human.nbArrowUsed++;
         prologInterface.RemoveFromKB("nb_arrow(_, _)");
-        prologInterface.RemoveFromKB("nb_arrow_shot(_, _)");
         prologInterface.AddToKB($"nb_arrow({human.agentName}, {human.nbArrow})", true);
-        prologInterface.AddToKB($"nb_arrow_shot({human.agentName},{human.nbArrowUsed})", true);
 
         switch (direction)
         {
@@ -340,14 +343,18 @@ public class World : MonoBehaviour
 
         void KillWumpus(Coordinates coords)
         {
-            human.nbWumpusDead++;
-            prologInterface.RemoveFromKB("nb_wumpus_dead(_)");
-            prologInterface.AddToKB($"nb_wumpus_dead({human.nbWumpusDead})", true);
-
             RemoveFromGrids(coords.col, coords.row, "wumpus", true, true);
             AddToGrids(coords.col, coords.row, "wumpusdead", true, true);
             prologInterface.AddCellContentKB(coords, "wumpusdead");
             gameController.makeInferences();
         }
+    }
+
+    public void Move(Human agent, Coordinates newCoords)
+    {
+        RemoveFromGrids(agent.coords.col, agent.coords.row, agent.agentName, true, true);
+        agent.Move(newCoords);
+        AddToGrids(agent.coords.col, agent.coords.row, agent.agentName, true, true);
+        AddToGrids(agent.coords.col, agent.coords.row, "visited", true, false);
     }
 }

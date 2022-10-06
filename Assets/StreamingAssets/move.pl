@@ -2,7 +2,7 @@
 
 :- use_module(library(random)).
 
-:- multifile [cell:cell2/2, objective:objective/2, state:state/2].
+:- multifile [situation:situation/2, objective:objective/2, state:state/2].
 
 %%%%%%%%%% MOVE ONTOLOGY %%%%%%%%%%
 
@@ -24,27 +24,27 @@ move_back(X):-
 
 % X move to the right cell
 move_right(X):-
-    cell:cell2([Col, Row], X),
+    situation:situation([Col, Row], X),
     RightCol is Col+1,
-    cell:cell2([RightCol, Row], unvisited_safe_cell).
+    situation:situation([RightCol, Row], unvisited_safe_cell).
 
 % X move to the left cell
 move_left(X):-
-    cell:cell2([Col, Row], X),
+    situation:situation([Col, Row], X),
     LeftCol is Col-1,
-    cell:cell2([LeftCol, Row], unvisited_safe_cell).
+    situation:situation([LeftCol, Row], unvisited_safe_cell).
 
 % X move to the top cell
 move_up(X):-
-    cell:cell2([Col, Row], X),
+    situation:situation([Col, Row], X),
     UpRow is Row+1,
-    cell:cell2([Col, UpRow], unvisited_safe_cell).
+    situation:situation([Col, UpRow], unvisited_safe_cell).
 
 % X move to the bottom cell
 move_down(X):-
-    cell:cell2([Col, Row], X),
+    situation:situation([Col, Row], X),
     DownRow is Row-1,
-    cell:cell2([Col, DownRow], unvisited_safe_cell).
+    situation:situation([Col, DownRow], unvisited_safe_cell).
 
 % move randomly to a side cell
 random_move(X, Move):-
@@ -74,13 +74,13 @@ move(X, Move):-
 
 % cell content is undefined
 % unvisited_safe_cell(Col, Row):-
-    % \+ cell:cell2([Col, Row], visited),
-    % \+ cell:cell2([Col, Row], wall),
-    % cell:cell2([Col, Row], safe).
+    % \+ situation:situation([Col, Row], visited),
+    % \+ situation:situation([Col, Row], wall),
+    % situation:situation([Col, Row], safe).
 
 % % cell content is undefined
 % undefined_cell(Col, Row):-
-%     \+ cell:cell2([Col, Row], visited),
-%     \+ cell:cell2([Col, Row], wall),
+%     \+ situation:situation([Col, Row], visited),
+%     \+ situation:situation([Col, Row], wall),
 %     wellfs:is_undefined(cell2([Col, Row], wumpus)),
 %     wellfs:is_undefined(cell2([Col, Row], pit)).

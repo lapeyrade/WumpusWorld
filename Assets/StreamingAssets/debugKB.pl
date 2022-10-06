@@ -2,7 +2,7 @@
 
 % DYNAMIC PART OF THE KNOWLEDGE BASE
 
-nb_arrow(human, 1).
+nb_arrow(human, 8).
 nb_gold(human, 1).
 intelligence(human, 3).
 strength(human, 7).
