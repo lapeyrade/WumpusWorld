@@ -2,8 +2,8 @@
 
 % DYNAMIC PART OF THE KNOWLEDGE BASE
 
-nb_arrow(human, 8).
-nb_gold(human, 1).
+nb_arrow(human, 4).
+nb_gold(human, 0).
 intelligence(human, 3).
 strength(human, 7).
 dexterity(human, 7).
@@ -11,6 +11,7 @@ personality(human, determinist).
 personality(human, hunter).
 personality(human, greedy).
 % ------------------
+% [7, 8], [6, 8], [5, 8], [4, 8], [4, 7], [5, 7], [6, 7], [7, 7], [8, 7], [9, 7], [9, 6], [8, 6], [8, 5], [8, 4], [7, 4], [7, 3], [6, 3], [5, 3], [4, 3], [4, 2], [5, 2], [6, 2], [7, 2], [8, 2], [8, 1], [7, 1], [6, 1], [5, 1], [4, 1], [3, 1], [2, 1], [1, 1], 
 cell([1, 1], cell).
 cell([1, 1], start).
 cell([1, 1], visited).
@@ -137,139 +138,5 @@ cell([5, 8], visited).
 cell([6, 8], cell).
 cell([6, 8], visited).
 cell([7, 8], cell).
+cell([7, 8], human).
 cell([7, 8], visited).
-cell([8, 8], cell).
-cell([8, 8], visited).
-cell([9, 8], cell).
-cell([9, 8], stenchyes).
-cell([9, 8], visited).
-cell([8, 9], cell).
-cell([8, 9], visited).
-cell([9, 9], cell).
-cell([9, 9], visited).
-cell([10, 9], cell).
-cell([10, 9], stenchyes).
-cell([10, 9], visited).
-cell([10, 8], wumpusdead).
-cell([10, 8], cell).
-cell([10, 8], visited).
-cell([11, 8], cell).
-cell([11, 8], wall).
-cell([11, 8], stenchyes).
-cell([9, 10], cell).
-cell([9, 10], visited).
-cell([10, 10], cell).
-cell([10, 10], visited).
-cell([11, 10], cell).
-cell([11, 10], wall).
-cell([10, 11], cell).
-cell([10, 11], wall).
-cell([8, 10], cell).
-cell([8, 10], visited).
-cell([7, 10], cell).
-cell([7, 10], visited).
-cell([6, 10], cell).
-cell([6, 10], visited).
-cell([5, 10], cell).
-cell([5, 10], visited).
-cell([4, 10], cell).
-cell([4, 10], visited).
-cell([3, 10], cell).
-cell([3, 10], stenchyes).
-cell([3, 10], visited).
-cell([3, 8], wumpusdead).
-cell([4, 11], cell).
-cell([4, 11], wall).
-cell([4, 9], cell).
-cell([4, 9], visited).
-cell([5, 9], cell).
-cell([5, 9], visited).
-cell([6, 9], cell).
-cell([6, 9], visited).
-cell([7, 9], cell).
-cell([7, 9], visited).
-cell([3, 9], cell).
-cell([3, 9], stenchyes).
-cell([3, 9], visited).
-cell([3, 8], cell).
-cell([3, 8], visited).
-cell([2, 8], cell).
-cell([2, 8], stenchyes).
-cell([2, 8], breezeyes).
-cell([2, 8], visited).
-cell([5, 11], cell).
-cell([5, 11], wall).
-cell([6, 11], cell).
-cell([6, 11], wall).
-cell([7, 11], cell).
-cell([7, 11], wall).
-cell([8, 11], cell).
-cell([8, 11], wall).
-cell([9, 11], cell).
-cell([9, 11], wall).
-cell([4, 6], cell).
-cell([4, 6], visited).
-cell([5, 6], cell).
-cell([5, 6], visited).
-cell([6, 6], cell).
-cell([6, 6], breezeyes).
-cell([6, 6], visited).
-cell([7, 6], cell).
-cell([7, 6], visited).
-cell([5, 5], cell).
-cell([5, 5], stenchyes).
-cell([5, 5], breezeyes).
-cell([5, 5], visited).
-cell([4, 5], cell).
-cell([4, 5], visited).
-cell([3, 5], cell).
-cell([3, 5], visited).
-cell([2, 5], cell).
-cell([2, 5], stenchyes).
-cell([2, 5], visited).
-cell([2, 4], cell).
-cell([2, 4], breezeyes).
-cell([2, 4], visited).
-cell([3, 4], cell).
-cell([3, 4], breezeyes).
-cell([3, 4], visited).
-cell([4, 4], cell).
-cell([4, 4], stenchyes).
-cell([4, 4], visited).
-cell([5, 4], cell).
-cell([5, 4], visited).
-cell([6, 4], cell).
-cell([6, 4], stenchyes).
-cell([6, 4], breezeyes).
-cell([6, 4], visited).
-cell([3, 6], cell).
-cell([3, 6], visited).
-cell([2, 6], cell).
-cell([2, 6], visited).
-cell([1, 6], cell).
-cell([1, 6], stenchyes).
-cell([1, 6], visited).
-cell([1, 5], wumpusdead).
-cell([1, 5], cell).
-cell([1, 5], breezeyes).
-cell([1, 5], visited).
-cell([2, 7], cell).
-cell([2, 7], visited).
-cell([1, 7], cell).
-cell([1, 7], breezeyes).
-cell([1, 7], visited).
-cell([8, 0], cell).
-cell([8, 0], wall).
-cell([7, 0], cell).
-cell([7, 0], wall).
-cell([6, 0], cell).
-cell([6, 0], wall).
-cell([5, 0], cell).
-cell([5, 0], wall).
-cell([4, 0], cell).
-cell([4, 0], wall).
-cell([3, 0], cell).
-cell([3, 0], wall).
-cell([2, 0], cell).
-cell([2, 0], wall).
-cell([1, 1], human).

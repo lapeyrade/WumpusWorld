@@ -3,7 +3,8 @@ using System.Collections.Generic;
 
 public class Human : MonoBehaviour
 {
-    public string agentName;
+    public string name;
+    public int id;
     public Coordinates coords;
     public int nbGold = 0;
     public int nbArrow;
@@ -15,10 +16,11 @@ public class Human : MonoBehaviour
     [SerializeField] public int strength = 7;
     [SerializeField] public int dexterity = 7;
 
-    public void initAgent(Coordinates startCoords, string name, int nbTotalWumpus, Coordinates gridMax)
+    public Human(int agentId, string agentName, Coordinates startCoords, int nbTotalWumpus)
     {
+        id = agentId;
+        name = agentName;
         coords = startCoords;
-        agentName = name;
         nbWumpus = nbTotalWumpus;
         nbArrow = nbTotalWumpus;
     }

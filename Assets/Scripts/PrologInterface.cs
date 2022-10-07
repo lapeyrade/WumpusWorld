@@ -17,7 +17,9 @@ public class PrologInterface : MonoBehaviour
     private string debugPrologFilePath = Path.Combine(Application.streamingAssetsPath, "debugkb.pl");
 
     private PrologMQI mqi;
+    private PrologMQI mqi2;
     PrologThread prologThread;
+    PrologThread prologThread2;
 
     void Update()
     {
@@ -44,26 +46,39 @@ public class PrologInterface : MonoBehaviour
         }
     }
 
-    public void InitialiseGameKB(int nbWumpus, Human agent)
+    public void InitialiseGameKB(Human agent, Human agent2, int nbWumpus)
     {
         this.mqi = new PrologMQI();
+        this.mqi2 = new PrologMQI();
         this.prologThread = mqi.create_thread();
+        this.prologThread2 = mqi2.create_thread();
 
         this.prologThread.query("consult('" + prologFilePath + "')");
+        this.prologThread2.query("consult('" + prologFilePath + "')");
 
-        AddToKB($"nb_gold({agent.agentName}, {0})", true);
-        AddToKB($"nb_arrow({agent.agentName}, {nbWumpus})", true);
-        AddToKB($"intelligence({agent.agentName}, {agent.intelligence})", true);
-        AddToKB($"strength({agent.agentName}, {agent.strength})", true);
-        AddToKB($"dexterity({agent.agentName}, {agent.dexterity})", true);
+        AddToKB(agent, $"nb_gold({agent.name}, {0})", true);
+        AddToKB(agent, $"nb_arrow({agent.name}, {nbWumpus})", true);
+        AddToKB(agent, $"intelligence({agent.name}, {agent.intelligence})", true);
+        AddToKB(agent, $"strength({agent.name}, {agent.strength})", true);
+        AddToKB(agent, $"dexterity({agent.name}, {agent.dexterity})", true);
+
+        AddToKB(agent2, $"nb_gold({agent2.name}, {0})", true);
+        AddToKB(agent2, $"nb_arrow({agent2.name}, {nbWumpus})", true);
+        AddToKB(agent2, $"intelligence({agent2.name}, {agent2.intelligence})", true);
+        AddToKB(agent2, $"strength({agent2.name}, {agent2.strength})", true);
+        AddToKB(agent2, $"dexterity({agent2.name}, {agent2.dexterity})", true);
     }
 
     public String NextMove(Human agent)
     {
-
-        prologThread.query_async($"move({agent.agentName}, Move)", false);
-
+        prologThread.query_async($"move({agent.name}, Move)", false);
         List<Tuple<string, string>> result = prologThread.query_async_result();
+
+        if (agent.id != 1)
+        {
+            prologThread2.query_async($"move({agent.name}, Move)", false);
+            result = prologThread2.query_async_result();
+        }
 
         if (result.Count == 0)
             return "Default";
@@ -73,9 +88,14 @@ public class PrologInterface : MonoBehaviour
 
     public string RandomMove(Human agent)
     {
-        prologThread.query_async($"random_move({agent.agentName}, Move)", false);
-
+        prologThread.query_async($"random_move({agent.name}, Move)", false);
         List<Tuple<string, string>> result = prologThread.query_async_result();
+
+        if (agent.id != 1)
+        {
+            prologThread2.query_async($"random_move({agent.name}, Move)", false);
+            result = prologThread2.query_async_result();
+        }
 
         if (result.Count == 0)
             return "Default";
@@ -85,9 +105,14 @@ public class PrologInterface : MonoBehaviour
 
     public String NextAction(Human agent)
     {
-        prologThread.query_async($"action({agent.agentName}, Action)", false);
-
+        prologThread.query_async($"action({agent.name}, Action)", false);
         List<Tuple<string, string>> result = prologThread.query_async_result();
+
+        if (agent.id != 1)
+        {
+            prologThread2.query_async($"action({agent.name}, Action)", false);
+            result = prologThread2.query_async_result();
+        }
 
         if (result.Count == 0)
             return "Default";
@@ -100,11 +125,14 @@ public class PrologInterface : MonoBehaviour
         return bool.Parse(prologThread.query($"is_true(situation([{coords.col}, {coords.row}], {element}))").ElementAt(0).Item1);
     }
 
-    public List<Coordinates> CheckElement(string element)
+    public List<Coordinates> CheckElement(string element, Human agent)
     {
         List<Coordinates> listCoordsElement = new List<Coordinates>();
 
-        prologThread.query_async($"list_element([Col, Row], {element})", false);
+        if (agent.id == 1)
+            prologThread.query_async($"list_element([Col, Row], {element})", false);
+        else
+            prologThread2.query_async($"list_element([Col, Row], {element})", false);
 
         bool more_results = true;
 
@@ -113,7 +141,16 @@ public class PrologInterface : MonoBehaviour
             Coordinates coords = new Coordinates(0, 0);
             bool colRetrieved = false;
 
-            foreach (Tuple<string, string> answer in prologThread.query_async_result())
+
+            List<Tuple<string, string>> answers = new List<Tuple<string, string>>();
+
+            if (agent.id == 1)
+                answers = prologThread.query_async_result();
+            else
+                answers = prologThread2.query_async_result();
+
+
+            foreach (Tuple<string, string> answer in answers)
             {
                 if (answer.Item1 == "Col")
                 {
@@ -136,25 +173,36 @@ public class PrologInterface : MonoBehaviour
 
 
     /***************** KB I/O *****************/
-    public void AddToKB(string predicate, Boolean verifyKB)
+    public void AddToKB(Human agent, string predicate, Boolean verifyKB)
     {
-        if (!verifyKB || (verifyKB && this.prologThread.query(predicate).ElementAt(0).Item1 == "false"))
-            this.prologThread.query($"assertz({predicate})");
+        if (agent.id == 1)
+        {
+            if (!verifyKB || (verifyKB && this.prologThread.query(predicate).ElementAt(0).Item1 == "false"))
+                this.prologThread.query($"assertz({predicate})");
+        }
+        else
+        {
+            if (!verifyKB || (verifyKB && this.prologThread2.query(predicate).ElementAt(0).Item1 == "false"))
+                this.prologThread2.query($"assertz({predicate})");
+        }
     }
 
-    public void RemoveFromKB(string predicate)
+    public void RemoveFromKB(Human agent, string predicate)
     {
-        this.prologThread.query($"retract({predicate})");
+        if (agent.id == 1)
+            this.prologThread.query($"retract({predicate})");
+        else
+            this.prologThread2.query($"retract({predicate})");
     }
 
-    public void AddCellContentKB(Coordinates coords, string cellContent)
+    public void AddCellContentKB(Human agent, Coordinates coords, string cellContent)
     {
-        AddToKB($"cell([{coords.col}, {coords.row}], {cellContent})", true);
+        AddToKB(agent, $"cell([{coords.col}, {coords.row}], {cellContent})", true);
     }
 
-    public void RemoveCellContentKB(Coordinates coords, string cellContent)
+    public void RemoveCellContentKB(Human agent, Coordinates coords, string cellContent)
     {
-        RemoveFromKB($"cell([{coords.col}, {coords.row}], {cellContent})");
+        RemoveFromKB(agent, $"cell([{coords.col}, {coords.row}], {cellContent})");
     }
 
 
@@ -178,7 +226,7 @@ public class PrologInterface : MonoBehaviour
         if (debugFileLog)
             WriteInDebugKB("% ------------------");
 
-        // PrintAgentMovements(debugFileLog, consoleLog);
+        PrintAgentMovements(debugFileLog, consoleLog);
 
         PrintCellContent(debugFileLog, consoleLog);
 

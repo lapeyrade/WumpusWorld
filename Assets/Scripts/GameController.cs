@@ -13,10 +13,7 @@ public class GameController : MonoBehaviour
     public GameObject gridManager;
     private World world;
     private PrologInterface prologInterface;
-
-    private Human human;
-    private Dog dog;
-
+    
     [SerializeField]
     private bool autoMode = true;
 
@@ -31,8 +28,6 @@ public class GameController : MonoBehaviour
     {
         world = gridManager.GetComponent<World>();
         prologInterface = gridManager.GetComponent<PrologInterface>();
-        human = gridManager.GetComponent<Human>();
-        dog = gridManager.GetComponent<Dog>();
     }
 
     void Update()
@@ -57,10 +52,13 @@ public class GameController : MonoBehaviour
             else if (Input.GetKeyDown("return") || Input.GetKeyDown("space") || Input.GetKeyDown("right") ||
                         Input.GetKeyDown("left") || Input.GetKeyDown("up") || Input.GetKeyDown("down") || autoMode)
             {
-                MoveCell(human);
-                SenseCell(human);
-                ActionCell(human);
-                prologInterface.PrintKB(human);
+                MoveCell(world.human);
+                MoveCell(world.human2);
+                SenseCell(world.human);
+                SenseCell(world.human2);
+                ActionCell(world.human);
+                ActionCell(world.human2);
+                prologInterface.PrintKB(world.human);
             }
         }
     }
@@ -124,16 +122,16 @@ public class GameController : MonoBehaviour
             if (!world.agentMap[agent.coords.col, agent.coords.row].Keys.ToList().Contains(element))
                 world.AddToGrids(agent.coords.col, agent.coords.row, element, true, false);
 
-            prologInterface.AddCellContentKB(new Coordinates(agent.coords.col, agent.coords.row), element);
+            prologInterface.AddCellContentKB(agent, new Coordinates(agent.coords.col, agent.coords.row), element);
         }
 
         List<string> cellContent = world.agentMap[agent.coords.col, agent.coords.row].Keys.ToList();
 
         if (!cellContent.Contains("wall"))
         {
-            prologInterface.AddCellContentKB(new Coordinates(agent.coords.col, agent.coords.row), "visited");
+            prologInterface.AddCellContentKB(agent, new Coordinates(agent.coords.col, agent.coords.row), "visited");
 
-            makeInferences();
+            makeInferences(agent);
 
             // if (cellContent.Contains("start") && (agent.nbGold == 1 || (agent.getAgentPersonalities().Contains("greedy") && agent.nbGold == world.nbGold)))
             if (cellContent.Contains("start") && (agent.nbGold == 1))
@@ -145,7 +143,7 @@ public class GameController : MonoBehaviour
         }
     }
 
-    public void makeInferences()
+    public void makeInferences(Human agent)
     {
         AddAllElementToGrids("safe", true, false);
         AddAllElementToGrids("stenchyes", true, false);
@@ -157,7 +155,7 @@ public class GameController : MonoBehaviour
 
         void AddAllElementToGrids(string element, bool updateMapAgent, bool updateMap)
         {
-            foreach (Coordinates coords in prologInterface.CheckElement(element))
+            foreach (Coordinates coords in prologInterface.CheckElement(element, agent))
             {
                 if (coords.col >= world.gridMin.col && coords.col < world.gridMax.col && coords.row >= world.gridMin.row && coords.row < world.gridMax.row)
                     world.AddToGrids(coords.col, coords.row, element, updateMapAgent, updateMap);
@@ -174,29 +172,29 @@ public class GameController : MonoBehaviour
             switch (action)
             {
                 case "bump_wall":
-                    prologInterface.RemoveCellContentKB(agent.coords, "safe");
-                    world.RemoveFromGrids(agent.coords.col, agent.coords.row, agent.agentName, true, true);
+                    prologInterface.RemoveCellContentKB(agent, agent.coords, "safe");
+                    world.RemoveFromGrids(agent, agent.coords.col, agent.coords.row, agent.name, true, true);
                     agent.BumpWall();
-                    world.AddToGrids(agent.coords.col, agent.coords.row, agent.agentName, true, true);
-                    prologInterface.AddCellContentKB(agent.coords, "human");
+                    world.AddToGrids(agent.coords.col, agent.coords.row, agent.name, true, true);
+                    prologInterface.AddCellContentKB(agent, agent.coords, "human");
                     break;
                 case "pickup_gold":
                     agent.TakeGold();
-                    world.RemoveFromGrids(agent.coords.col, agent.coords.row, "gold", true, true);
-                    prologInterface.RemoveFromKB("nb_gold(_, _)");
-                    prologInterface.AddToKB($"nb_gold({agent.agentName}, {agent.nbGold})", true);
+                    world.RemoveFromGrids(agent, agent.coords.col, agent.coords.row, "gold", true, true);
+                    prologInterface.RemoveFromKB(agent, "nb_gold(_, _)");
+                    prologInterface.AddToKB(agent, $"nb_gold({agent.name}, {agent.nbGold})", true);
                     break;
                 case "shoot_right":
-                    world.ShootArrow("right");
+                    world.ShootArrow(agent, "right");
                     break;
                 case "shoot_left":
-                    world.ShootArrow("left");
+                    world.ShootArrow(agent, "left");
                     break;
                 case "shoot_up":
-                    world.ShootArrow("up");
+                    world.ShootArrow(agent, "up");
                     break;
                 case "shoot_down":
-                    world.ShootArrow("down");
+                    world.ShootArrow(agent, "down");
                     break;
                 default:
                     ActionLeftToDo = false;
