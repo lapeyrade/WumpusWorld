@@ -9,10 +9,16 @@
 % X move to the last cell visited
 move_back(X):-
     \+ objective:objective(X, explore_cave),
-    \+ objective:objective(X, kill_wumpus),
+    (
+        \+ objective:objective(X, hunt_wumpus);
+        (
+            objective:objective(X, hunt_wumpus),
+            \+ state:state(X, can_shoot_arrow)
+        )
+    ),
     (
         objective:objective(X, find_gold),
-    state:state(X, gold_found)
+        state:state(X, gold_found)
     ), !.
 
 % X move to the last cell visited

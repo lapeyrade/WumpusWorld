@@ -17,7 +17,7 @@ pickup_gold(X):-
 
 shoot(X, Y):-
     \+ objective:objective(X, avoid_killing),
-    objective:objective(X, kill_wumpus),
+    objective:objective(X, kill_wumpus);
     state:state(X, can_shoot_arrow),
     alignment:alignment(X, Y, enemy),
     type:type(Y, being).

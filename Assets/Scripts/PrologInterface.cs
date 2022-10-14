@@ -1,32 +1,38 @@
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Assertions;
-using System.Reflection;
-using System.IO;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
+using PrologMachineQueryInterface;
+using UnityEngine;
 
 public class PrologInterface : MonoBehaviour
 {
-    [SerializeField] private bool debugFileLog = true;
-    private bool consoleLog = false;
-    [SerializeField] private string query = "situation([X, Y], Z)";
-    [SerializeField] private bool askQuery = false;
+    [SerializeField] public bool debugFileLog = true;
+    [SerializeField] public bool consoleLog = false;
+    [SerializeField] public string query = "situation([X, Y], Z)";
+    [SerializeField] public bool askQuery = false;
 
-    private string prologFilePath = Path.Combine(Application.streamingAssetsPath, "kb.pl");
-    private string debugPrologFilePath = Path.Combine(Application.streamingAssetsPath, "debugkb.pl");
+    private readonly string prologFilePath = Path.Combine(Application.streamingAssetsPath, "kb.pl");
+    private readonly string debugPrologFilePath = Path.Combine(Application.streamingAssetsPath, "debugkb.pl");
 
     private PrologMQI mqi;
-    private PrologMQI mqi2;
-    PrologThread prologThread;
-    PrologThread prologThread2;
 
-    void Update()
+    private PrologThread prologThread;
+
+    public void InitKnowledgeBase()
+    {
+        mqi = new PrologMQI();
+        prologThread = mqi.CreateThread();
+        prologThread.Query("consult('" + prologFilePath + "')");
+    }
+
+    protected void Update()
     {
         /* Prolog query inside the Unity Inspector */
         if (askQuery)
         {
-            prologThread.query_async(query, false);
+            prologThread.QueryAsync(query, false);
 
             Debug.Log("Query: " + query);
 
@@ -34,7 +40,7 @@ public class PrologInterface : MonoBehaviour
 
             while (more_results)
             {
-                foreach (Tuple<string, string> answer in prologThread.query_async_result())
+                foreach (Tuple<string, string> answer in prologThread.QueryAsyncResult())
                 {
                     if (answer.Item1 == "null" && answer.Item2 == "null")
                         more_results = false;
@@ -46,39 +52,22 @@ public class PrologInterface : MonoBehaviour
         }
     }
 
-    public void InitialiseGameKB(Human agent, Human agent2, int nbWumpus)
+    public void InitialiseAgents(List<Human> agents)
     {
-        this.mqi = new PrologMQI();
-        this.mqi2 = new PrologMQI();
-        this.prologThread = mqi.create_thread();
-        this.prologThread2 = mqi2.create_thread();
-
-        this.prologThread.query("consult('" + prologFilePath + "')");
-        this.prologThread2.query("consult('" + prologFilePath + "')");
-
-        AddToKB(agent, $"nb_gold({agent.name}, {0})", true);
-        AddToKB(agent, $"nb_arrow({agent.name}, {nbWumpus})", true);
-        AddToKB(agent, $"intelligence({agent.name}, {agent.intelligence})", true);
-        AddToKB(agent, $"strength({agent.name}, {agent.strength})", true);
-        AddToKB(agent, $"dexterity({agent.name}, {agent.dexterity})", true);
-
-        AddToKB(agent2, $"nb_gold({agent2.name}, {0})", true);
-        AddToKB(agent2, $"nb_arrow({agent2.name}, {nbWumpus})", true);
-        AddToKB(agent2, $"intelligence({agent2.name}, {agent2.intelligence})", true);
-        AddToKB(agent2, $"strength({agent2.name}, {agent2.strength})", true);
-        AddToKB(agent2, $"dexterity({agent2.name}, {agent2.dexterity})", true);
+        foreach (Human agent in agents)
+        {
+            AddToKB($"nb_gold({agent.agentName}, {0})", true);
+            AddToKB($"nb_arrow({agent.agentName}, {agent.nbArrow})", true);
+            AddToKB($"intelligence({agent.agentName}, {agent.intelligence})", true);
+            AddToKB($"strength({agent.agentName}, {agent.strength})", true);
+            AddToKB($"dexterity({agent.agentName}, {agent.dexterity})", true);
+        }
     }
 
-    public String NextMove(Human agent)
+    public string NextMove(Human agent)
     {
-        prologThread.query_async($"move({agent.name}, Move)", false);
-        List<Tuple<string, string>> result = prologThread.query_async_result();
-
-        if (agent.id != 1)
-        {
-            prologThread2.query_async($"move({agent.name}, Move)", false);
-            result = prologThread2.query_async_result();
-        }
+        prologThread.QueryAsync($"move({agent.agentName}, Move)", false);
+        List<Tuple<string, string>> result = prologThread.QueryAsyncResult();
 
         if (result.Count == 0)
             return "Default";
@@ -88,14 +77,8 @@ public class PrologInterface : MonoBehaviour
 
     public string RandomMove(Human agent)
     {
-        prologThread.query_async($"random_move({agent.name}, Move)", false);
-        List<Tuple<string, string>> result = prologThread.query_async_result();
-
-        if (agent.id != 1)
-        {
-            prologThread2.query_async($"random_move({agent.name}, Move)", false);
-            result = prologThread2.query_async_result();
-        }
+        prologThread.QueryAsync($"random_move({agent.agentName}, Move)", false);
+        List<Tuple<string, string>> result = prologThread.QueryAsyncResult();
 
         if (result.Count == 0)
             return "Default";
@@ -103,16 +86,10 @@ public class PrologInterface : MonoBehaviour
             return result.First().Item2;
     }
 
-    public String NextAction(Human agent)
+    public string NextAction(Human agent)
     {
-        prologThread.query_async($"action({agent.name}, Action)", false);
-        List<Tuple<string, string>> result = prologThread.query_async_result();
-
-        if (agent.id != 1)
-        {
-            prologThread2.query_async($"action({agent.name}, Action)", false);
-            result = prologThread2.query_async_result();
-        }
+        prologThread.QueryAsync($"action({agent.agentName}, Action)", false);
+        List<Tuple<string, string>> result = prologThread.QueryAsyncResult();
 
         if (result.Count == 0)
             return "Default";
@@ -120,143 +97,142 @@ public class PrologInterface : MonoBehaviour
             return result.First().Item2;
     }
 
-    public Boolean CheckCellElement(Coordinates coords, string element)
+    public bool CheckCellElement((int x, int y) coord, string element)
     {
-        return bool.Parse(prologThread.query($"is_true(situation([{coords.col}, {coords.row}], {element}))").ElementAt(0).Item1);
+        return bool.Parse(prologThread.Query($"is_true(situation([{coord.x}, {coord.y}], {element}))").ElementAt(0).Item1);
     }
 
-    public List<Coordinates> CheckElement(string element, Human agent)
+    public List<Vector2Int> CheckElement(string element)
     {
-        List<Coordinates> listCoordsElement = new List<Coordinates>();
+        List<Vector2Int> listCoordElem = new();
 
-        if (agent.id == 1)
-            prologThread.query_async($"list_element([Col, Row], {element})", false);
-        else
-            prologThread2.query_async($"list_element([Col, Row], {element})", false);
+        prologThread.QueryAsync($"list_element([Col, Row], {element})", false);
 
         bool more_results = true;
 
         while (more_results)
         {
-            Coordinates coords = new Coordinates(0, 0);
+            Vector2Int coord = new(0, 0);
             bool colRetrieved = false;
 
-
-            List<Tuple<string, string>> answers = new List<Tuple<string, string>>();
-
-            if (agent.id == 1)
-                answers = prologThread.query_async_result();
-            else
-                answers = prologThread2.query_async_result();
-
-
-            foreach (Tuple<string, string> answer in answers)
+            foreach (Tuple<string, string> answer in prologThread.QueryAsyncResult())
             {
                 if (answer.Item1 == "Col")
                 {
-                    coords.col = int.Parse(answer.Item2);
+                    coord.x = int.Parse(answer.Item2);
                     colRetrieved = true;
                 }
                 else if (answer.Item1 == "Row")
                 {
-                    coords.row = int.Parse(answer.Item2);
-                    if (colRetrieved && coords.col != null && coords.row != null)
-                        listCoordsElement.Add(coords);
+                    coord.y = int.Parse(answer.Item2);
+                    if (colRetrieved)
+                        listCoordElem.Add(coord);
                 }
                 else if (answer.Item1 == "null" && answer.Item2 == "null")
                     more_results = false;
             }
         }
-
-        return listCoordsElement;
+        return listCoordElem;
     }
 
 
     /***************** KB I/O *****************/
-    public void AddToKB(Human agent, string predicate, Boolean verifyKB)
+    public void AddToKB(string predicate, bool verifyKB)
     {
-        if (agent.id == 1)
+        if (!verifyKB || (verifyKB && prologThread.Query(predicate).ElementAt(0).Item1 == "false"))
+            prologThread.Query($"assertz({predicate})");
+    }
+
+    public void RemoveFromKB(string predicate)
+    {
+        prologThread.Query($"retract({predicate})");
+    }
+
+    public void AddCellContentKB(Vector2Int coord, string cellContent)
+    {
+        AddToKB($"cell([{coord.x}, {coord.y}], {cellContent})", true);
+    }
+
+    public void RemoveCellContentKB(Vector2Int coord, string cellContent)
+    {
+        RemoveFromKB($"cell([{coord.x}, {coord.y}], {cellContent})");
+    }
+
+    public List<string> GetPersonalities(Human agent)
+    {
+        prologThread.QueryAsync($"personality({agent.agentName}, Personality)", false);
+
+        List<string> listPersonalities = new();
+        bool more_results = true;
+
+        while (more_results)
         {
-            if (!verifyKB || (verifyKB && this.prologThread.query(predicate).ElementAt(0).Item1 == "false"))
-                this.prologThread.query($"assertz({predicate})");
+            foreach (Tuple<string, string> answer in prologThread.QueryAsyncResult())
+            {
+                if (answer.Item1 == "null" || answer.Item2 == "null")
+                    more_results = false;
+                else
+                    listPersonalities.Add(answer.Item2);
+            }
         }
-        else
-        {
-            if (!verifyKB || (verifyKB && this.prologThread2.query(predicate).ElementAt(0).Item1 == "false"))
-                this.prologThread2.query($"assertz({predicate})");
-        }
+
+        return listPersonalities;
     }
 
-    public void RemoveFromKB(Human agent, string predicate)
-    {
-        if (agent.id == 1)
-            this.prologThread.query($"retract({predicate})");
-        else
-            this.prologThread2.query($"retract({predicate})");
-    }
-
-    public void AddCellContentKB(Human agent, Coordinates coords, string cellContent)
-    {
-        AddToKB(agent, $"cell([{coords.col}, {coords.row}], {cellContent})", true);
-    }
-
-    public void RemoveCellContentKB(Human agent, Coordinates coords, string cellContent)
-    {
-        RemoveFromKB(agent, $"cell([{coords.col}, {coords.row}], {cellContent})");
-    }
 
 
     /***************** LOGS *****************/
-    public void PrintKB(Human agent)
+    public void PrintKB(List<Human> agents)
     {
         if (debugFileLog)
             ResetDebugKB();
 
         // ClearLog();
 
-        PrintGlobalVariables("nb_arrow", "Initial number of arrows: ", debugFileLog, consoleLog);
-        PrintGlobalVariables("nb_gold", "Initial number of gold: ", debugFileLog, consoleLog);
-        PrintGlobalVariables("intelligence", "Intelligence: ", debugFileLog, consoleLog);
-        PrintGlobalVariables("strength", "Strength: ", debugFileLog, consoleLog);
-        PrintGlobalVariables("dexterity", "Dexterity: ", debugFileLog, consoleLog);
-        PrintGlobalVariables("personality", "Personality: ", debugFileLog, consoleLog);
+        PrintGlobalVariables("nb_arrow", debugFileLog, consoleLog);
+        PrintGlobalVariables("nb_gold", debugFileLog, consoleLog);
+        PrintGlobalVariables("intelligence", debugFileLog, consoleLog);
+        PrintGlobalVariables("strength", debugFileLog, consoleLog);
+        PrintGlobalVariables("dexterity", debugFileLog, consoleLog);
+        PrintGlobalVariables("personality", debugFileLog, consoleLog);
 
         if (consoleLog)
             Debug.Log("------------------\n");
         if (debugFileLog)
             WriteInDebugKB("% ------------------");
 
-        PrintAgentMovements(debugFileLog, consoleLog);
+        PrintAgentMovements(debugFileLog, consoleLog, agents);
 
         PrintCellContent(debugFileLog, consoleLog);
 
-        void PrintAgentMovements(Boolean debugFile, Boolean consoleLog)
+        void PrintAgentMovements(bool debugFile, bool consoleLog, List<Human> agents)
         {
-            string stackTrace = "% ";
-            foreach (Coordinates movement in agent.pastMovements)
+            foreach (Human agent in agents)
             {
-                stackTrace += movement.ToString();
-            }
+                string stackTrace = "% ";
+                foreach (Vector2Int movement in agent.pastMovements)
+                    stackTrace += movement.ToString();
 
-            if (consoleLog)
-                Debug.Log(stackTrace);
-            if (debugFile)
-                WriteInDebugKB(stackTrace);
+                if (consoleLog)
+                    Debug.Log(stackTrace);
+                if (debugFile)
+                    WriteInDebugKB(stackTrace);
+            }
         }
 
-        void PrintCellContent(Boolean debugFile, Boolean consoleLog)
+        void PrintCellContent(bool debugFile, bool consoleLog)
         {
-            prologThread.query_async($"cell([Col, Row], Element)", false);
+            prologThread.QueryAsync($"cell([Col, Row], Element)", false);
 
-            List<String> listCol = new List<String>();
-            List<String> listRow = new List<String>();
-            List<String> listElement = new List<String>();
+            List<string> listCol = new();
+            List<string> listRow = new();
+            List<string> listElement = new();
 
             bool more_results = true;
 
             while (more_results)
             {
-                foreach (Tuple<string, string> answer in prologThread.query_async_result())
+                foreach (Tuple<string, string> answer in prologThread.QueryAsyncResult())
                 {
                     if (answer.Item1 == "Col")
                         listCol.Add(answer.Item2);
@@ -281,18 +257,18 @@ public class PrologInterface : MonoBehaviour
             }
         }
 
-        void PrintGlobalVariables(string variable, string message, Boolean debugFile, Boolean consoleLog)
+        void PrintGlobalVariables(string variable, bool debugFile, bool consoleLog)
         {
-            prologThread.query_async($"{variable}(Element, Characteristic)", false);
+            prologThread.QueryAsync($"{variable}(Element, Characteristic)", false);
 
-            List<String> listElements = new List<String>();
-            List<String> listCharacteristics = new List<String>();
+            List<string> listElements = new();
+            List<string> listCharacteristics = new();
 
             bool more_results = true;
 
             while (more_results)
             {
-                foreach (Tuple<string, string> answer in prologThread.query_async_result())
+                foreach (Tuple<string, string> answer in prologThread.QueryAsyncResult())
                 {
                     if (answer.Item1 == "Element")
                         listElements.Add(answer.Item2);
@@ -337,9 +313,7 @@ public class PrologInterface : MonoBehaviour
         while ((oldVersion = streamReader.ReadLine()) != null)
         {
             if (!oldVersion.Contains(stoppingLine))
-            {
                 newVersion += oldVersion + Environment.NewLine;
-            }
             else
             {
                 newVersion += stoppingLine + Environment.NewLine + Environment.NewLine;
@@ -354,14 +328,14 @@ public class PrologInterface : MonoBehaviour
     {
         if (!File.Exists(debugPrologFilePath))
         {
-            using (StreamWriter streamWriter = File.CreateText(debugPrologFilePath)) // Create a file to write to.
-            {
-                streamWriter.WriteLine(prologText);
-            }
+            // Create a file to write to.
+            using StreamWriter streamWriter = File.CreateText(debugPrologFilePath);
+            streamWriter.WriteLine(prologText);
         }
-
-        using (StreamWriter streamWriter = File.AppendText(debugPrologFilePath)) // Add text to file
+        else
         {
+            // Append text to existing file
+            using StreamWriter streamWriter = File.AppendText(debugPrologFilePath);
             streamWriter.WriteLine(prologText);
         }
     }

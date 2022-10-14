@@ -12,5 +12,4 @@ characteristic_(X, Value) :- dexterity(X, Value).
 % Query PERSONALITY
 characteristic(X, Characteristic, Value):-
     clause(characteristic_(X, Value), C),
-    call(C),
-    C =.. [Characteristic, _, _].
+    call(C), C =.. [Characteristic, _, _].

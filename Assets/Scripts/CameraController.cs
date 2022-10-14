@@ -6,18 +6,20 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     public GameObject gridManager;
+    private World world;
+
+    protected void Start()
+    {
+        world = gridManager.GetComponent<World>();
+    }
 
     public void AdjustCameraPosition()
     {
-        World world = gridManager.GetComponent<World>();
-        Coordinates gridMax = world.gridMax;
-        float tileSize = world.tileSize;
+        transform.position = new Vector3((world.gridMax.x - 1) * world.tileSize / 2, (world.gridMax.y - 1) * world.tileSize / 2, -1);
 
-        transform.position = new Vector3(((gridMax.col - 1) * tileSize) / 2, (((gridMax.row - 1) * tileSize)) / 2, -1);
-
-        if (gridMax.col > gridMax.row)
-            GetComponent<Camera>().orthographicSize = gridMax.col / 2 + 1f;
+        if (world.gridMax.x > world.gridMax.y)
+            GetComponent<Camera>().orthographicSize = world.gridMax.x / 2 + 1f;
         else
-            GetComponent<Camera>().orthographicSize = gridMax.row / 2 + 1f;
+            GetComponent<Camera>().orthographicSize = world.gridMax.y / 2 + 1f;
     }
 }

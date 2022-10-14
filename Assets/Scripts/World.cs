@@ -1,5 +1,5 @@
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 
 /// <summary>
 /// Construct and update the world
@@ -7,69 +7,57 @@ using System.Collections.Generic;
 /// </summary>
 public class World : MonoBehaviour
 {
-    [SerializeField] private int RandomSeed = 29;
-    private int minGridCol = 0;
-    private int minGridRow = 0;
-
-    [SerializeField] private int maxGridCol = 7;
-    [SerializeField] private int maxGridRow = 7;
-    [SerializeField] private int startCol = 1;
-    [SerializeField] private int startRow = 1;
+    [SerializeField] public int RandomSeed = 29;
+    [SerializeField] public Vector2Int gridMin = new(0, 0);
+    [SerializeField] public Vector2Int gridMax = new(9, 9);
     [SerializeField] public float tileSize = 1.05f;
-    [SerializeField] private int nbPit = 4;
-    [SerializeField] private int nbWumpus = 2;
+    [SerializeField] public int nbPit = 4;
+    [SerializeField] public int nbWumpus = 2;
     [SerializeField] public int nbGold = 1;
-    [SerializeField] private int nbAgent = 2;
-    public Coordinates gridMin;
-    public Coordinates gridMax;
-    private Coordinates startCoords;
+    [SerializeField] public int nbAgent = 2;
 
-    public Dictionary<string, GameObject>[,] map;
-    public Dictionary<string, GameObject>[,] agentMap;
+    public List<(string, GameObject)>[,] map;
+    public List<(string, GameObject)>[,] agentMap;
 
     public GameObject gridManager;
     public GameObject mainCamera;
     private GameController gameController;
     private CameraController cameraController;
     private PrologInterface prologInterface;
-    public Human human;
-    public Human human2;
-    private Dog dog;
+    [SerializeField] public List<Human> agents;
 
-    void Awake()
+
+    protected void Awake()
     {
         gameController = gridManager.GetComponent<GameController>();
         prologInterface = gridManager.GetComponent<PrologInterface>();
     }
 
-    void Start()
+    protected void Start()
     {
         Random.InitState(RandomSeed); // Random Seed
-        gridMax = new Coordinates(maxGridCol + 2, maxGridRow + 2);
-        gridMin = new Coordinates(minGridCol, minGridRow);
-        startCoords = new Coordinates(startCol, startRow);
 
-        map = new Dictionary<string, GameObject>[gridMax.col, gridMax.row];
-        agentMap = new Dictionary<string, GameObject>[gridMax.col, gridMax.row];
+        map = new List<(string, GameObject)>[gridMax.x, gridMax.y];
+        agentMap = new List<(string, GameObject)>[gridMax.x, gridMax.y];
 
 
-        if ((nbPit + nbWumpus + nbGold + nbAgent) > (gridMax.col * gridMax.row))
+        if ((nbPit + nbWumpus + nbGold + nbAgent) > (gridMax.x * gridMax.y))
         {
             Debug.LogError("Map too small.");
             gameController.SetGameOver("Incorrect Parameters", true);
         }
         else
         {
+            prologInterface.InitKnowledgeBase();
+
             GenerateGrid();
-            GenerateHuman();
-            // GenerateDog();
-            prologInterface.InitialiseGameKB(human, human2, nbWumpus);
             GrenerateWall();
+            GenerateHuman();
             GenerateGold();
             GenerateWumpus();
             GeneratePit();
 
-            InitialiseGame();
+            gameController.PlayTurn(true);
         }
 
         cameraController = mainCamera.GetComponent<CameraController>();
@@ -78,279 +66,298 @@ public class World : MonoBehaviour
 
     private void GenerateGrid()
     {
-        for (int col = gridMin.col; col < gridMax.col; col++)
+        for (int x = gridMin.x; x < gridMax.x; x++)
         {
-            for (int row = gridMin.row; row < gridMax.row; row++)
+            for (int y = gridMin.y; y < gridMax.y; y++)
             {
-                agentMap[col, row] = new Dictionary<string, GameObject>();
-                map[col, row] = new Dictionary<string, GameObject>();
-                AddToGrids(col, row, "cell", true, true);
+                agentMap[x, y] = new List<(string, GameObject)>();
+                map[x, y] = new List<(string, GameObject)>();
+                AddToGrids(new Vector2Int(x, y), "cell", true, true);
             }
         }
-        AddToGrids(startCoords.col, startCoords.row, "start", true, true);
-    }
-
-    private void GenerateHuman()
-    {
-        human = new Human(1, "human", startCoords, nbWumpus);
-        AddToGrids(human.coords.col, human.coords.row, human.name, true, true);
-        human2 = new Human(2, "human", new Coordinates(maxGridCol - 1, maxGridRow - 1), nbWumpus);
-        AddToGrids(human2.coords.col, human2.coords.row, human2.name, true, true);
     }
 
     private void GrenerateWall()
     {
-        for (int row = gridMin.row; row < gridMax.row; row++) // Right
+        for (int y = gridMin.y; y < gridMax.y; y++) // Right
+            AddToGrids(new Vector2Int(gridMax.x - 1, y), "wall", false, true);
+
+        for (int y = gridMin.y; y < gridMax.y; y++) // Left
+            AddToGrids(new Vector2Int(gridMin.x, y), "wall", false, true);
+
+        for (int x = gridMin.y; x < gridMax.x; x++) // Top
+            AddToGrids(new Vector2Int(x, gridMax.y - 1), "wall", false, true);
+
+        for (int x = gridMin.y; x < gridMax.x; x++) // Bottom
+            AddToGrids(new Vector2Int(x, gridMin.y), "wall", false, true);
+    }
+
+    private void GenerateHuman()
+    {
+        agents = new List<Human>();
+
+        for (int i = 0; i < nbAgent; i++)
         {
-            AddToGrids(gridMax.col - 1, row, "wall", false, true);
+            Vector2Int coord = new(1, 1);
+
+            if (i != 0)
+            {
+                do
+                {
+                    coord = new(Random.Range(gridMin.x + 1, gridMax.y - 1), Random.Range(gridMin.x + 1, gridMax.y - 1));
+                } while (map[coord.x, coord.y].Exists(x => x.Item1 == "human" || x.Item1 == "wall"));
+            }
+
+            Human agent = new(i, "human", coord, nbWumpus)
+            {
+                agentMapPrefab = Instantiate(Resources.Load("human")) as GameObject,
+                worldMapPrefab = Instantiate(Resources.Load("human")) as GameObject
+            };
+
+            agents.Add(agent);
+            gameController.PlayTurn(true);
         }
-        for (int row = gridMin.row; row < gridMax.row; row++) // Left
-        {
-            AddToGrids(gridMin.row, row, "wall", false, true);
-        }
-        for (int col = gridMin.row; col < gridMax.col; col++) // Top
-        {
-            AddToGrids(col, gridMax.row - 1, "wall", false, true);
-        }
-        for (int col = gridMin.row; col < gridMax.col; col++) // Bottom
-        {
-            AddToGrids(col, gridMin.row, "wall", false, true);
-        }
+
+        prologInterface.InitialiseAgents(agents);
     }
 
     private void GenerateGold()
     {
-        int col = Random.Range(gridMin.col, gridMax.col - 1);
-        int row = Random.Range(gridMin.row, gridMax.row - 1);
+        Vector2Int coord = new(0, 0);
+
         for (int gold = 0; gold < nbGold; gold++)
         {
-            while (map[col, row].ContainsKey("start") || map[col, row].ContainsKey("pit") || map[col, row].ContainsKey("wumpus") || map[col, row].ContainsKey("gold") || map[col, row].ContainsKey("wall"))
+            do
             {
-                col = Random.Range(gridMin.col, gridMax.col - 1);
-                row = Random.Range(gridMin.row, gridMax.row - 1);
-            }
-            AddToGrids(col, row, "gold", true, true);
-            agentMap[col, row]["gold"].SetActive(false);
+                coord = new(Random.Range(gridMin.x + 1, gridMax.y - 1), Random.Range(gridMin.x + 1, gridMax.y - 1));
+            } while (map[coord.x, coord.y].Exists(x => x.Item1 == "human" || x.Item1 == "wall" || x.Item1 == "gold"));
+
+            AddToGrids(coord, "gold", true, true);
+            agentMap[coord.x, coord.y].Find(x => x.Item1 == "gold").Item2.SetActive(false);
         }
     }
 
     private void GenerateWumpus()
     {
-        int col = Random.Range(gridMin.col, gridMax.col - 1);
-        int row = Random.Range(gridMin.row, gridMax.row - 1);
+        Vector2Int coord = new(0, 0);
+
         for (int wumpus = 0; wumpus < nbWumpus; wumpus++)
         {
-            while (map[col, row].ContainsKey("start") || map[col, row].ContainsKey("pit") || map[col, row].ContainsKey("wumpus") || map[col, row].ContainsKey("gold") || map[col, row].ContainsKey("wall") || (col == startCoords.col && row == startCoords.row + 1) || (col == startCoords.col + 1 && row == startCoords.row))
+            do
             {
-                col = Random.Range(gridMin.col, gridMax.col - 1);
-                row = Random.Range(gridMin.row, gridMax.row - 1);
-            }
-            AddToGrids(col, row, "wumpus", true, true);
-            agentMap[col, row]["wumpus"].SetActive(false);
+                coord = new(Random.Range(gridMin.x + 1, gridMax.y - 1), Random.Range(gridMin.x + 1, gridMax.y - 1));
+            } while (map[coord.x, coord.y].Exists(x => x.Item1 == "human" || x.Item1 == "wall" || x.Item1 == "gold" || x.Item1 == "wumpus"));
 
-            AddToGrids(col, row, "wumpusdead", true, true);
-            map[col, row]["wumpusdead"].SetActive(false);
-            agentMap[col, row]["wumpusdead"].SetActive(false);
+            AddToGrids(coord, "wumpus", true, true);
+            agentMap[coord.x, coord.y].Find(x => x.Item1 == "wumpus").Item2.SetActive(false);
 
-            GenerateAroundCell(col, row, "stenchyes");  // Stench Generation
+            AddToGrids(coord, "wumpusdead", true, true);
+            map[coord.x, coord.y].Find(x => x.Item1 == "wumpusdead").Item2.SetActive(false);
+            agentMap[coord.x, coord.y].Find(x => x.Item1 == "wumpusdead").Item2.SetActive(false);
+
+            GenerateAroundCell(coord, "stenchyes");
         }
     }
 
     private void GeneratePit()
     {
-        int col = Random.Range(gridMin.col, gridMax.col - 1);
-        int row = Random.Range(gridMin.row, gridMax.row - 1);
+        Vector2Int coord = new(0, 0);
+
         for (int pit = 0; pit < nbPit; pit++)
         {
-            while (map[col, row].ContainsKey("start") || map[col, row].ContainsKey("pit") || map[col, row].ContainsKey("wumpus") || map[col, row].ContainsKey("gold") || map[col, row].ContainsKey("wall") || (col == startCoords.col && row == startCoords.row + 1) || (col == startCoords.col + 1 && row == startCoords.row))
+            do
             {
-                col = Random.Range(gridMin.col, gridMax.col - 1);
-                row = Random.Range(gridMin.row, gridMax.row - 1);
-            }
-            AddToGrids(col, row, "pit", true, true);
-            agentMap[col, row]["pit"].SetActive(false);
-            GenerateAroundCell(col, row, "breezeyes");  // yes Generation
+                coord = new(Random.Range(gridMin.x + 1, gridMax.y - 1), Random.Range(gridMin.x + 1, gridMax.y - 1));
+            } while (map[coord.x, coord.y].Exists(x => x.Item1 == "human" || x.Item1 == "wall" || x.Item1 == "gold" || x.Item1 == "wumpus" || x.Item1 == "pit"));
+
+            AddToGrids(coord, "pit", true, true);
+            agentMap[coord.x, coord.y].Find(x => x.Item1 == "pit").Item2.SetActive(false);
+
+            GenerateAroundCell(coord, "breezeyes");
         }
     }
 
-    private void GenerateAroundCell(int col, int row, string element)
+    private void GenerateAroundCell(Vector2Int coord, string element)
     {
-        Generate(col + 1, row); // Right cell
-        Generate(col - 1, row); // Left cell
-        Generate(col, row + 1); // Top cell
-        Generate(col, row - 1); // Bottom cell
+        Generate(new Vector2Int(coord.x + 1, coord.y), element); // Right cell
+        Generate(new Vector2Int(coord.x - 1, coord.y), element); // Left cell
+        Generate(new Vector2Int(coord.x, coord.y + 1), element); // Top cell
+        Generate(new Vector2Int(coord.x, coord.y - 1), element); // Bottom cell
 
-        void Generate(int col, int row)
+        void Generate(Vector2Int coord, string element)
         {
-            if (!map[col, row].ContainsKey(element))
+            if (!map[coord.x, coord.y].Exists(x => x.Item1 == element) && !map[coord.x, coord.y].Exists(x => x.Item1 == "wall"))
             {
-                AddToGrids(col, row, element, true, true);
-                agentMap[col, row][element].SetActive(false);
-
-                if (map[col, row].ContainsKey("wall"))
-                    map[col, row][element].SetActive(false);
+                AddToGrids(coord, element, true, true);
+                agentMap[coord.x, coord.y].Find(x => x.Item1 == element).Item2.SetActive(false);
             }
         }
     }
 
-    private void InitialiseGame()
+    public void AddToGrids(Vector2Int coord, string content, bool updateAgentMap, bool updatedMap)
     {
-        Move(human, human.coords);
-        gameController.SenseCell(human);
-        gameController.ActionCell(human);
-
-        Move(human2, human2.coords);
-        gameController.SenseCell(human2);
-        gameController.ActionCell(human2);
-
-        prologInterface.PrintKB(human);
-    }
-
-    public void AddToGrids(int col, int row, string content, bool updateMapAgent, bool updateMap)
-    {
-        Color newColor = Color.white;
-
-        switch (content)
+        if (content is "wall" or "safe" or "visited" or "danger" or "undefined")
         {
-            case "safe": // Dark Green
-                newColor = new Color(0.145f, 0.701f, 0.294f, 1);
-                break;
-            case "wall": // Black 
-                newColor = Color.black;
-                break;
-            case "danger": // Red
-                newColor = Color.red;
-                break;
-            case "undefined": // Orange
-                newColor = new Color(1.0f, 0.64f, 0.0f);
-                break;
-            case "visited": // Cyan
-                newColor = Color.cyan;
-                break;
-            default:
-                break;
-        }
+            Color newColor = Color.white;
 
-        if (content == "wall" || content == "safe" || content == "visited" || content == "danger" || content == "undefined")
-        {
-            if (updateMapAgent && agentMap[col, row].ContainsKey(content) == false)
+            switch (content)
             {
-                agentMap[col, row].Add(content, null);
-                agentMap[col, row]["cell"].GetComponent<SpriteRenderer>().color = newColor;
+                case "wall": // Black 
+                    newColor = Color.black;
+                    break;
+                case "visited": // Cyan
+                    newColor = Color.cyan;
+                    break;
+                case "danger": // Red
+                    newColor = Color.red;
+                    break;
+                case "safe": // Dark Green
+                    newColor = new Color(0.145f, 0.701f, 0.294f, 1);
+                    break;
+                case "undefined": // Orange
+                    newColor = new Color(1.0f, 0.64f, 0.0f);
+                    break;
             }
 
-            if (updateMap && map[col, row].ContainsKey(content) == false)
-            {
-                map[col, row].Add(content, null);
-                map[col, row]["cell"].GetComponent<SpriteRenderer>().color = newColor;
-            }
+            if (updateAgentMap && !agentMap[coord.x, coord.y].Exists(x => x.Item1 == content || (x.Item1 == "visited" && content != "wall" && content != "danger")))
+                ChangeColorMap(agentMap, coord, content, newColor);
+
+            if (updatedMap && !map[coord.x, coord.y].Exists(x => x.Item1 == content))
+                ChangeColorMap(map, coord, content, newColor);
         }
         else
         {
-            if (updateMapAgent)
+            if (updateAgentMap && content != "human")
+                AddGameObjectMap(agentMap, coord, content, GetAgentMapOffset(coord));
+
+            if (updatedMap && content != "human")
+                AddGameObjectMap(map, coord, content, GetWorldMapOffset(coord));
+        }
+
+        void ChangeColorMap(List<(string, GameObject)>[,] _map, Vector2Int coord, string content, Color newColor)
+        {
+            _map[coord.x, coord.y].Add((content, null));
+            _map[coord.x, coord.y].Find(x => x.Item1 == "cell").Item2.GetComponent<SpriteRenderer>().color = newColor;
+        }
+
+        void AddGameObjectMap(List<(string, GameObject)>[,] _map, Vector2Int coord, string content, Vector2 newPosition)
+        {
+            if (!_map[coord.x, coord.y].Exists(x => x.Item1 == content))
             {
-                if (agentMap[col, row].ContainsKey(content) == false)
-                {
-                    agentMap[col, row].Add(content, (GameObject)Instantiate(Resources.Load(content), transform));
-                    agentMap[col, row][content].transform.position = new Vector2((col - gridMax.col / 2 - 0.5f) * tileSize, row * tileSize);
-                }
-                else
-                    agentMap[col, row][content].SetActive(true);
+                _map[coord.x, coord.y].Add((content, Instantiate(Resources.Load(content), transform) as GameObject));
+                _map[coord.x, coord.y].Find(x => x.Item1 == content).Item2.transform.position = newPosition;
             }
-            if (updateMap)
-            {
-                if (map[col, row].ContainsKey(content) == false)
-                {
-                    map[col, row].Add(content, (GameObject)Instantiate(Resources.Load(content), transform));
-                    map[col, row][content].transform.position = new Vector2((col + gridMax.col / 2 + 0.5f) * tileSize, row * tileSize);
-                }
-                else
-                    map[col, row][content].SetActive(true);
-            }
+            else
+                _map[coord.x, coord.y].Find(x => x.Item1 == content).Item2.SetActive(true);
         }
     }
 
-    public void RemoveFromGrids(Human agent, int col, int row, string content, bool updateMapAgent, bool updateMap)
+    public void RemoveFromGrids(Vector2Int coord, string content, bool updateAgentMap, bool updateMap)
     {
-        if (updateMapAgent && agentMap[col, row].ContainsKey(content) == true)
+        if (updateAgentMap && agentMap[coord.x, coord.y].Exists(x => x.Item1 == content))
         {
-            agentMap[col, row][content].SetActive(false);
-            agentMap[col, row].Remove(content);
-            prologInterface.RemoveCellContentKB(agent, new Coordinates(col, row), content);
+            if (agentMap[coord.x, coord.y].Find(x => x.Item1 == content).Item2 != null)
+                agentMap[coord.x, coord.y].Find(x => x.Item1 == content).Item2.SetActive(false);
+            agentMap[coord.x, coord.y].Remove(agentMap[coord.x, coord.y].Find(x => x.Item1 == content));
+            prologInterface.RemoveCellContentKB(coord, content);
         }
 
-        if (updateMap && map[col, row].ContainsKey(content) == true)
+        if (updateMap && map[coord.x, coord.y].Exists(x => x.Item1 == content))
         {
-            map[col, row][content].SetActive(false);
-            map[col, row].Remove(content);
+            if (map[coord.x, coord.y].Find(x => x.Item1 == content).Item2 != null)
+                map[coord.x, coord.y].Find(x => x.Item1 == content).Item2.SetActive(false);
+            map[coord.x, coord.y].Remove(map[coord.x, coord.y].Find(x => x.Item1 == content));
         }
     }
 
     public void ShootArrow(Human agent, string direction)
     {
-        Debug.Log("Shooting " + direction);
-        prologInterface.RemoveFromKB(agent, "nb_arrow(_, _)");
+        prologInterface.RemoveFromKB("nb_arrow(_, _)");
         agent.nbArrow -= 1;
-        prologInterface.AddToKB(agent, $"nb_arrow({agent.name}, {agent.nbArrow})", true);
+        prologInterface.AddToKB($"nb_arrow({agent.agentName}, {agent.nbArrow})", true);
 
         switch (direction)
         {
             case "right":
-                for (int col = agent.coords.col; col < gridMax.col; col++)
+                for (int x = agent.coord.x; x < gridMax.x; x++)
                 {
-                    if (map[col, agent.coords.row].ContainsKey("wumpus"))
+                    if (map[x, agent.coord.y].Exists(x => x.Item1 == "wumpus"))
                     {
-                        KillWumpus(agent, new Coordinates(col, agent.coords.row));
+                        KillWumpus(new Vector2Int(x, agent.coord.y));
                         break;
                     }
                 }
                 break;
             case "left":
-                for (int col = agent.coords.col; col > gridMin.col; col--)
+                for (int x = agent.coord.x; x > gridMin.x; x--)
                 {
-                    if (map[col, agent.coords.row].ContainsKey("wumpus"))
+                    if (map[x, agent.coord.y].Exists(x => x.Item1 == "wumpus"))
                     {
-                        KillWumpus(agent, new Coordinates(col, agent.coords.row));
+                        KillWumpus(new Vector2Int(x, agent.coord.y));
                         break;
                     }
                 }
                 break;
             case "up":
-                for (int row = agent.coords.row; row < gridMax.row; row++)
+                for (int y = agent.coord.y; y < gridMax.y; y++)
                 {
-                    if (map[agent.coords.col, row].ContainsKey("wumpus"))
+                    if (map[agent.coord.x, y].Exists(x => x.Item1 == "wumpus"))
                     {
-                        KillWumpus(agent, new Coordinates(agent.coords.col, row));
+                        KillWumpus(new Vector2Int(agent.coord.x, y));
                         break;
                     }
                 }
                 break;
             case "down":
-                for (int row = agent.coords.row; row > gridMin.row; row--)
+                for (int y = agent.coord.y; y > gridMin.y; y--)
                 {
-                    if (map[agent.coords.col, row].ContainsKey("wumpus"))
+                    if (map[agent.coord.x, y].Exists(x => x.Item1 == "wumpus"))
                     {
-                        KillWumpus(agent, new Coordinates(agent.coords.col, row));
+                        KillWumpus(new Vector2Int(agent.coord.x, y));
                         break;
                     }
                 }
                 break;
         }
 
-        void KillWumpus(Human agent, Coordinates coordsWumpus)
+        void KillWumpus(Vector2Int coordWumpus)
         {
-            RemoveFromGrids(agent, coordsWumpus.col, coordsWumpus.row, "wumpus", true, true);
-            AddToGrids(coordsWumpus.col, coordsWumpus.row, "wumpusdead", true, true);
-            prologInterface.AddCellContentKB(agent, coordsWumpus, "wumpusdead");
-            gameController.makeInferences(agent);
+            RemoveFromGrids(coordWumpus, "wumpus", true, true);
+            AddToGrids(coordWumpus, "wumpusdead", true, true);
+            prologInterface.AddCellContentKB(coordWumpus, "wumpusdead");
+            gameController.MakeInferences();
         }
     }
 
-    public void Move(Human agent, Coordinates newCoords)
+    public void Move(Human agent, Vector2Int newCoord)
     {
-        RemoveFromGrids(agent, agent.coords.col, agent.coords.row, agent.name, true, true);
-        agent.Move(newCoords);
-        AddToGrids(agent.coords.col, agent.coords.row, agent.name, true, true);
-        AddToGrids(agent.coords.col, agent.coords.row, "visited", true, false);
+        RemoveFromGrids(agent.coord, agent.agentName, true, true);
+
+        if (!map[newCoord.x, newCoord.y].Exists(x => x.Item1 == agent.agentName))
+        {
+            map[newCoord.x, newCoord.y].Add((agent.agentName, null));
+            agent.worldMapPrefab.transform.position = GetAgentMapOffset(newCoord);
+        }
+        if (!agentMap[newCoord.x, newCoord.y].Exists(x => x.Item1 == agent.agentName))
+        {
+            agentMap[newCoord.x, newCoord.y].Add((agent.agentName, null));
+            agent.agentMapPrefab.transform.position = GetAgentMapOffset(newCoord);
+        }
+
+        agent.Move(newCoord);
+
+        prologInterface.AddCellContentKB(agent.coord, agent.agentName);
+        AddToGrids(agent.coord, "visited", true, false);
     }
+
+    public Vector2 GetAgentMapOffset(Vector2Int coord)
+    {
+        return new Vector2((coord.x - gridMax.x / 2 - 0.65f) * tileSize, coord.y * tileSize);
+    }
+
+    public Vector2 GetWorldMapOffset(Vector2Int coord)
+    {
+        return new Vector2((coord.x + gridMax.x / 2 + 0.65f) * tileSize, coord.y * tileSize);
+    }
+
 }

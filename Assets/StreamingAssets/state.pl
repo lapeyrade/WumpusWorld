@@ -8,10 +8,10 @@
 % STATE: SAFETY, DANGER, GOLD_FOUND, CANT_SHOOT_ARROW
 
 % X can shoot arrow in any direction
-can_shoot_arrow(X):- nb_arrow(X, Arrow), Arrow > 0.
+can_shoot_arrow(Id):- nb_arrow(Id, Arrow), Arrow > 0.
 
 % X has found at least one gold
-gold_found(X):- nb_gold(X, NbGold), NbGold > 0.
+gold_found(Id):- nb_gold(Id, NbGold), NbGold > 0.
 
 % X is in a safe cell
 safety(X):- location:location(X, safe, same_cell).

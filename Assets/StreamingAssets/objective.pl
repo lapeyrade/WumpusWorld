@@ -5,8 +5,15 @@
 %%%%% ONTOLOGY OBJECTIVE %%%%%
 % OBJECTIVES: FIND_GOLD, KILL_WUMPUS, AVOID_KILLING, EXPLORE_CAVE, DETERMINISTIC/STOCHASTIC_EXPLORATION
 
-kill_wumpus(X):-
+hunt_wumpus(X):-
     personality:personality(X, hunter),
+    \+ personality:personality(X, pacifist).
+
+kill_wumpus(X):-
+    (
+        personality:personality(X, killer);
+        personality:personality(X, hunter)
+    ),
     \+ personality:personality(X, pacifist).
 
 find_gold(X):-
@@ -25,7 +32,7 @@ determinist_exploration(X):-
 stochastic_exploration(X):-
     personality:personality(X, stochastic).
 
-objective_(X):- kill_wumpus(X).
+objective_(X):- hunt_wumpus(X).
 objective_(X):- find_gold(X).
 objective_(X):- avoid_killing(X).
 objective_(X):- explore_cave(X).

@@ -1,56 +1,52 @@
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 
-public class Human : MonoBehaviour
+[System.Serializable]
+public class Human
 {
-    public string name;
-    public int id;
-    public Coordinates coords;
+    public string agentName = "";
+    public string id = "human";
+    public Vector2Int startCoord;
+    public Vector2Int coord;
     public int nbGold = 0;
     public int nbArrow;
     public int nbWumpus;
 
-    public Stack<Coordinates> pastMovements = new Stack<Coordinates>();
+    public GameObject agentMapPrefab;
+    public GameObject worldMapPrefab;
+
+    public Stack<Vector2Int> pastMovements = new();
 
     [SerializeField] public int intelligence = 3;
-    [SerializeField] public int strength = 7;
+    [SerializeField] public int strength = 5;
     [SerializeField] public int dexterity = 7;
 
-    public Human(int agentId, string agentName, Coordinates startCoords, int nbTotalWumpus)
+    [SerializeField] public List<string> personalities;
+
+
+    public Human(int agentId, string name, Vector2Int newCoord, int nbTotalWumpus)
     {
-        id = agentId;
-        name = agentName;
-        coords = startCoords;
+        id += agentId.ToString();
+        agentName = name;
+        startCoord = newCoord;
+        coord = startCoord;
         nbWumpus = nbTotalWumpus;
         nbArrow = nbTotalWumpus;
     }
 
-    public void Move(Coordinates newCoords)
+    public void Move(Vector2Int newCoord)
     {
-        pastMovements.Push(newCoords);
-        coords = newCoords;
+        pastMovements.Push(newCoord);
+        coord = newCoord;
     }
 
-    public Coordinates MoveBack()
+    public Vector2Int MoveBack()
     {
         if (pastMovements.Count > 1)
         {
             pastMovements.Pop();
             return pastMovements.Pop();
         }
-        return coords;
-    }
-
-    public void TakeGold()
-    {
-        Debug.Log("Taking Gold");
-        nbGold += 1;
-    }
-
-    public void BumpWall()
-    {
-        Debug.Log("Bumping Wall");
-        pastMovements.Pop();
-        coords = pastMovements.Peek();
+        return coord;
     }
 }

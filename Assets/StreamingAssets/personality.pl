@@ -12,27 +12,27 @@ stochastic(X):-
     characteristic:characteristic(X, dexterity, Value), Value < 5.
 
 hunter(X):-
-    characteristic:characteristic(X, strength, Value), Value >= 7,
-    characteristic:characteristic(X, dexterity, Value2), Value2 >= 7.
+    characteristic:characteristic(X, strength, Value), Value >= 7.
+
+killer(X):-
+    characteristic:characteristic(X, strength, Value), Value > 4, Value < 7.
 
 pacifist(X):-
-    characteristic:characteristic(X, intelligence, Value), Value > 7,
-    characteristic:characteristic(X, strength, Value2), Value2 < 4.
+    characteristic:characteristic(X, strength, Value), Value =< 4.
 
 explorer(X):-
-    characteristic:characteristic(X, intelligence, Value), Value >= 7,
-    characteristic:characteristic(X, dexterity, Value2), Value2 >= 7.
+    characteristic:characteristic(X, intelligence, Value), Value > 4, Value < 7.
 
 greedy(X):-
-    characteristic:characteristic(X, intelligence, Value), Value =< 3.
+    characteristic:characteristic(X, intelligence, Value), Value =< 4.
 
 nonmaterialistic(X):-
-    characteristic:characteristic(X, intelligence, Value), Value > 7.
-
+    characteristic:characteristic(X, intelligence, Value), Value >= 7.
 
 personality_(X) :- determinist(X).
 personality_(X) :- stochastic(X).
 personality_(X) :- hunter(X).
+personality_(X) :- killer(X).
 personality_(X) :- pacifist(X).
 personality_(X) :- explorer(X).
 personality_(X) :- greedy(X).
