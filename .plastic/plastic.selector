@@ -1,4 +1,0 @@
-repository "wumpus_world@SylvainL@cloud"
-  path "/"
-    br "/main"
-    co "/main"
