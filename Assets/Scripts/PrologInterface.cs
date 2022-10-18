@@ -29,26 +29,25 @@ public class PrologInterface : MonoBehaviour
     protected void Update()
     {
         /* Prolog query inside the Unity Inspector */
-        if (askQuery)
+        if (!askQuery) return;
+        
+        _prologThread.QueryAsync(query, false);
+
+        Debug.Log($"Query: {query}");
+
+        bool moreResults = true;
+
+        while (moreResults)
         {
-            _prologThread.QueryAsync(query, false);
-
-            Debug.Log("Query: " + query);
-
-            bool moreResults = true;
-
-            while (moreResults)
+            foreach (Tuple<string, string> answer in _prologThread.QueryAsyncResult())
             {
-                foreach (Tuple<string, string> answer in _prologThread.QueryAsyncResult())
-                {
-                    if (answer.Item1 == "null" && answer.Item2 == "null")
-                        moreResults = false;
-                    else
-                        Debug.Log(answer.Item1 + " = " + answer.Item2);
-                }
+                if (answer.Item1 == "null" && answer.Item2 == "null")
+                    moreResults = false;
+                else
+                    Debug.Log($"{answer.Item1} = {answer.Item2}");
             }
-            askQuery = false;
         }
+        askQuery = false;
     }
 
     public void InitialiseAgents(List<Human> agents)
@@ -95,12 +94,7 @@ public class PrologInterface : MonoBehaviour
         else
             return result.First().Item2;
     }
-
-    public bool CheckCellElement((int x, int y) coord, string element)
-    {
-        return bool.Parse(_prologThread.Query($"is_true(situation([{coord.x}, {coord.y}], {element}))").ElementAt(0).Item1);
-    }
-
+    
     public List<Vector2Int> CheckElement(string element)
     {
         List<Vector2Int> listCoordElem = new();
@@ -244,15 +238,14 @@ public class PrologInterface : MonoBehaviour
                 }
             }
 
-            if (listCol.Count() == listRow.Count() && listRow.Count() == listElement.Count())
+            if (listCol.Count() != listRow.Count() || listRow.Count() != listElement.Count()) return;
+            
+            for (int i = 0; i < listCol.Count(); i++)
             {
-                for (int i = 0; i < listCol.Count(); i++)
-                {
-                    if (logConsole)
-                        Debug.Log($"cell([{listCol[i]}, {listRow[i]}], {listElement[i]}).");
-                    if (debugFile)
-                        WriteInDebugKb($"cell([{listCol[i]}, {listRow[i]}], {listElement[i]}).");
-                }
+                if (logConsole)
+                    Debug.Log($"cell([{listCol[i]}, {listRow[i]}], {listElement[i]}).");
+                if (debugFile)
+                    WriteInDebugKb($"cell([{listCol[i]}, {listRow[i]}], {listElement[i]}).");
             }
         }
 

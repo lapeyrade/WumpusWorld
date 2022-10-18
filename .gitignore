@@ -74,5 +74,6 @@ crashlytics-build.properties
 ignore.conf
 .vscode/
 .plastic/
+.idea/
 
 TODO

@@ -110,8 +110,8 @@ public class World : MonoBehaviour
 
             Human agent = new(i, "human", coord, nbWumpus)
             {
-                agentMapPrefab = Instantiate(Resources.Load("human")) as GameObject,
-                worldMapPrefab = Instantiate(Resources.Load("human")) as GameObject
+                prefabAgentMap = Instantiate(Resources.Load("human")) as GameObject,
+                prefabWorldMap = Instantiate(Resources.Load("human")) as GameObject
             };
 
             agents.Add(agent);
@@ -333,12 +333,12 @@ public class World : MonoBehaviour
         if (!Map[newCoord.x, newCoord.y].Exists(x => x.Item1 == agent.agentName))
         {
             Map[newCoord.x, newCoord.y].Add((agent.agentName, null));
-            agent.worldMapPrefab.transform.position = GetAgentMapOffset(newCoord);
+            agent.prefabWorldMap.transform.position = GetAgentMapOffset(newCoord);
         }
         if (!AgentMap[newCoord.x, newCoord.y].Exists(x => x.Item1 == agent.agentName))
         {
             AgentMap[newCoord.x, newCoord.y].Add((agent.agentName, null));
-            agent.agentMapPrefab.transform.position = GetAgentMapOffset(newCoord);
+            agent.prefabAgentMap.transform.position = GetAgentMapOffset(newCoord);
         }
 
         agent.Move(newCoord);

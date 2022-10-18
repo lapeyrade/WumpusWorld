@@ -5,14 +5,14 @@ using UnityEngine;
 public class Human
 {
     public string agentName;
-    public string id = "human";
+    public string id;
     public Vector2Int startCoord;
     public Vector2Int coord;
     public int nbGold;
     public int nbArrow;
     
-    public GameObject agentMapPrefab;
-    public GameObject worldMapPrefab;
+    public GameObject prefabAgentMap;
+    public GameObject prefabWorldMap;
 
     public Stack<Vector2Int> PastMovements = new();
 
@@ -25,7 +25,7 @@ public class Human
 
     public Human(int agentId, string name, Vector2Int newCoord, int nbTotalWumpus)
     {
-        id += agentId.ToString();
+        id = $"human{agentId.ToString()}";
         agentName = name;
         startCoord = newCoord;
         coord = startCoord;

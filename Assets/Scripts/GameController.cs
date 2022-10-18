@@ -11,11 +11,12 @@ public class GameController : MonoBehaviour
     private PrologInterface _prologInterface;
 
     [SerializeField] public bool autoMode = true;
+    [SerializeField] public bool consoleLog;
     [SerializeField] public float timerInterval = 0.01f;
     private float _timer;
     private float _timer2;
     private bool _gameOver;
-    
+
     protected void Awake()
     {
         _world = gridManager.GetComponent<World>();
@@ -81,7 +82,7 @@ public class GameController : MonoBehaviour
         else if (Input.GetKeyDown("return")) // Random Move
             move = _prologInterface.RandomMove(agent);
 
-        if (!firstTurn)
+        if (!firstTurn && consoleLog)
             Debug.Log(move);
 
         switch (move)
@@ -109,7 +110,8 @@ public class GameController : MonoBehaviour
         if (agent.startCoord == agent.coord && agent.nbGold == 1)
             SetGameOver("Game Won!", false);
 
-        foreach (string element in _world.Map[agent.coord.x, agent.coord.y].Except(_world.AgentMap[agent.coord.x, agent.coord.y]).Select(x => x.Item1))
+        foreach (string element in _world.Map[agent.coord.x, agent.coord.y]
+                     .Except(_world.AgentMap[agent.coord.x, agent.coord.y]).Select(x => x.Item1))
         {
             _world.AddToGrids(agent.coord, element, true, false);
             _prologInterface.AddCellContentKb(agent.coord, element);
@@ -153,7 +155,7 @@ public class GameController : MonoBehaviour
         while (actionLeftToDo)
         {
             string action = _prologInterface.NextAction(agent);
-            if (action != "null")
+            if (action != "null" && consoleLog)
                 Debug.Log(action);
 
             switch (action)
@@ -191,7 +193,7 @@ public class GameController : MonoBehaviour
     {
         _gameOver = true;
         Debug.Log(message);
-        Debug.Log("Game Duration: " + _timer2);
+        Debug.Log($"Game Duration: {_timer2}");
         
         if (!exitApp) return;
         
