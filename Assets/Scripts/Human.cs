@@ -4,18 +4,17 @@ using UnityEngine;
 [System.Serializable]
 public class Human
 {
-    public string agentName = "";
+    public string agentName;
     public string id = "human";
     public Vector2Int startCoord;
     public Vector2Int coord;
-    public int nbGold = 0;
+    public int nbGold;
     public int nbArrow;
-    public int nbWumpus;
-
+    
     public GameObject agentMapPrefab;
     public GameObject worldMapPrefab;
 
-    public Stack<Vector2Int> pastMovements = new();
+    public Stack<Vector2Int> PastMovements = new();
 
     [SerializeField] public int intelligence = 3;
     [SerializeField] public int strength = 5;
@@ -30,23 +29,20 @@ public class Human
         agentName = name;
         startCoord = newCoord;
         coord = startCoord;
-        nbWumpus = nbTotalWumpus;
         nbArrow = nbTotalWumpus;
     }
 
     public void Move(Vector2Int newCoord)
     {
-        pastMovements.Push(newCoord);
+        PastMovements.Push(newCoord);
         coord = newCoord;
     }
 
     public Vector2Int MoveBack()
     {
-        if (pastMovements.Count > 1)
-        {
-            pastMovements.Pop();
-            return pastMovements.Pop();
-        }
-        return coord;
+        if (PastMovements.Count <= 1) return coord;
+        
+        PastMovements.Pop();
+        return PastMovements.Pop();
     }
 }

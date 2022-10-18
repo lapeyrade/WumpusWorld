@@ -18,33 +18,33 @@ using System.Threading;
 
 namespace PrologMachineQueryInterface
 {
-    class PrologError
+    /*class PrologError
     {
-        public string _exception_json;
+        private readonly string _exceptionJson;
 
-        public PrologError(string exception_json)
+        public PrologError(string exceptionJson)
         {
-            using JsonDocument doc = JsonDocument.Parse(exception_json);
+            using JsonDocument doc = JsonDocument.Parse(exceptionJson);
             JsonElement jsonResult = doc.RootElement;
-
+        
             Debug.Assert(jsonResult.GetProperty("functor").GetString() == "exception" &&
                 jsonResult.GetProperty("args").ToString().Length == 1);
-            this._exception_json = jsonResult.GetProperty("args")[0].ToString();
-
-            this.Prolog();
+            _exceptionJson = jsonResult.GetProperty("args")[0].ToString();
+        
+            Prolog();
         }
 
         public string Json()
         {
-            return this._exception_json;
+            return _exceptionJson;
         }
 
-        public string Prolog()
+        private string Prolog()
         {
-            // return json_to_prolog(this._exception_json);
-            return this._exception_json;
+            return json_to_prolog(_exception_json);
+            return _exceptionJson;
         }
-    }
+    }*/
 
     public class PrologConnectionFailedError : Exception
     {
@@ -71,165 +71,163 @@ namespace PrologMachineQueryInterface
         public PrologResultNotAvailableError(string jsonResult) : base(jsonResult) { }
     }
 
-    public class PrologMQI
+    public class PrologMqi
     {
-        public int? _port;
-        public string? _password;
-        public Process? _process;
-        public float? _query_timeout;
-        public int? pending_connections;
-        public string? _output_file;
-        public string? _unix_domain_socket;
-        public string? _mqi_traces;
-        public bool _launch_mqi;
-        public string? _prolog_path;
-        public string? _prolog_path_args;
-        public bool? connection_failed;
+        public int? Port;
+        public string Password;
+        private Process _process;
+        private readonly float? _queryTimeout;
+        private readonly int? _pendingConnections;
+        private readonly string _outputFile;
+        public string UnixDomainSocket;
+        // private string _mqiTraces;
+        private readonly bool _launchMqi;
+        private readonly string _prologPath;
+        private readonly string _prologPathArgs;
+        public bool ConnectionFailed;
 
-        public PrologMQI(
-            bool launch_mqi = true,
-            int? port = null,
-            string? password = null,
-            string? unix_domain_socket = null,
-            float? query_timeout_seconds = null,
-            int? pending_connection_count = null,
-            string? output_file_name = null,
-            string? mqi_traces = null,
-            string? prolog_path = null,
-            string? prolog_path_args = null)
+        public PrologMqi(
+            bool launchMqi = true,
+            int? port = null!,
+            string password = null,
+            string unixDomainSocket = null,
+            float? queryTimeoutSeconds = null,
+            int? pendingConnectionCount = null,
+            string outputFileName = null,
+            // string mqiTraces = null,
+            string prologPath = null,
+            string prologPathArgs = null)
         {
-            this._port = port;
-            this._password = password;
-            this._process = null;
-            this._query_timeout = query_timeout_seconds;
-            this.pending_connections = pending_connection_count;
-            this._output_file = output_file_name;
-            this._unix_domain_socket = unix_domain_socket;
-            this._mqi_traces = mqi_traces;
-            this._launch_mqi = launch_mqi;
-            this._prolog_path = prolog_path;
-            this._prolog_path_args = prolog_path_args;
+            Port = port;
+            Password = password;
+            _process = null;
+            _queryTimeout = queryTimeoutSeconds;
+            _pendingConnections = pendingConnectionCount;
+            _outputFile = outputFileName;
+            UnixDomainSocket = unixDomainSocket;
+            // _mqiTraces = mqiTraces;
+            _launchMqi = launchMqi;
+            _prologPath = prologPath;
+            _prologPathArgs = prologPathArgs;
 
-            this.connection_failed = false;
+            ConnectionFailed = false;
 
             OperatingSystem os = Environment.OSVersion;
             PlatformID pid = os.Platform;
 
             // Ensure arguments are valid
-            if (this._unix_domain_socket != null)
+            if (UnixDomainSocket != null)
             {
-                if (pid == PlatformID.Win32NT || pid == PlatformID.Win32S || pid == PlatformID.Win32Windows || pid == PlatformID.WinCE)
+                if (pid is PlatformID.Win32NT or PlatformID.Win32S or PlatformID.Win32Windows or PlatformID.WinCE)
                     throw new ArgumentException("Unix domain sockets are not supported on Windows");
-                else if (this._port != null)
+                else if (Port != null)
                     throw new ArgumentException("Must only provide one of: port or unix_domain_socket");
             }
 
-            if (this._launch_mqi is false && this._output_file != null)
+            if (_launchMqi is false && _outputFile != null)
                 throw new ArgumentException("output_file only works when launch_mqi is True");
 
-            this.Start();
+            Start();
         }
 
 
         public void Start()
         {
-            if (this._launch_mqi)
+            if (!_launchMqi) return;
+            // File.WriteAllText("output.txt", string.Empty); // Clear output file
+            // using StreamWriter file = new("output.txt", append: true);
+
+            string swiplPath = "swipl";
+
+            if (_prologPath != null)
+                swiplPath = Path.Join(_prologPath, "swipl");
+
+            string launchArgs = "";
+
+            if (_prologPathArgs != null)
+                launchArgs += _prologPathArgs;
+
+            launchArgs +=
+            (
+                "--quiet"
+                + " -g"
+                + " mqi_start"
+                + " -t"
+                + " halt"
+                + " --"
+                + " --write_connection_values=true"
+            );
+
+            if (_pendingConnections != null)
+                launchArgs += " --pending_connections=" + _pendingConnections;
+            if (_queryTimeout != null)
+                launchArgs += " --query_timeout=" + _queryTimeout;
+            if (Password != null)
+                launchArgs += " --password=" + Password;
+            if (_outputFile != null)
             {
-                // File.WriteAllText("output.txt", string.Empty); // Clear output file
-                // using StreamWriter file = new("output.txt", append: true);
+                string finalPath = PrologFunctions.CreatePosixPath(_outputFile);
+                launchArgs += " --write_output_to_file =" + _outputFile;
+                Console.WriteLine("Writing all Prolog output to file: " + finalPath);
+            }
+            if (Port != null)
+                launchArgs += " --port=" + Port;
 
-                string swiplPath = "swipl";
-
-                if (this._prolog_path != null)
-                    swiplPath = Path.Join(this._prolog_path, "swipl");
-
-                string launchArgs = "";
-
-                if (this._prolog_path_args != null)
-                    launchArgs += this._prolog_path_args;
-
-                launchArgs +=
-                    (
-                        "--quiet"
-                        + " -g"
-                        + " mqi_start"
-                        + " -t"
-                        + " halt"
-                        + " --"
-                        + " --write_connection_values=true"
-                    );
-
-                if (this.pending_connections != null)
-                    launchArgs += " --pending_connections=" + this.pending_connections;
-                if (this._query_timeout != null)
-                    launchArgs += " --query_timeout=" + this._query_timeout;
-                if (this._password != null)
-                    launchArgs += " --password=" + this._password;
-                if (this._output_file != null)
-                {
-                    string finalPath = PrologFunctions.CreatePosixPath(this._output_file);
-                    launchArgs += " --write_output_to_file =" + this._output_file;
-                    Console.WriteLine("Writing all Prolog output to file: " + finalPath);
-                }
-                if (this._port != null)
-                    launchArgs += " --port=" + this._port;
-
-                if (this._unix_domain_socket != null)
-                {
-                    if (this._unix_domain_socket.Length > 0)
-                        launchArgs += " --unix_domain_socket=" + this._unix_domain_socket;
-                    else
-                        launchArgs += " --unix_domain_socket";
-                }
-
-                // file.WriteLine("Prolog MQI launching swipl with args: " + launchArgs);
-
-                try
-                {
-                    this._process = new Process();
-                    this._process.StartInfo.FileName = swiplPath;
-                    this._process.StartInfo.Arguments = launchArgs;
-                    this._process.StartInfo.UseShellExecute = false;
-                    this._process.StartInfo.RedirectStandardOutput = true;
-                    this._process.Start();
-                }
-                catch (FileNotFoundException)
-                {
-                    throw new PrologLaunchError("The SWI Prolog executable 'swipl' could not be found on the system path, please add it.");
-                }
-
-
-                if (this._unix_domain_socket is null)
-                {
-                    string? portString = this._process.StandardOutput.ReadLine();
-
-                    if (portString == "")
-                        throw new PrologLaunchError("no port found in stdout");
-                    else if (portString != null)
-                    {
-                        string serverPortString = portString.Trim('\n');
-                        this._port = Int32.Parse(serverPortString);
-                        // file.WriteLine("Prolog MQI port: " + this._port);
-                    }
-                }
+            if (UnixDomainSocket != null)
+            {
+                if (UnixDomainSocket.Length > 0)
+                    launchArgs += " --unix_domain_socket=" + UnixDomainSocket;
                 else
-                {
-                    string? domain_socket = this._process.StandardOutput.ReadLine();
+                    launchArgs += " --unix_domain_socket";
+            }
 
-                    if (domain_socket == "")
-                        throw new PrologLaunchError("no Unix Domain Socket found in stdout");
-                    else if (domain_socket != null)
-                        this._unix_domain_socket = domain_socket.Trim('\n');
-                }
+            // file.WriteLine("Prolog MQI launching swipl with args: " + launchArgs);
 
-                string? passwordString = this._process.StandardOutput.ReadLine();
-                if (passwordString == "")
-                    throw new PrologLaunchError("no password found in stdout");
-                else if (passwordString != null)
+            try
+            {
+                _process = new Process();
+                _process.StartInfo.FileName = swiplPath;
+                _process.StartInfo.Arguments = launchArgs;
+                _process.StartInfo.UseShellExecute = false;
+                _process.StartInfo.RedirectStandardOutput = true;
+                _process.Start();
+            }
+            catch (FileNotFoundException)
+            {
+                throw new PrologLaunchError("The SWI Prolog executable 'swipl' could not be found on the system path, please add it.");
+            }
+
+
+            if (UnixDomainSocket is null)
+            {
+                string portString = _process.StandardOutput.ReadLine();
+
+                if (portString == "")
+                    throw new PrologLaunchError("no port found in stdout");
+                else if (portString != null)
                 {
-                    this._password = passwordString.Trim('\n');
-                    // file.WriteLine("Prolog MQI password: " + this._password);
+                    string serverPortString = portString.Trim('\n');
+                    Port = Int32.Parse(serverPortString);
+                    // file.WriteLine("Prolog MQI port: " + _port);
                 }
+            }
+            else
+            {
+                string domainSocket = _process.StandardOutput.ReadLine();
+
+                if (domainSocket == "")
+                    throw new PrologLaunchError("no Unix Domain Socket found in stdout");
+                else if (domainSocket != null)
+                    UnixDomainSocket = domainSocket.Trim('\n');
+            }
+
+            string passwordString = _process.StandardOutput.ReadLine();
+            if (passwordString == "")
+                throw new PrologLaunchError("no password found in stdout");
+            else if (passwordString != null)
+            {
+                Password = passwordString.Trim('\n');
+                // file.WriteLine("Prolog MQI password: " + _password);
             }
 
         }
@@ -240,12 +238,9 @@ namespace PrologMachineQueryInterface
             return new PrologThread(this);
         }
 
-        public int? ProcessID()
+        public int? ProcessId()
         {
-            if (this._process != null)
-                return this._process.Id;
-            else
-                return null;
+            return _process?.Id;
         }
     }
 
@@ -257,76 +252,75 @@ namespace PrologMachineQueryInterface
 
     public class PrologThread
     {
-        public PrologMQI _prolog_server;
-        public Socket? _socket;
-        public string? communication_thread_id;
-        public string? goal_thread_id;
-        public int _heartbeat_count;
-        public int? _server_protocol_major;
-        public int? _server_protocol_minor;
+        private readonly PrologMqi _prologServer;
+        private Socket _socket;
+        // private string _communicationThreadId;
+        // private string _goalThreadId;
+        // private int _heartbeatCount;
+        private int? _serverProtocolMajor;
+        private int? _serverProtocolMinor;
 
-        public PrologThread(PrologMQI prologMQI)
+        public PrologThread(PrologMqi prologMqi)
         {
-            this._prolog_server = prologMQI;
-            this._socket = null;
-            this.communication_thread_id = null;
-            this.goal_thread_id = null;
-            this._heartbeat_count = 0;
-            this._server_protocol_major = null;
-            this._server_protocol_minor = null;
+            _prologServer = prologMqi;
+            _socket = null;
+            // _communicationThreadId = null;
+            // _goalThreadId = null;
+            // _heartbeatCount = 0;
+            _serverProtocolMajor = null;
+            _serverProtocolMinor = null;
 
-            this.Start();
+            Start();
         }
 
-        public void Start()
+        private void Start()
         {
             // using StreamWriter file = new("output.txt", append: true);
 
-            // file.WriteLine("Entering PrologThread: " + this._prolog_server.process_id());
+            // file.WriteLine("Entering PrologThread: " + _prolog_server.process_id());
 
-            if (this._socket != null)
+            if (_socket != null)
                 return;
 
-            if (this._prolog_server.ProcessID() is null)
-                this._prolog_server.Start();
+            if (_prologServer.ProcessId() is null)
+                _prologServer.Start();
 
             Dictionary<string, int?> prologAddress = new();
 
-            if (this._prolog_server._unix_domain_socket != null)
+            if (_prologServer.UnixDomainSocket != null)
             {
-                prologAddress.Add(this._prolog_server._unix_domain_socket, this._prolog_server._port);
-                this._socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                prologAddress.Add(_prologServer.UnixDomainSocket, _prologServer.Port);
+                _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             }
             else
             {
-                prologAddress.Add("127.0.0.1", this._prolog_server._port);
-                this._socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                prologAddress.Add("127.0.0.1", _prologServer.Port);
+                _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             }
 
             // file.WriteLine("PrologMQI connecting to Prolog at: " + prologAddress.First().Key + ":" + prologAddress.First().Value);
 
-            int connect_count = 0;
-            while (connect_count < 3)
+            int connectCount = 0;
+            while (connectCount < 3)
             {
                 try
                 {
-                    this._socket.Connect(IPAddress.Parse(prologAddress.First().Key), prologAddress.First().Value ?? default);
+                    _socket.Connect(IPAddress.Parse(prologAddress.First().Key), prologAddress.First().Value ?? default);
                     break;
                 }
                 catch (SocketException)
                 {
                     // file.WriteLine("Server not responding %s", prologAddress);
-                    connect_count += 1;
+                    connectCount += 1;
                     Thread.Sleep(1);
-                    continue;
                 }
             }
-            if (connect_count == 3)
+            if (connectCount == 3)
                 throw new SocketException((int)SocketError.ConnectionRefused);
 
-            this.Send(this._prolog_server._password ?? "Null Password");
+            Send(_prologServer.Password ?? "Null Password");
 
-            string result = this.Receive();
+            string result = Receive();
 
             using JsonDocument doc = JsonDocument.Parse(result);
             JsonElement jsonResult = doc.RootElement;
@@ -336,55 +330,54 @@ namespace PrologMachineQueryInterface
 
             if (jsonResult.GetProperty("functor").ToString() != "true")
                 throw new PrologLaunchError($"Failed to accept password: {jsonResult}");
+            
+
+            // _communicationThreadId = jsonResult.GetProperty("args")[0][0][0].GetProperty("args")[0].ToString();
+            // _goalThreadId = jsonResult.GetProperty("args")[0][0][0].GetProperty("args")[1].ToString();
+
+            // file.WriteLine("PrologMQI server protocol: " + communication_thread_id + " " + goal_thread_id);
+
+            if (jsonResult.GetProperty("args")[0][0].GetArrayLength() > 1)
+            {
+                JsonElement versionTerm = jsonResult.GetProperty("args")[0][0][1];
+                _serverProtocolMajor = versionTerm.GetProperty("args")[0].GetInt32();
+                _serverProtocolMinor = versionTerm.GetProperty("args")[1].GetInt32();
+            }
             else
             {
-                this.communication_thread_id = jsonResult.GetProperty("args")[0][0][0].GetProperty("args")[0].ToString();
-                this.goal_thread_id = jsonResult.GetProperty("args")[0][0][0].GetProperty("args")[1].ToString();
-
-                // file.WriteLine("PrologMQI server protocol: " + this.communication_thread_id + " " + this.goal_thread_id);
-
-                if (jsonResult.GetProperty("args")[0][0].GetArrayLength() > 1)
-                {
-                    JsonElement versionTerm = jsonResult.GetProperty("args")[0][0][1];
-                    this._server_protocol_major = versionTerm.GetProperty("args")[0].GetInt32();
-                    this._server_protocol_minor = versionTerm.GetProperty("args")[1].GetInt32();
-                }
-                else
-                {
-                    this._server_protocol_major = 0;
-                    this._server_protocol_minor = 0;
-                }
-
-                // file.WriteLine("PrologMQI server protocol: " + this._server_protocol_major + " " + this._server_protocol_minor);
-
-                this.CheckProtocolVersion();
+                _serverProtocolMajor = 0;
+                _serverProtocolMinor = 0;
             }
+
+            // file.WriteLine("PrologMQI server protocol: " + _server_protocol_major + " " + _server_protocol_minor);
+
+            CheckProtocolVersion();
         }
 
-        public void CheckProtocolVersion()
+        private void CheckProtocolVersion()
         {
-            int required_server_major = 1;
-            int required_server_minor = 0;
+            int requiredServerMajor = 1;
+            int requiredServerMinor = 0;
 
-            if (this._server_protocol_major == 0 && this._server_protocol_minor == 0)
+            if (_serverProtocolMajor == 0 && _serverProtocolMinor == 0)
                 return;
 
-            if (this._server_protocol_major == required_server_major && this._server_protocol_minor == required_server_minor)
+            if (_serverProtocolMajor == requiredServerMajor && _serverProtocolMinor == requiredServerMinor)
                 return;
 
-            throw new PrologLaunchError($"This version of swiplserver requires MQI major version {required_server_major} and minor version >= {required_server_minor}. The server is running MQI '{this._server_protocol_major}.{this._server_protocol_minor}");
+            throw new PrologLaunchError($"version of swiplserver requires MQI major version {requiredServerMajor} and minor version >= {requiredServerMinor}. The server is running MQI '{_serverProtocolMajor}.{_serverProtocolMinor}");
         }
 
-        public string Receive()
+        private string Receive()
         {
             // using StreamWriter file = new("output.txt", append: true);
 
             byte[] buffer = new byte[4096];
 
-            if (this._socket is null)
+            if (_socket is null)
                 throw new NullReferenceException("Socket is null");
 
-            int iRx = this._socket.Receive(buffer);
+            int iRx = _socket.Receive(buffer);
 
             string msg = Encoding.ASCII.GetString(buffer, 0, iRx);
 
@@ -395,7 +388,7 @@ namespace PrologMachineQueryInterface
             return msg;
         }
 
-        public void Send(string value)
+        private void Send(string value)
         {
             // using StreamWriter file = new("output.txt", append: true);
 
@@ -407,15 +400,11 @@ namespace PrologMachineQueryInterface
             // file.WriteLine("PrologMQI send: " + value);
 
             byte[] valueBytes = Encoding.UTF8.GetBytes(value);
-            string utf8value = Encoding.UTF8.GetString(valueBytes);
+            string utf8Value = Encoding.UTF8.GetString(valueBytes);
 
             // file.WriteLine("Utf8 Value: " + utf8value);
-
-            int messageLen;
-            if (this._server_protocol_major == 0)
-                messageLen = value.Length;
-            else
-                messageLen = utf8value.Length;
+            
+            int messageLen = _serverProtocolMajor == 0 ? value.Length : utf8Value.Length;
 
             string msgHeader = messageLen.ToString() + ".\n";
             byte[] messageLenBytes = Encoding.UTF8.GetBytes(msgHeader);
@@ -429,92 +418,92 @@ namespace PrologMachineQueryInterface
             // for (int i = 0; i < valueBytes.Length; i++)
             // file.Write(valueBytes[i]);
 
-            if (this._socket != null)
+            if (_socket != null)
             {
-                this._socket.Send(messageLenBytes);
-                this._socket.Send(valueBytes);
+                _socket.Send(messageLenBytes);
+                _socket.Send(valueBytes);
             }
         }
 
         public void Stop()
         {
-            if (this._socket != null)
+            if (_socket != null)
             {
-                if (this._prolog_server.connection_failed ?? false)
+                if (_prologServer.ConnectionFailed)
                 {
-                    this.Send("close.\n");
-                    this.ReturnPrologResponse();
+                    Send("close.\n");
+                    ReturnPrologResponse();
                 }
             }
         }
 
 
-        public List<Tuple<string, string>> Query(string value, float? query_timeout_seconds = null)
+        public List<Tuple<string, string>> Query(string value, float? queryTimeoutSeconds = null)
         {
-            if (this._socket is null)
-                this.Start();
+            if (_socket is null)
+                Start();
 
             value = value.Trim();
             value = value.Trim('\n');
 
-            string? timeoutString = query_timeout_seconds.ToString();
-            if (query_timeout_seconds is null)
+            string timeoutString = queryTimeoutSeconds.ToString();
+            if (queryTimeoutSeconds is null)
                 timeoutString = "_";
 
-            this.Send($"run(({value}), {timeoutString}).\n");
+            Send($"run(({value}), {timeoutString}).\n");
 
-            return this.ReturnPrologResponse();
+            return ReturnPrologResponse();
         }
 
-        public void QueryAsync(string value, bool find_all, float? query_timeout_seconds = null)
+        public void QueryAsync(string value, bool findAll, float? queryTimeoutSeconds = null)
         {
-            if (this._socket is null)
-                this.Start();
+            if (_socket is null)
+                Start();
 
             value = value.Trim();
             value = value.Trim('\n');
 
-            string? timeoutString = query_timeout_seconds.ToString();
-            if (query_timeout_seconds is null)
+            string timeoutString = queryTimeoutSeconds.ToString();
+            if (queryTimeoutSeconds is null)
                 timeoutString = "_";
 
-            this.Send($"run_async(({value}), {timeoutString}, {find_all.ToString().ToLower()}).\n");
+            Send($"run_async(({value}), {timeoutString}, {findAll.ToString().ToLower()}).\n");
 
-            this.ReturnPrologResponse();
+            ReturnPrologResponse();
         }
 
-        public void CancelQueryAsync()
-        {
-            this.Send("cancel_async.\n");
-            this.ReturnPrologResponse();
-        }
+        // public void CancelQueryAsync()
+        // {
+        //     Send("cancel_async.\n");
+        //     ReturnPrologResponse();
+        // }
 
-        public List<Tuple<string, string>> QueryAsyncResult(float? wait_timeout_seconds = null)
+        public List<Tuple<string, string>> QueryAsyncResult(float? waitTimeoutSeconds = null)
         {
             // StreamWriter file = new("output.txt", append: true);
 
-            string? timeoutString = wait_timeout_seconds.ToString();
-            if (wait_timeout_seconds is null)
+            string timeoutString = waitTimeoutSeconds.ToString();
+            if (waitTimeoutSeconds is null)
                 timeoutString = "-1";
 
             // file.WriteLine("\nquery_async_result: " + timeoutString);
 
-            this.Send($"async_result({timeoutString}).\n");
+            Send($"async_result({timeoutString}).\n");
 
-            return this.ReturnPrologResponse();
+            return ReturnPrologResponse();
         }
 
-        public void HaltServer()
-        {
-            this.Send("quit.\n");
-            this.ReturnPrologResponse();
-            this._prolog_server.connection_failed = true;
-        }
+        // public void HaltServer()
+        // {
+        //     Send("quit.\n");
+        //     ReturnPrologResponse();
+        //     _prologServer.ConnectionFailed = true;
+        // }
 
-        public List<Tuple<string, string>> ReturnPrologResponse()
+        private List<Tuple<string, string>> ReturnPrologResponse()
         {
             // using StreamWriter file = new("output.txt", append: true);
-            string result = this.Receive();
+            string result = Receive();
 
             // file.WriteLine("\nReceive: " + result);
 
@@ -529,11 +518,11 @@ namespace PrologMachineQueryInterface
             if (jsonResult.ToString() != "false" && jsonResult.GetProperty("functor").ToString() == "exception")
             {
                 if (jsonResult.GetProperty("args")[0].ToString() == "no_more_results")
-                    answerList.Add(new Tuple<string, string>("null", "null"));
+                    answerList.Add(new("null", "null"));
                 else if (jsonResult.GetProperty("args")[0].ToString() == "connection_failed")
-                    this._prolog_server.connection_failed = true;
-                else if (!typeof(string).IsInstanceOfType(jsonResult.GetProperty("args")[0]))
-                    throw new PrologLaunchError(jsonResult.ToString());
+                    _prologServer.ConnectionFailed = true;
+                // else if (!typeof(string).IsInstanceOfType(jsonResult.GetProperty("args")[0]))
+                else throw new PrologLaunchError(jsonResult.ToString());
 
                 switch (jsonResult.GetProperty("args")[0].ToString())
                 {
@@ -581,37 +570,37 @@ namespace PrologMachineQueryInterface
 
     public static class PrologFunctions
     {
-        public static string CreatePosixPath(string os_path)
+        public static string CreatePosixPath(string osPath)
         {
-            return os_path.Replace("\\", "/");
+            return osPath.Replace("\\", "/");
         }
 
-        public static bool IsPrologFunctor(JsonElement json_term)
+        // public static bool IsPrologFunctor(JsonElement jsonTerm)
+        // {
+        //     return jsonTerm.TryGetProperty("functor", out _) && jsonTerm.TryGetProperty("args", out _);
+        // }
+
+        private static bool IsPrologVariable(JsonElement jsonTerm)
         {
-            return json_term.TryGetProperty("functor", out _) && json_term.TryGetProperty("args", out _);
+            return jsonTerm.GetProperty("args")[0].ToString() == "test" || jsonTerm[0].GetProperty("args")[0].ToString() == "_";
         }
 
-        public static bool IsPrologVariable(JsonElement json_term)
+        private static bool IsPrologAtom(JsonElement jsonTerm)
         {
-            return json_term.GetProperty("args")[0].ToString() == "test" || json_term[0].GetProperty("args")[0].ToString() == "_";
+            return !IsPrologVariable(jsonTerm);
         }
 
-        public static bool IsPrologAtom(JsonElement json_term)
+        public static JsonElement PrologName(JsonElement jsonTerm)
         {
-            return !IsPrologVariable(json_term);
+            if (IsPrologAtom(jsonTerm) || IsPrologVariable(jsonTerm))
+                return jsonTerm;
+            
+            return jsonTerm.GetProperty("functor");
         }
 
-        public static JsonElement PrologName(JsonElement json_term)
+        public static JsonElement PrologArgs(JsonElement jsonTerm)
         {
-            if (IsPrologAtom(json_term) || IsPrologVariable(json_term))
-                return json_term;
-            else
-                return json_term.GetProperty("functor");
-        }
-
-        public static JsonElement PrologArgs(JsonElement json_term)
-        {
-            return json_term.GetProperty("args");
+            return jsonTerm.GetProperty("args");
         }
 
         // void quote_prolog_identifier(identifier: str):
@@ -651,17 +640,17 @@ namespace PrologMachineQueryInterface
     }
 
 
-    public class Test
+    public static class Test
     {
         public static void Main()
         {
-            PrologMQI mqi = new();
+            PrologMqi mqi = new();
             PrologThread prologThread = mqi.CreateThread();
 
             /*************************************************************************
             TEST 0 : Test of the consult command to use a prolog file 
             *************************************************************************/
-            Console.WriteLine("TEST 0 : Consult command and query afeter consult\n");
+            Console.WriteLine("TEST 0 : Consult command and query after consult\n");
             Console.WriteLine("Query: consult(test).");
             Console.WriteLine(prologThread.Query("consult(test)").ElementAt(0).Item1);
             Console.WriteLine("Query: father(bob).");
@@ -685,19 +674,20 @@ namespace PrologMachineQueryInterface
             Console.WriteLine("Query: father(X)\n");
             prologThread.QueryAsync("father(X)", false);
 
-            bool test2_more_results = true;
-            while (test2_more_results)
+            bool test2MoreResults = true;
+            
+            while (test2MoreResults)
             {
-                List<Tuple<string, string>> test2_result = prologThread.QueryAsyncResult();
-                for (int i = 0; i < test2_result.Count; i++)
+                List<Tuple<string, string>> test2Result = prologThread.QueryAsyncResult();
+                for (int i = 0; i < test2Result.Count; i++)
                 {
-                    if (test2_result.ElementAt(i).Item1 == "null" && test2_result.ElementAt(i).Item2 == "null")
+                    if (test2Result.ElementAt(i).Item1 == "null" && test2Result.ElementAt(i).Item2 == "null")
                     {
                         Console.WriteLine("No more results");
-                        test2_more_results = false;
+                        test2MoreResults = false;
                     }
                     else
-                        Console.WriteLine(test2_result.ElementAt(i).Item1 + " = " + test2_result.ElementAt(i).Item2);
+                        Console.WriteLine(test2Result.ElementAt(i).Item1 + " = " + test2Result.ElementAt(i).Item2);
                 }
             }
 
@@ -708,19 +698,19 @@ namespace PrologMachineQueryInterface
             Console.WriteLine("Query: mother(X, Y)\n");
             prologThread.QueryAsync("mother(X, Y)", false);
 
-            bool test3_more_results = true;
-            while (test3_more_results)
+            bool test3MoreResults = true;
+            while (test3MoreResults)
             {
-                List<Tuple<string, string>> test3_results = prologThread.QueryAsyncResult();
-                for (int i = 0; i < test3_results.Count; i++)
+                List<Tuple<string, string>> test3Results = prologThread.QueryAsyncResult();
+                for (int i = 0; i < test3Results.Count; i++)
                 {
-                    if (test3_results.ElementAt(i).Item1 == "null" && test3_results.ElementAt(i).Item2 == "null")
+                    if (test3Results.ElementAt(i).Item1 == "null" && test3Results.ElementAt(i).Item2 == "null")
                     {
                         Console.WriteLine("No more results");
-                        test3_more_results = false;
+                        test3MoreResults = false;
                     }
                     else
-                        Console.WriteLine(test3_results.ElementAt(i).Item1 + " = " + test3_results.ElementAt(i).Item2);
+                        Console.WriteLine(test3Results.ElementAt(i).Item1 + " = " + test3Results.ElementAt(i).Item2);
                 }
             }
 
@@ -759,19 +749,19 @@ namespace PrologMachineQueryInterface
             Console.WriteLine("Query: uncle([Col, Row], X, Y).");
             prologThread.QueryAsync("uncle([Col, Row], X, Y)", false);
 
-            bool test6_more_results = true;
-            while (test6_more_results)
+            bool test6MoreResults = true;
+            while (test6MoreResults)
             {
-                List<Tuple<string, string>> test6_results = prologThread.QueryAsyncResult();
-                for (int i = 0; i < test6_results.Count; i++)
+                List<Tuple<string, string>> test6Results = prologThread.QueryAsyncResult();
+                for (int i = 0; i < test6Results.Count; i++)
                 {
-                    if (test6_results.ElementAt(i).Item1 == "null" && test6_results.ElementAt(i).Item2 == "null")
+                    if (test6Results.ElementAt(i).Item1 == "null" && test6Results.ElementAt(i).Item2 == "null")
                     {
                         Console.WriteLine("No more results");
-                        test6_more_results = false;
+                        test6MoreResults = false;
                     }
                     else
-                        Console.WriteLine(test6_results.ElementAt(i).Item1 + " = " + test6_results.ElementAt(i).Item2);
+                        Console.WriteLine(test6Results.ElementAt(i).Item1 + " = " + test6Results.ElementAt(i).Item2);
                 }
             }
 

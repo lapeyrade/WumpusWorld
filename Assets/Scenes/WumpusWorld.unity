@@ -282,12 +282,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1d0afbb961de3c4bb9d7e1e4d8d8eda, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RandomSeed: 23
+  randomSeed: 1
   gridMin: {x: 0, y: 0}
-  gridMax: {x: 25, y: 25}
+  gridMax: {x: 15, y: 15}
   tileSize: 1.05
-  nbPit: 20
-  nbWumpus: 20
+  nbPit: 10
+  nbWumpus: 10
   nbGold: 1
   nbAgent: 1
   gridManager: {fileID: 1979442548}

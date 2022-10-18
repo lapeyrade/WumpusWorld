@@ -73,8 +73,10 @@ situation([Col, Row], safe):-
 % cell content is undefined, agent doesnt know if there is an enemy 
 situation([Col, Row], undefined):-
     in_limits([Col, Row], agent),
-    wellfs:is_undefined(situation([Col, Row], wumpus)),
-    wellfs:is_undefined(situation([Col, Row], pit)).
+    (
+        wellfs:is_undefined(situation([Col, Row], wumpus));
+        wellfs:is_undefined(situation([Col, Row], pit))
+    ).
 
 % cell is dangerous, agent knows there is an enemy 
 situation([Col, Row], danger):-
