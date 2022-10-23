@@ -2,7 +2,7 @@
 
 :- dynamic([nb_gold/2, nb_arrow/2], [incremental(true)]).
 
-:- multifile [location:location/3, alignment:alignment/3].
+:- multifile [location:location/3, alignment:alignment/3, situation:situation/2].
 
 %%%%%%%%%% STATE ONTOLOGY %%%%%%%%%%
 % STATE: SAFETY, DANGER, GOLD_FOUND, CANT_SHOOT_ARROW
@@ -14,31 +14,36 @@ can_shoot_arrow(Id):- nb_arrow(Id, Arrow), Arrow > 0.
 gold_found(Id):- nb_gold(Id, NbGold), NbGold > 0.
 
 % X is in a safe cell
-safety(X):- location:location(X, safe, same_cell).
+safety(Id):-    
+    situation:situation(Id, [X, Y]),
+    (
+        situation:situation(safe, [X, Y]);
+        situation:situation(visited, [X, Y])
+    ).
 
 % X is in an ajacent cell to an enemy
-danger(X):-
-    location:location(X, Y, adjacent_cell),
-    alignment:alignment(X, Y, enemy).
+danger(Id1):-
+    location:location(Id1, Id2, adjacent_cell).
+    alignment:alignment(Id1, Id2, enemy).
 
-state_(X) :- can_shoot_arrow(X).
-state_(X) :- gold_found(X).
-state_(X) :- danger(X).
-state_(X) :- safety(X).
+state_(Id) :- can_shoot_arrow(Id).
+state_(Id) :- gold_found(Id).
+state_(Id) :- safety(Id).
+state_(Id) :- danger(Id).
 
 % QUERY State
-state(X, State):-
-    clause(state_(X), S),
+state(Id, State):-
+    clause(state_(Id), S),
     call(S),
     S =.. [State, _].
 
 
 % all golds are found by the agent
-% all_golds_found(X) :-
+% all_golds_found(Id) :-
     % nb_gold(TotalGold), nb_gold_agent(X, AgentGold),
     % TotalGold == AgentGold.
 
 % all wumpus are killed by the agent
-% all_wumpus_killed(X) :-
+% all_wumpus_killed(Id) :-
     % nb_wumpus(TotalWumpus), nb_wumpus_dead(X, WumpusDead),
     % TotalWumpus == WumpusDead.

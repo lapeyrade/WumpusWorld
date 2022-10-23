@@ -19,9 +19,9 @@ is_false(Atom):- \+ Atom.
 % is_false(Atom):- call_delays(Atom, false).
 
 % Query cells that contain elements with certitude
-list_element([Col, Row], Element):-
-    is_true(situation:situation([Col, Row], Element)).
+list_element(Elem, [X, Y]):-
+    is_true(situation:situation(Elem, [X, Y])).
 
-% % Query cells that contain elements with incertainty
-list_element([Col, Row], undefined):-
-    is_undefined(situation:situation([Col, Row], undefined)).
+% Query cells that contain elements with incertainty
+list_element(undefined, [X, Y]):-
+    is_undefined(situation:situation(undefined, [X, Y])).

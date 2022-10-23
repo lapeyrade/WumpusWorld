@@ -5,77 +5,79 @@
 %%%%% ONTOLOGY LOCATION %%%%%
 % LOCATION: SAME_CELL, RIGHT_ROW, LEFT_ROW, UP_COL, DOWN_COL
 
-% X is in the same cell as Y
-same_cell(X, Y):-
-    situation:situation([Col, Row], X),
-    situation:situation([Col, Row], Y).
+% Elem1 is in the same cell as Elem2
+same_cell(Id1, Id2):-
+    situation:situation(Id1, [X, Y]),
+    situation:situation(Id2, [X, Y]).
 
 % X is to the right of Y
-right_col(X, Y):-
-    situation:situation([ColX, Row], X),
-    situation:situation([ColY, Row], Y),
-    ColX > ColY.
+right_col(Id1, Id2):-
+    situation:situation(Id1, [X1, Y]),
+    situation:situation(Id2, [X2, Y]),
+    X1 > X2.
 
 % X is to the left of Y 
-left_col(X, Y):-
-    situation:situation([ColX, Row], X),
-    situation:situation([ColY, Row], Y),
-    ColX < ColY.
+left_col(Id1, Id2):-
+    situation:situation(Id1, [X1, Y]),
+    situation:situation(Id2, [X2, Y]),
+    X1 < X2.
 
 % X is above Y 
-up_row(X, Y):-
-    situation:situation([Col, RowX], X),
-    situation:situation([Col, RowY], Y),
-    RowX > RowY.
+up_row(Id1, Id2):-
+    situation:situation(Id1, [X, Y1]),
+    situation:situation(Id2, [X, Y2]),
+    Y1 > Y2.
 
 % X is below of Y 
-down_row(X, Y):-
-    situation:situation([Col, RowX], X),
-    situation:situation([Col, RowY], Y),
-    RowX < RowY.
+down_row(Id1, Id2):-
+    situation:situation(Id1, [X, Y1]),
+    situation:situation(Id2, [X, Y2]),
+    Y1 < Y2.
 
 % X is in the right cell of Y
-right_cell(X, Y):-
-    situation:situation([ColX, Row], X),
-    situation:situation([ColY, Row], Y),
-    ColX is ColY + 1.
+right_cell(Id1, Id2):-
+    situation:situation(Id1, [X1, Row]),
+    situation:situation(Id2, [X2, Row]),
+    X1 is X2 + 1.
 
 % X is in the left cell of Y
-left_cell(X, Y):-
-    situation:situation([ColX, Row], X),
-    situation:situation([ColY, Row], Y),
-    ColX is ColY - 1.
+left_cell(Id1, Id2):-
+    situation:situation(Id1, [X1, Row]),
+    situation:situation(Id2, [X2, Row]),
+    X1 is X2 - 1.
 
 % X is in the upper cell of Y
-up_cell(X, Y):-
-    situation:situation([Col, RowX], X),
-    situation:situation([Col, RowY], Y),
-    RowX is RowY + 1.
+up_cell(Id1, Id2):-
+    situation:situation(Id1, [X, Y1]),
+    situation:situation(Id2, [X, Y2]),
+    Y1 is Y2 + 1.
 
 % X is in the lower cell of Y
-down_cell(X, Y):-
-    situation:situation([Col, RowX], X),
-    situation:situation([Col, RowY], Y),
-    RowX is RowY - 1.
+down_cell(Id1, Id2):-
+    situation:situation(Id1, [X, Y1]),
+    situation:situation(Id2, [X, Y2]),
+    Y1 is Y2 - 1.
 
 % X is in an adjacent cell of Y
-adjacent_cell(X, Y):-
-    right_cell(X, Y); left_cell(X, Y);
-    up_cell(X, Y); down_cell(X, Y).
+adjacent_cell(Id1, Id2):-
+    right_cell(Id1, Id2);
+    left_cell(Id1, Id2);
+    up_cell(Id1, Id2);
+    down_cell(Id1, Id2).
 
-location_(X, Y):- same_cell(X, Y).
-location_(X, Y):- right_col(X, Y).
-location_(X, Y):- left_col(X, Y).
-location_(X, Y):- up_row(X, Y).
-location_(X, Y):- down_row(X, Y).
-location_(X, Y):- right_cell(X, Y).
-location_(X, Y):- left_cell(X, Y).
-location_(X, Y):- up_cell(X, Y).
-location_(X, Y):- down_cell(X, Y).
-location_(X, Y):- adjacent_cell(X, Y).
+location_(Id1, Id2):- same_cell(Id1, Id2).
+location_(Id1, Id2):- right_col(Id1, Id2).
+location_(Id1, Id2):- left_col(Id1, Id2).
+location_(Id1, Id2):- up_row(Id1, Id2).
+location_(Id1, Id2):- down_row(Id1, Id2).
+location_(Id1, Id2):- right_cell(Id1, Id2).
+location_(Id1, Id2):- left_cell(Id1, Id2).
+location_(Id1, Id2):- up_cell(Id1, Id2).
+location_(Id1, Id2):- down_cell(Id1, Id2).
+location_(Id1, Id2):- adjacent_cell(Id1, Id2).
 
 % Query Location
-location(X, Y, Location):-
-    clause(location_(X, Y), Loc),
+location(Id1, Id2, Location):-
+    clause(location_(Id1, Id2), Loc),
     call(Loc),
     Loc =.. [Location, _, _].

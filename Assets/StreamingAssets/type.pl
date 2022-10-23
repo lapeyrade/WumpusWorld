@@ -17,13 +17,13 @@ type(monster, animal).
 type(beast, animal).
 type(human, animal).
 type(wall, obstacle).
-type(rock, obstacle).
+% type(rock, obstacle).
 type(door, obstacle).
 type(pit, trap).
 type(cage, trap).
 
 type(door, open_door).
-type(door, locked_door).
+% type(door, locked_door).
 
 type(dog, beast).
 type(deer, beast).

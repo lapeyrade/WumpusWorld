@@ -83,7 +83,7 @@ public class GameController : MonoBehaviour
             move = _prologInterface.RandomMove(agent);
 
         if (!firstTurn && consoleLog)
-            Debug.Log(move);
+            Debug.Log($"{agent.id}: {move}");
 
         switch (move)
         {
@@ -108,24 +108,24 @@ public class GameController : MonoBehaviour
     private void SenseCell(Human agent)
     {
         if (agent.startCoord == agent.coord && agent.nbGold == 1)
-            SetGameOver("Game Won!", false);
+            SetGameOver($"{agent.id} Won!", false);
 
         foreach (string element in _world.Map[agent.coord.x, agent.coord.y]
                      .Except(_world.AgentMap[agent.coord.x, agent.coord.y]).Select(x => x.Item1))
         {
             _world.AddToGrids(agent.coord, element, true, false);
-            _prologInterface.AddCellContentKb(agent.coord, element);
+            _prologInterface.AddCellContentKb(element, agent.coord);
         }
 
         if (!_world.AgentMap[agent.coord.x, agent.coord.y].Exists(x => x.Item1 is "wall" or "pit" or "wumpus"))
         {
-            _prologInterface.AddCellContentKb(agent.coord, "visited");
+            _prologInterface.AddCellContentKb("visited", agent.coord);
             MakeInferences();
         }
         else if (_world.AgentMap[agent.coord.x, agent.coord.y].Exists(x => x.Item1 is "wumpus" or "pit"))
         {
             _world.AddToGrids(agent.coord, "danger", true, false);
-            SetGameOver("Game Lost!", false);
+            SetGameOver($"{agent.id} Lost!", false);
         }
     }
 
@@ -156,19 +156,18 @@ public class GameController : MonoBehaviour
         {
             string action = _prologInterface.NextAction(agent);
             if (action != "null" && consoleLog)
-                Debug.Log(action);
+                Debug.Log($"{agent.id}: {action}");
 
             switch (action)
             {
                 case "bump_wall":
-                    _prologInterface.RemoveCellContentKb(agent.coord, "safe");
+                    _prologInterface.RemoveCellContentKb("safe", agent.coord);
                     _world.Move(agent, agent.MoveBack());
                     break;
                 case "pickup_gold":
                     agent.nbGold += 1;
                     _world.RemoveFromGrids(agent.coord, "gold", true, true);
-                    _prologInterface.RemoveFromKb($"nb_gold({agent.agentName}, _)");
-                    _prologInterface.AddToKb($"nb_gold({agent.agentName}, {agent.nbGold})", true);
+                    _prologInterface.AddToKb($"nb_gold({agent.id}, {agent.nbGold})", true);
                     break;
                 case "shoot_right":
                     _world.ShootArrow(agent, "right");
@@ -193,7 +192,7 @@ public class GameController : MonoBehaviour
     {
         _gameOver = true;
         Debug.Log(message);
-        Debug.Log($"Game Duration: {_timer2}");
+        // Debug.Log($"Game Duration: {_timer2}");
         
         if (!exitApp) return;
         

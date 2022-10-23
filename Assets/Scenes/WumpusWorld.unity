@@ -253,7 +253,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridManager: {fileID: 1979442548}
-  autoMode: 1
+  autoMode: 0
   consoleLog: 0
   timerInterval: 0.016
 --- !u!4 &1979442550
@@ -290,7 +290,7 @@ MonoBehaviour:
   nbPit: 9
   nbWumpus: 9
   nbGold: 1
-  nbAgent: 1
+  nbAgent: 40
   gridManager: {fileID: 1979442548}
   mainCamera: {fileID: 519420028}
   agents: []
@@ -308,5 +308,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debugFileLog: 0
   consoleLog: 0
-  query: situation([X, Y], Z)
+  query: 
   askQuery: 0

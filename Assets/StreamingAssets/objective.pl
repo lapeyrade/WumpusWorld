@@ -5,42 +5,42 @@
 %%%%% ONTOLOGY OBJECTIVE %%%%%
 % OBJECTIVES: FIND_GOLD, KILL_WUMPUS, AVOID_KILLING, EXPLORE_CAVE, DETERMINISTIC/STOCHASTIC_EXPLORATION
 
-hunt_wumpus(X):-
-    personality:personality(X, hunter),
-    \+ personality:personality(X, pacifist).
+hunt_wumpus(Id):-
+    personality:personality(Id, hunter),
+    \+ personality:personality(Id, pacifist).
 
-kill_wumpus(X):-
+kill_wumpus(Id):-
     (
-        personality:personality(X, killer);
-        personality:personality(X, hunter)
+        personality:personality(Id, killer);
+        personality:personality(Id, hunter)
     ),
-    \+ personality:personality(X, pacifist).
+    \+ personality:personality(Id, pacifist).
 
-find_gold(X):-
-    personality:personality(X, greedy),
-    \+ personality:personality(X, nonmaterialistic).
+find_gold(Id):-
+    personality:personality(Id, greedy),
+    \+ personality:personality(Id, nonmaterialistic).
 
-avoid_killing(X):-
-    personality:personality(X, pacifist).
+avoid_killing(Id):-
+    personality:personality(Id, pacifist).
 
-explore_cave(X):-
-    personality:personality(X, explorer).
+explore_cave(Id):-
+    personality:personality(Id, explorer).
 
-determinist_exploration(X):-
-    personality:personality(X, determinist).
+determinist_exploration(Id):-
+    personality:personality(Id, determinist).
 
-stochastic_exploration(X):-
-    personality:personality(X, stochastic).
+stochastic_exploration(Id):-
+    personality:personality(Id, stochastic).
 
-objective_(X):- hunt_wumpus(X).
-objective_(X):- find_gold(X).
-objective_(X):- avoid_killing(X).
-objective_(X):- explore_cave(X).
-objective_(X):- determinist_exploration(X).
-objective_(X):- stochastic_exploration(X).
+objective_(Id):- hunt_wumpus(Id).
+objective_(Id):- find_gold(Id).
+objective_(Id):- avoid_killing(Id).
+objective_(Id):- explore_cave(Id).
+objective_(Id):- determinist_exploration(Id).
+objective_(Id):- stochastic_exploration(Id).
 
 % Query OBJECTIVE
-objective(X, Objective):-
-    clause(objective_(X), Obj),
+objective(Id, Objective):-
+    clause(objective_(Id), Obj),
     call(Obj),
     Obj =.. [Objective, _].

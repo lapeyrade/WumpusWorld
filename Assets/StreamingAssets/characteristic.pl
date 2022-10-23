@@ -5,11 +5,11 @@
 %%%%% ONTOLOGY PERSONALITY %%%%%
 
 % PERSONALITY: INTELLIGENCE, STRENGTH, DEXTERITY
-characteristic_(X, Value) :- intelligence(X, Value).
-characteristic_(X, Value) :- strength(X, Value).
-characteristic_(X, Value) :- dexterity(X, Value).
+characteristic_(Id, Value) :- intelligence(Id, Value).
+characteristic_(Id, Value) :- strength(Id, Value).
+characteristic_(Id, Value) :- dexterity(Id, Value).
 
 % Query PERSONALITY
-characteristic(X, Characteristic, Value):-
-    clause(characteristic_(X, Value), C),
+characteristic(Id, Characteristic, Value):-
+    clause(characteristic_(Id, Value), C),
     call(C), C =.. [Characteristic, _, _].

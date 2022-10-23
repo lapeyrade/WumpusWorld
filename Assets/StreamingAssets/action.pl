@@ -1,69 +1,65 @@
 :- module(action, [action/2]).
 
-:- multifile [wellfs:is_true/1, type:type/2, location:location/3, alignment:alignment/3, state:state/2, objective:objective/2].
+:- multifile [wellfs:is_true/1, type:type/2, location:location/3, alignment:alignment/3, state:state/2, objective:objective/2, situation:situation/2].
 
 %%%%%%%%%% ACTION ONTOLOGY %%%%%%%%%%
 % ACTION: HIT_WALL, pickup_gold, SHOOT_ARROW, SHOOT_RIGHT/LEFT/UP/DOWM
 
 % agent hits the wall so he cannot enter the cell
-bump_wall(X):- location:location(X, wall, same_cell).
-bump_rock(X):- location:location(X, rock, same_cell).
-bump_locked_door(X):- location:location(X, locked_door, same_cell).
+bump_wall(Id):-
+    location:location(Id, wall, same_cell).
 
 % agent picks gold
-pickup_gold(X):-
-    location:location(X, gold, same_cell),
-    objective:objective(X, find_gold).
+pickup_gold(Id):-
+    location:location(Id, gold, same_cell),
+    objective:objective(Id, find_gold).
 
-shoot(X, Y):-
-    \+ objective:objective(X, avoid_killing),
-    objective:objective(X, kill_wumpus);
-    state:state(X, can_shoot_arrow),
-    alignment:alignment(X, Y, enemy),
-    type:type(Y, being).
+shoot(Id1, Id2):-
+    \+ objective:objective(Id1, avoid_killing),
+    objective:objective(Id1, kill_wumpus);
+    state:state(Id1, can_shoot_arrow),
+    alignment:alignment(Id1, Id2, enemy),
+    type:type(Id2, wumpus).
+
+% shoot an arrow to the right
+shoot_right(Id1):-
+    shoot(Id1, Id2),
+    wellfs:is_true(location(Id1, Id2, left_col)).
 
 % shoot an arrow to the left
-shoot_right(X):-
-    shoot(X, Y),
-    wellfs:is_true(location(X, Y, left_col)).
-
-% shoot an arrow to the left
-shoot_left(X):-
-    shoot(X, Y),
-    wellfs:is_true(location(X, Y, right_col)).
+shoot_left(Id1):-
+    shoot(Id1, Id2),
+    wellfs:is_true(location(Id1, Id2, right_col)).
 
 % shoot an arrow upward
-shoot_up(X):-
-    shoot(X, Y),
-    wellfs:is_true(location(X, Y, down_row)).
+shoot_up(Id1):-
+    shoot(Id1, Id2),
+    wellfs:is_true(location(Id1, Id2, down_row)).
 
 % shoot an arrow downward
-shoot_down(X):-
-    shoot(X, Y),
-    wellfs:is_true(location(X, Y, up_row)).
+shoot_down(Id1):-
+    shoot(Id1, Id2),
+    wellfs:is_true(location(Id1, Id2, up_row)).
 
-explore(X):- objective:objective(X, explore_cave).
+explore(Id):- objective:objective(Id, explore_cave).
 
-
-action_(X) :- bump_locked_door(X).
-action_(X) :- bump_rock(X).
-action_(X) :- bump_wall(X).
-action_(X) :- pickup_gold(X).
-action_(X) :- shoot_right(X).
-action_(X) :- shoot_left(X).
-action_(X) :- shoot_up(X).
-action_(X) :- shoot_down(X).
-action_(X) :- explore(X).
+action_(Id) :- bump_wall(Id).
+action_(Id) :- pickup_gold(Id).
+action_(Id) :- shoot_right(Id).
+action_(Id) :- shoot_left(Id).
+action_(Id) :- shoot_up(Id).
+action_(Id) :- shoot_down(Id).
+action_(Id) :- explore(Id).
 
 % QUERY Action
-action(X, Action):-
-    clause(action_(X), A),
+action(Id, Action):-
+    clause(action_(Id), A),
     call(A),
     A =.. [Action,_].
 
 
 %%%% V2 %%%%%
-% action(X):- shoot_action(X).
+% action(Id):- shoot_action(X).
 % action(X):- hit_obstacle_action(X).
 % action(X):- pick_up_action(X).
 % action(X):- explore_action(X).

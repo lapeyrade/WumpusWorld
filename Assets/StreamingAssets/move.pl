@@ -7,75 +7,74 @@
 %%%%%%%%%% MOVE ONTOLOGY %%%%%%%%%%
 
 % X move to the last cell visited
-move_back(X):-
-    \+ objective:objective(X, explore_cave),
+move_back(Id):-
+    \+ objective:objective(Id, explore_cave),
     (
-        \+ objective:objective(X, hunt_wumpus);
+        \+ objective:objective(Id, hunt_wumpus);
         (
-            objective:objective(X, hunt_wumpus),
-            \+ state:state(X, can_shoot_arrow)
+            objective:objective(Id, hunt_wumpus),
+            \+ state:state(Id, can_shoot_arrow)
         )
     ),
     (
-        objective:objective(X, find_gold),
-        state:state(X, gold_found)
+        objective:objective(Id, find_gold),
+        state:state(Id, gold_found)
     ), !.
 
 % X move to the last cell visited
-move_back(X):-
-    \+ move_right(X),
-    \+ move_left(X),
-    \+ move_up(X),
-    \+ move_down(X).
+move_back(Id):-
+    \+ move_right(Id),
+    \+ move_left(Id),
+    \+ move_up(Id),
+    \+ move_down(Id).
 
 % X move to the right cell
-move_right(X):-
-    situation:situation([Col, Row], X),
-    RightCol is Col+1,
-    situation:situation([RightCol, Row], unvisited_safe_cell).
+move_right(Id):-
+    situation:situation(Id, [X, Y]),
+    RightX is X+1,
+    situation:situation(unvisited_safe_cell, [RightX, Y]).
 
 % X move to the left cell
-move_left(X):-
-    situation:situation([Col, Row], X),
-    LeftCol is Col-1,
-    situation:situation([LeftCol, Row], unvisited_safe_cell).
+move_left(Id):-
+    situation:situation(Id, [X, Y]),
+    LeftX is X-1,
+    situation:situation(unvisited_safe_cell, [LeftX, Y]).
 
 % X move to the top cell
-move_up(X):-
-    situation:situation([Col, Row], X),
-    UpRow is Row+1,
-    situation:situation([Col, UpRow], unvisited_safe_cell).
+move_up(Id):-
+    situation:situation(Id, [X, Y]),
+    UpY is Y+1,
+    situation:situation(unvisited_safe_cell, [X, UpY]).
 
 % X move to the bottom cell
-move_down(X):-
-    situation:situation([Col, Row], X),
-    DownRow is Row-1,
-    situation:situation([Col, DownRow], unvisited_safe_cell).
+move_down(Id):-
+    situation:situation(Id, [X, Y]),
+    DownY is Y-1,
+    situation:situation(unvisited_safe_cell, [X, DownY]).
 
 % move randomly to a side cell
-random_move(X, Move):-
+random_move(Id, Move):-
     random_permutation([move_right, move_left, move_up, move_down, move_back], ListDirection),
     member(Move, ListDirection),
-    call(Move, X).
+    call(Move, Id).
 
-move_(X):- move_back(X).
-move_(X):- move_right(X).
-move_(X):- move_left(X).
-move_(X):- move_up(X).
-move_(X):- move_down(X).
+move_(Id):- move_back(Id).
+move_(Id):- move_right(Id).
+move_(Id):- move_left(Id).
+move_(Id):- move_up(Id).
+move_(Id):- move_down(Id).
 
 % QUERY Move
-move(X, Move):-
-    objective:objective(X, determinist_exploration),
-    clause(move_(X), M),
+move(Id, Move):-
+    objective:objective(Id, determinist_exploration),
+    clause(move_(Id), M),
     call(M),
     M =.. [Move, _].
 
 % QUERY Random Move
-move(X, Move):-
-    objective:objective(X, stochastic_exploration),
-    objective:
-    random_move(X, Move).
+move(Id, Move):-
+    objective:objective(Id, stochastic_exploration),
+    random_move(Id, Move).
 
 
 % cell content is undefined
