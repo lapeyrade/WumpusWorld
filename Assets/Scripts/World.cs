@@ -325,15 +325,12 @@ public class World : MonoBehaviour
         RemoveFromGrids(agent.coord, agent.agentName, true, true);
 
         if (!Map[newCoord.x, newCoord.y].Exists(x => x.Item1 == agent.agentName))
-        {
             Map[newCoord.x, newCoord.y].Add((agent.agentName, null));
-            agent.prefabWorldMap.transform.position = GetWorldMapOffset(newCoord);
-        }
-        if (!AgentMap[newCoord.x, newCoord.y].Exists(x => x.Item1 == agent.agentName))
-        {
+        agent.prefabWorldMap.transform.position = GetWorldMapOffset(newCoord);
+
+            if (!AgentMap[newCoord.x, newCoord.y].Exists(x => x.Item1 == agent.agentName))
             AgentMap[newCoord.x, newCoord.y].Add((agent.agentName, null));
-            agent.prefabAgentMap.transform.position = GetAgentMapOffset(newCoord);
-        }
+        agent.prefabAgentMap.transform.position = GetAgentMapOffset(newCoord);
 
         agent.Move(newCoord);
 
