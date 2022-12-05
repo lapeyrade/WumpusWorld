@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using UnityEngine;
 
@@ -12,11 +13,11 @@ public class GameController : MonoBehaviour
 
     [SerializeField] public bool autoMode = true;
     [SerializeField] public bool consoleLog;
-    [SerializeField] public float timerInterval = 0.01f;
+    [Range(0.0f, 1.0f)][SerializeField] public float timerInterval = 0.016f;
     private float _timer;
-    private float _timer2;
+    // private float _timer2;
     private bool _gameOver;
-
+    
     protected void Awake()
     {
         _world = gridManager.GetComponent<World>();
@@ -28,7 +29,7 @@ public class GameController : MonoBehaviour
         if (autoMode && _timer < timerInterval)
         {
             _timer += Time.deltaTime;
-            _timer2 += Time.deltaTime;
+            // _timer2 += Time.deltaTime;
         }
         else
         {
@@ -43,9 +44,13 @@ public class GameController : MonoBehaviour
         {
             if (Input.GetKeyDown("escape"))
                 SetGameOver("Exit Game!", true);
-
+            else if (Input.GetKeyDown("backspace"))
+            {
+                ScreenCapture.CaptureScreenshot("Screenshots/screenshot " + System.DateTime.Now.ToString("MM-dd-yy (HH-mm-ss)") + ".png");
+                Debug.Log("Screenshot saved!");
+            }
             else if (Input.GetKeyDown("return") || Input.GetKeyDown("space") || Input.GetKeyDown("right") ||
-                Input.GetKeyDown("left") || Input.GetKeyDown("up") || Input.GetKeyDown("down") || autoMode || firstTurn)
+                     Input.GetKeyDown("left") || Input.GetKeyDown("up") || Input.GetKeyDown("down") || autoMode || firstTurn)
             {
                 foreach (Human agent in _world.agents)
                 {
@@ -193,9 +198,9 @@ public class GameController : MonoBehaviour
         _gameOver = true;
         Debug.Log(message);
         // Debug.Log($"Game Duration: {_timer2}");
-        
+
         if (!exitApp) return;
-        
+
         Application.Quit();
         UnityEditor.EditorApplication.isPlaying = false;
     }

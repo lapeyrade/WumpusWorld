@@ -1,6 +1,6 @@
-:- module(wellfs, [is_true/1, is_false/1, is_undefined/1, list_element/2]).
+% :- module(wellfs, [is_true/1, is_false/1, is_undefined/1, list_element/2]).
 
-:- multifile [situation:situation/2].
+:- multifile [situation/2].
 
 :- set_prolog_flag(toplevel_list_wfs_residual_program, false).
 
@@ -20,8 +20,8 @@ is_false(Atom):- \+ Atom.
 
 % Query cells that contain elements with certitude
 list_element(Elem, [X, Y]):-
-    is_true(situation:situation(Elem, [X, Y])).
+    is_true(situation(Elem, [X, Y])).
 
 % Query cells that contain elements with incertainty
 list_element(undefined, [X, Y]):-
-    is_undefined(situation:situation(undefined, [X, Y])).
+    is_undefined(situation(undefined, [X, Y])).

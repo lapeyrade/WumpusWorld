@@ -1,45 +1,42 @@
-:- module(situation, [situation/2, cell/2]).
+% :- module(situation, [situation/2, cell/2]).
 
-:- multifile [wellfs:is_false/1, wellfs:is_true/1, wellfs:is_undefined/1, alignment:alignment/3].
+:- multifile [is_false/1, is_true/1, is_undefined/1, alignment/3].
 
 :- table situation/2 as incremental.
 
 :- dynamic([cell/2, situation/2], [incremental(true)]).
 
 %%%%%%%%%% SITUATION ONTOLOGY %%%%%%%%%%
-
 % Intermediate predicate for cell
-situation(Element, [X, Y]):-
-    cell(Element, [X, Y]).
+situation(Element, [X, Y]):- cell(Element, [X, Y]).
 
 % agent and human are the same thing for now
-situation(agent, [X, Y]):-
-    situation(human, [X, Y]).
+situation(agent, [X, Y]):- situation(human, [X, Y]).
 
 % cell has wumpusno if visited and no wumpus
 situation(wumpusno, [X, Y]):-
     in_limits(agent, [X, Y]),
     situation(visited, [X, Y]),
-    wellfs:is_false(situation(wumpusyes, [X, Y])),
-    wellfs:is_false(situation(wumpusdead, [X, Y])).
+    is_false(situation(wumpusyes, [X, Y])),
+    is_false(situation(wumpusdead, [X, Y])).
 
 % cell has pitno if visited and no pit
 situation(pitno, [X, Y]):-
     in_limits(agent, [X, Y]),
     situation(visited, [X, Y]),
-    wellfs:is_false(situation(pityes, [X, Y])).
+    is_false(situation(pityes, [X, Y])).
 
 % cell has breezeno if visited and no breeze
 situation(breezeno, [X, Y]):-
     in_limits(agent, [X, Y]),
     situation(visited, [X, Y]),
-    wellfs:is_false(situation(breezeyes, [X, Y])).
+    is_false(situation(breezeyes, [X, Y])).
 
 % cell has stenchno if visited and no stench
 situation(stenchno, [X, Y]):-
     in_limits(agent, [X, Y]),
     situation(visited, [X, Y]),
-    wellfs:is_false(situation(stenchyes, [X, Y])).
+    is_false(situation(stenchyes, [X, Y])).
 
 % cell is safe because it contains a wall
 situation(safe, [X, Y]):-
@@ -56,36 +53,32 @@ situation(safe, [X, Y]):-
     LeftX is X-1,
     UpY is Y+1,
     DownY is Y-1,
-    alignment:alignment(human, Id2, enemy),
-    wellfs:is_false(situation(Id2, [X, Y])),
-    (
-        wellfs:is_false(situation(stench, [RightX, Y]));
-        wellfs:is_false(situation(stench, [LeftX, Y]));
-        wellfs:is_false(situation(stench, [X, UpY]));
-        wellfs:is_false(situation(stench, [X, DownY]))
+    \+ (
+        is_true(situation(Id2, [X, Y])),
+        alignment(human, Id2, enemy)
     ),
     (
-        wellfs:is_false(situation(breeze, [RightX, Y]));
-        wellfs:is_false(situation(breeze, [LeftX, Y]));
-        wellfs:is_false(situation(breeze, [X, UpY]));
-        wellfs:is_false(situation(breeze, [X, DownY]))
+        is_false(situation(stench, [RightX, Y]));
+        is_false(situation(stench, [LeftX, Y]));
+        is_false(situation(stench, [X, UpY]));
+        is_false(situation(stench, [X, DownY]))
+    ),
+    (
+        is_false(situation(breeze, [RightX, Y]));
+        is_false(situation(breeze, [LeftX, Y]));
+        is_false(situation(breeze, [X, UpY]));
+        is_false(situation(breeze, [X, DownY]))
     ).
 
-% cell content is undefined, agent doesnt know if there is an enemy 
+% cell undefined if agent doesnt know if enemy in it 
 situation(undefined, [X, Y]):-
-    in_limits(agent, [X, Y]),
-    (
-        wellfs:is_undefined(situation(wumpus, [X, Y]));
-        wellfs:is_undefined(situation(pit, [X, Y]))
-    ).
+    is_undefined(situation(wumpus, [X, Y]));
+    is_undefined(situation(pit, [X, Y])).
 
 % cell is dangerous, agent knows there is an enemy 
 situation(danger, [X, Y]):-
-    in_limits(agent, [X, Y]),
-    (
-        wellfs:is_true(situation(pit, [X, Y]));
-        wellfs:is_true(situation(wumpus, [X, Y]))
-    ).
+    is_true(situation(pit, [X, Y]));
+    is_true(situation(wumpus, [X, Y])).
 
 % cell is not visited but known as safe
 situation(unvisited_safe_cell, [X, Y]):-
@@ -95,7 +88,6 @@ situation(unvisited_safe_cell, [X, Y]):-
 
 
 %%% Define Stench & Wumpus attributes %%%
-
 % cell has stenchyes if right cell has a wumpus
 situation(stenchyes, [X, Y]) :-
     in_limits(agent, [X, Y]),

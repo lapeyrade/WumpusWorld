@@ -18,8 +18,8 @@ public class CameraController : MonoBehaviour
         transform.position = new Vector3((_world.gridMax.x - 1) * _world.tileSize / 2, (_world.gridMax.y - 1) * _world.tileSize / 2, -1);
 
         if (_world.gridMax.x > _world.gridMax.y)
-            GetComponent<Camera>().orthographicSize = _world.gridMax.x / 2f + 1f;
+            GetComponent<Camera>().orthographicSize = _world.gridMax.x / 2f;
         else
-            GetComponent<Camera>().orthographicSize = _world.gridMax.y / 2f + 1f;
+            GetComponent<Camera>().orthographicSize = _world.gridMax.y / 2f * 1.25f;
     }
 }

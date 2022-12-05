@@ -1,4 +1,4 @@
-:- module(characteristic, [intelligence/2, strength/2, dexterity/2, characteristic/3]).
+% :- module(characteristic, [intelligence/2, strength/2, dexterity/2, characteristic/3]).
 
 :- dynamic([intelligence/2, strength/2, dexterity/2], [incremental(true)]).
 

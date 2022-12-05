@@ -30,13 +30,13 @@ public class PrologInterface : MonoBehaviour
     {
         /* Prolog query inside the Unity Inspector */
         if (!askQuery) return;
-        
+
         _prologThread.QueryAsync(query, false);
 
         Debug.Log($"Query: {query}");
 
         bool moreResults = true;
-        
+
         while (moreResults)
         {
             foreach (Tuple<string, string> answer in _prologThread.QueryAsyncResult())
@@ -51,8 +51,8 @@ public class PrologInterface : MonoBehaviour
 
     public void InitialiseAgents(Human agent)
     {
-        _prologThread.Query($"assertz(situation(human, [X, Y]):- situation({agent.id}, [X, Y]))");
-        
+        AddToKb($"assertz(situation(human, [X, Y]):- situation({agent.id}, [X, Y]))", true);
+
         AddToKb($"nb_gold({agent.id}, {0})", true);
         AddToKb($"nb_arrow({agent.id}, {agent.nbArrow})", true);
         AddToKb($"intelligence({agent.id}, {agent.intelligence})", true);
@@ -83,7 +83,7 @@ public class PrologInterface : MonoBehaviour
 
         return result.Count == 0 ? "Default" : result.First().Item2;
     }
-    
+
     public List<Vector2Int> CheckElement(string element)
     {
         List<Vector2Int> listCoordElem = new();
@@ -131,7 +131,7 @@ public class PrologInterface : MonoBehaviour
 
     public void RemoveCellContentKb(string content, Vector2Int coord)
     {
-        RemoveFromKb($"cell({content}, [{coord.x}, {coord.y}])");   
+        RemoveFromKb($"cell({content}, [{coord.x}, {coord.y}])");
     }
 
     public List<string> GetPersonalities(Human agent)
@@ -150,7 +150,7 @@ public class PrologInterface : MonoBehaviour
                 else moreResults = false;
             }
         }
-        
+
         return listPersonalities;
     }
 
@@ -164,21 +164,30 @@ public class PrologInterface : MonoBehaviour
 
         // ClearLog();
 
-        PrintGlobalVariables("nb_arrow", debugFileLog, consoleLog);
-        PrintGlobalVariables("nb_gold", debugFileLog, consoleLog);
-        PrintGlobalVariables("intelligence", debugFileLog, consoleLog);
-        PrintGlobalVariables("strength", debugFileLog, consoleLog);
-        PrintGlobalVariables("dexterity", debugFileLog, consoleLog);
-        PrintGlobalVariables("personality", debugFileLog, consoleLog);
+        // PrintGlobalVariables("nb_arrow", debugFileLog, consoleLog);
+        // PrintGlobalVariables("nb_gold", debugFileLog, consoleLog);
+        // PrintGlobalVariables("intelligence", debugFileLog, consoleLog);
+        // PrintGlobalVariables("strength", debugFileLog, consoleLog);
+        // PrintGlobalVariables("dexterity", debugFileLog, consoleLog);
+        // PrintGlobalVariables("personality", debugFileLog, consoleLog);
 
-        if (consoleLog)
-            Debug.Log("------------------\n");
+        PrintGlobalVariables("nb_arrow", debugFileLog, false);
+        PrintGlobalVariables("nb_gold", debugFileLog, false);
+        PrintGlobalVariables("intelligence", debugFileLog, false);
+        PrintGlobalVariables("strength", debugFileLog, false);
+        PrintGlobalVariables("dexterity", debugFileLog, false);
+        PrintGlobalVariables("personality", debugFileLog, false);
+
+        // if (consoleLog)
+        // Debug.Log("------------------\n");
         if (debugFileLog)
             WriteInDebugKb("% ------------------");
 
-        PrintAgentMovements(debugFileLog, consoleLog, agents);
+        // PrintAgentMovements(debugFileLog, consoleLog, agents);
+        PrintAgentMovements(debugFileLog, false, agents);
 
-        PrintCellContent(debugFileLog, consoleLog);
+        // PrintCellContent(debugFileLog, consoleLog);
+        PrintCellContent(debugFileLog, false);
 
         void PrintAgentMovements(bool debugFile, bool logConsole, List<Human> listAgent)
         {
@@ -198,7 +207,7 @@ public class PrologInterface : MonoBehaviour
         void PrintCellContent(bool debugFile, bool logConsole)
         {
             _prologThread.QueryAsync($"cell(Element, [X, Y])", false);
-            
+
             List<string> listX = new();
             List<string> listY = new();
             List<string> listElement = new();
@@ -218,7 +227,7 @@ public class PrologInterface : MonoBehaviour
             }
 
             if (listX.Count() != listY.Count() || listY.Count() != listElement.Count()) return;
-            
+
             for (int i = 0; i < listX.Count(); i++)
             {
                 if (logConsole)
@@ -268,7 +277,7 @@ public class PrologInterface : MonoBehaviour
         var assembly = Assembly.GetAssembly(typeof(UnityEditor.Editor));
         var type = assembly.GetType("UnityEditor.LogEntries");
         var method = type.GetMethod("Clear");
-        if (method != null) method.Invoke(new object(), null);
+        method?.Invoke(new object(), null);
     }
 #endif
 

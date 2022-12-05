@@ -10,7 +10,7 @@ public class Human
     public Vector2Int coord;
     public int nbGold;
     public int nbArrow;
-    
+
     public GameObject prefabAgentMap;
     public GameObject prefabWorldMap;
 
@@ -25,7 +25,7 @@ public class Human
 
     public Human(int agentId, string name, Vector2Int newCoord, int nbTotalWumpus)
     {
-        id = $"human{agentId.ToString()}";
+        id = $"human{agentId}";
         agentName = name;
         startCoord = newCoord;
         coord = startCoord;
@@ -41,7 +41,7 @@ public class Human
     public Vector2Int MoveBack()
     {
         if (PastMovements.Count <= 1) return coord;
-        
+
         PastMovements.Pop();
         return PastMovements.Pop();
     }

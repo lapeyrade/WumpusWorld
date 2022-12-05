@@ -1,1 +1,3 @@
-:- use_module([action, alignment, characteristic, location, move, objective, personality, situation, state, type, wellfs]).
+%%% Main file with "generic predicates" %%%
+
+:- consult([action, alignment, characteristic, decision, element, emotion, location, move, objective, personality, situation, state, wellfs]).

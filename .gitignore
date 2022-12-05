@@ -76,4 +76,5 @@ ignore.conf
 .plastic/
 .idea/
 
-TODO
+/Screenshots/
+/Recordings/

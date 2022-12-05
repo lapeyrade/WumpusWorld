@@ -45,7 +45,7 @@ public class World : MonoBehaviour
             Debug.LogError("Map too small.");
             _gameController.SetGameOver("Incorrect Parameters", true);
         }
-        
+
         _prologInterface.InitKnowledgeBase();
 
         GenerateGrid();
@@ -94,7 +94,7 @@ public class World : MonoBehaviour
         for (int i = 0; i < nbAgent; i++)
         {
             Vector2Int coord;
-            
+
             do
             {
                 coord = new(Random.Range(gridMin.x + 1, gridMax.x - 1), Random.Range(gridMin.y + 1, gridMax.y - 1));
@@ -105,9 +105,9 @@ public class World : MonoBehaviour
                 prefabAgentMap = Instantiate(Resources.Load("human")) as GameObject,
                 prefabWorldMap = Instantiate(Resources.Load("human")) as GameObject
             };
-            
+
             AddToGrids(coord, "start", true, true);
-            
+
             _prologInterface.InitialiseAgents(agent);
             agents.Add(agent);
         }
@@ -120,7 +120,7 @@ public class World : MonoBehaviour
             Vector2Int coord;
             do
             {
-                coord = new (Random.Range(gridMin.x + 1, gridMax.x - 1), Random.Range(gridMin.y + 1, gridMax.y - 1));
+                coord = new(Random.Range(gridMin.x + 1, gridMax.x - 1), Random.Range(gridMin.y + 1, gridMax.y - 1));
             } while (Map[coord.x, coord.y].Exists(x => x.Item1 is "start" or "wall" or "gold"));
 
             AddToGrids(coord, "gold", true, true);
@@ -202,8 +202,8 @@ public class World : MonoBehaviour
                     new Color(1.0f, 0.64f, 0.0f),
                 _ => Color.white
             };
-            
-            if (content == "visited" && AgentMap[coord.x, coord.y].Exists(x=> x.Item1 == "start"))
+
+            if (content == "visited" && AgentMap[coord.x, coord.y].Exists(x => x.Item1 == "start"))
                 newColor = Color.gray;
 
             if (updateAgentMap && !AgentMap[coord.x, coord.y].Exists(x =>
@@ -244,19 +244,17 @@ public class World : MonoBehaviour
     {
         if (updateAgentMap && AgentMap[coord.x, coord.y].Exists(x => x.Item1 == content))
         {
-            if (AgentMap[coord.x, coord.y].Find(x => x.Item1 == content).Item2 != null)
-                AgentMap[coord.x, coord.y].Find(x => x.Item1 == content).Item2.SetActive(false);
+            AgentMap[coord.x, coord.y].Find(x => x.Item1 == content).Item2?.SetActive(false);
             AgentMap[coord.x, coord.y].Remove(AgentMap[coord.x, coord.y].Find(x => x.Item1 == content));
 
-            if (content is "human") 
+            if (content is "human")
                 content = agents.Find(x => x.coord == coord).id;
             _prologInterface.RemoveCellContentKb(content, coord);
         }
 
         if (updateMap && Map[coord.x, coord.y].Exists(x => x.Item1 == content))
         {
-            if (Map[coord.x, coord.y].Find(x => x.Item1 == content).Item2 != null)
-                Map[coord.x, coord.y].Find(x => x.Item1 == content).Item2.SetActive(false);
+            Map[coord.x, coord.y].Find(x => x.Item1 == content).Item2?.SetActive(false);
             Map[coord.x, coord.y].Remove(Map[coord.x, coord.y].Find(x => x.Item1 == content));
         }
     }
@@ -310,14 +308,14 @@ public class World : MonoBehaviour
                 }
                 break;
         }
+    }
 
-        void KillWumpus(Vector2Int coordWumpus)
-        {
-            RemoveFromGrids(coordWumpus, "wumpus", true, true);
-            AddToGrids(coordWumpus, "wumpusdead", true, true);
-            _prologInterface.AddCellContentKb("wumpusdead", coordWumpus);
-            _gameController.MakeInferences();
-        }
+    private void KillWumpus(Vector2Int coordWumpus)
+    {
+        RemoveFromGrids(coordWumpus, "wumpus", true, true);
+        AddToGrids(coordWumpus, "wumpusdead", true, true);
+        _prologInterface.AddCellContentKb("wumpusdead", coordWumpus);
+        _gameController.MakeInferences();
     }
 
     public void Move(Human agent, Vector2Int newCoord)
@@ -328,7 +326,7 @@ public class World : MonoBehaviour
             Map[newCoord.x, newCoord.y].Add((agent.agentName, null));
         agent.prefabWorldMap.transform.position = GetWorldMapOffset(newCoord);
 
-            if (!AgentMap[newCoord.x, newCoord.y].Exists(x => x.Item1 == agent.agentName))
+        if (!AgentMap[newCoord.x, newCoord.y].Exists(x => x.Item1 == agent.agentName))
             AgentMap[newCoord.x, newCoord.y].Add((agent.agentName, null));
         agent.prefabAgentMap.transform.position = GetAgentMapOffset(newCoord);
 
@@ -338,9 +336,9 @@ public class World : MonoBehaviour
         AddToGrids(agent.coord, "visited", true, false);
     }
 
-    private Vector2 GetAgentMapOffset(Vector2Int coord) => 
-        new ((coord.x - gridMax.x / 2 - 0.65f) * tileSize, coord.y * tileSize);
-    
+    private Vector2 GetAgentMapOffset(Vector2Int coord) =>
+        new((coord.x - gridMax.x / 1.95f) * tileSize, coord.y * tileSize);
+
     private Vector2 GetWorldMapOffset(Vector2Int coord) =>
-        new ((coord.x + gridMax.x / 2 + 0.65f) * tileSize, coord.y * tileSize);
+        new((coord.x + gridMax.x / 1.95f) * tileSize, coord.y * tileSize);
 }
