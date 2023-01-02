@@ -78,3 +78,5 @@ ignore.conf
 
 /Screenshots/
 /Recordings/
+
+.DS_Store
