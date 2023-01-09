@@ -104,7 +104,7 @@ NavMeshSettings:
   serializedVersion: 2
   m_ObjectHideFlags: 0
   m_BuildSettings:
-    serializedVersion: 2
+    serializedVersion: 3
     agentTypeID: 0
     agentRadius: 0.5
     agentHeight: 2
@@ -117,7 +117,7 @@ NavMeshSettings:
     cellSize: 0.16666667
     manualTileSize: 0
     tileSize: 256
-    accuratePlacement: 0
+    buildHeightMesh: 0
     maxJobWorkers: 0
     preserveTilesOutsideBounds: 0
     debug:
@@ -162,7 +162,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f79dce484b7afdf48a60a1e9c3359297, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridManager: {fileID: 1979442548}
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
@@ -177,9 +176,17 @@ Camera:
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
+  m_Iso: 200
+  m_ShutterSpeed: 0.005
+  m_Aperture: 16
+  m_FocusDistance: 10
+  m_FocalLength: 50
+  m_BladeCount: 5
+  m_Curvature: {x: 2, y: 11}
+  m_BarrelClipping: 0.25
+  m_Anamorphism: 0
   m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}
-  m_FocalLength: 50
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
@@ -247,14 +254,11 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1979442548}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2e146ff4090db454689f20a6b480911f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridManager: {fileID: 1979442548}
-  autoMode: 0
-  consoleLog: 0
   timerInterval: 0.1
 --- !u!4 &1979442550
 Transform:
@@ -283,6 +287,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1d0afbb961de3c4bb9d7e1e4d8d8eda, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isGameOver: 0
+  isModeAuto: 0
   randomSeed: 1
   gridMin: {x: 0, y: 0}
   gridMax: {x: 15, y: 15}
@@ -291,8 +297,6 @@ MonoBehaviour:
   nbWumpus: 10
   nbGold: 1
   nbAgent: 1
-  gridManager: {fileID: 1979442548}
-  mainCamera: {fileID: 519420028}
   agents: []
 --- !u!114 &1979442552
 MonoBehaviour:
@@ -303,10 +307,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 1979442548}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40687e890277c7440885797e0fca5150, type: 3}
+  m_Script: {fileID: 11500000, guid: 6409cd61b8662494fa415957813a912e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugFileLog: 0
-  consoleLog: 0
-  query: type(X, Y)
-  askQuery: 0
