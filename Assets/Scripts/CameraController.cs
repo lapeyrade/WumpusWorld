@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-    public void AdjustCameraPosition()
+    private void Start()
     {
         transform.position = new Vector3((GameManager.Instance.gridMax.x - 1) * GameManager.Instance.tileSize / 2,
             (GameManager.Instance.gridMax.y - 1) * GameManager.Instance.tileSize / 2, -1);

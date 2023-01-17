@@ -12,10 +12,6 @@ public class GameManager : MonoBehaviour
     public Vector2Int gridMin = new(0, 0); 
     public Vector2Int gridMax = new(15, 15);
     public float tileSize = 1.05f;
-    public int nbPit = 4;
-    public int nbWumpus = 2;
-    public int nbGold = 1;
-    public int nbAgent = 2;
 
     public List<GameObject>[,] Map;
     public List<GameObject>[,] AgentsMap;
@@ -40,131 +36,11 @@ public class GameManager : MonoBehaviour
 
         Map = new List<GameObject>[gridMax.x, gridMax.y];
         AgentsMap = new List<GameObject>[gridMax.x, gridMax.y];
-
-        if ((nbPit + nbWumpus + nbGold + nbAgent) > (gridMax.x * gridMax.y))
-        {
-            Debug.LogError("Map too small, can't contain all the elements.");
-            Application.Quit();
-            UnityEditor.EditorApplication.isPlaying = false;
-        }
-    
-        GenerateGrid();
-        GenerateWall();
-        GenerateHuman();
-        GenerateGold();
-        GenerateWumpus();
-        GeneratePit();
-        GameObject.Find("Main Camera").GetComponent<CameraController>().AdjustCameraPosition();
-    }
-    
-    private void GenerateGrid()
-    {
-        for (int i = gridMin.x; i < gridMax.x; i++)
-        {
-            for (int j = gridMin.y; j < gridMax.y; j++)
-            {
-                AgentsMap[i, j] = new List<GameObject>();
-                Map[i, j] = new List<GameObject>();
-                AddToGrids(new Vector2Int(i, j), "cell");
-            }
-        }
-    }
-
-    private void GenerateWall()
-    {
-        for (int i = gridMin.y; i < gridMax.y; i++) // Right
-            AddToGrids(new Vector2Int(gridMax.x - 1, i), "wall");
-
-        for (int i = gridMin.y; i < gridMax.y; i++) // Left
-            AddToGrids(new Vector2Int(gridMin.x, i), "wall");
-
-        for (int i = gridMin.y + 1; i < gridMax.x - 1; i++) // Top
-            AddToGrids(new Vector2Int(i, gridMax.y - 1), "wall");
-
-        for (int i = gridMin.y + 1; i < gridMax.x - 1; i++) // Bottom
-            AddToGrids(new Vector2Int(i, gridMin.y), "wall");
-    }
-
-    private void GenerateHuman()
-    {
         agents = new List<GameObject>();
-
-        for (int i = 0; i < nbAgent; i++)
-        {
-            Vector2Int coord;
-
-            do
-            {
-                coord = new(Random.Range(gridMin.x + 1, gridMax.x - 1), Random.Range(gridMin.y + 1, gridMax.y - 1));
-            } while (Map[coord.x, coord.y].Exists(x => x.tag is "start" or "wall"));
-            
-            if (Instantiate(Resources.Load("human"), transform) is not GameObject agent) continue;
-            agent.GetComponent<Agent>().Init(i, coord, nbWumpus);
-
-            AddToGrids(coord, "start");
-            agents.Add(agent);
-        }
+        
+        GetComponent<GameBuilder>().BuildMaps();
     }
-
-    private void GenerateGold()
-    {
-        for (int i = 0; i < nbGold; i++)
-        {
-            Vector2Int coord;
-            do
-            {
-                coord = new(Random.Range(gridMin.x + 1, gridMax.x - 1), Random.Range(gridMin.y + 1, gridMax.y - 1));
-            } while (Map[coord.x, coord.y].Exists(x => x.tag is "start" or "wall" or "gold"));
-
-            AddToGrids(coord, "gold");
-        }
-    }
-
-    private void GenerateWumpus()
-    {
-        for (int i = 0; i < nbWumpus; i++)
-        {
-            Vector2Int coord;
-            do
-            {
-                coord = new(Random.Range(gridMin.x + 1, gridMax.x - 1), Random.Range(gridMin.y + 1, gridMax.y - 1));
-            } while (Map[coord.x, coord.y].Exists(x => x.tag is "start" or "wall" or "gold" or "wumpus"));
-
-            AddToGrids(coord, "wumpus");
-            GenerateAroundCell(coord, "stench");
-        }
-    }
-
-    private void GeneratePit()
-    {
-        for (int i = 0; i < nbPit; i++)
-        {
-            Vector2Int coord;
-            do
-            {
-                coord = new(Random.Range(gridMin.x + 1, gridMax.x - 1), Random.Range(gridMin.y + 1, gridMax.y - 1));
-            } while (Map[coord.x, coord.y].Exists(x => x.tag is "start" or "wall" or "gold" or "wumpus" or "pit"));
-
-            AddToGrids(coord, "pit");
-            GenerateAroundCell(coord, "breeze");
-        }
-    }
-
-    private void GenerateAroundCell(Vector2Int coord, string element)
-    {
-        Generate(new Vector2Int(coord.x + 1, coord.y), element); // Right cell
-        Generate(new Vector2Int(coord.x - 1, coord.y), element); // Left cell
-        Generate(new Vector2Int(coord.x, coord.y + 1), element); // Top cell
-        Generate(new Vector2Int(coord.x, coord.y - 1), element); // Bottom cell
-
-        void Generate(Vector2Int coords, string elem)
-        {
-            if (!Map[coords.x, coords.y].Exists(x => x.CompareTag(elem)) &&
-                !Map[coords.x, coords.y].Exists(x => x.tag is "wall"))
-                AddToGrids(coords, elem);
-        }
-    }
-
+    
     public void AddToGrids(Vector2Int coords, string element)
     {
         if (element is "human") return;
@@ -223,15 +99,17 @@ public class GameManager : MonoBehaviour
         map[coords.x, coords.y].Remove(cellMap);
     }
 
+    public bool CellInGridLimits(Vector2Int cell) => 
+        cell.x >= gridMin.x && cell.x < gridMax.x && cell.y >= gridMin.y && cell.y < gridMax.y;
+
     public void AttachGoldToAgent(Agent agent)
     {
         agent.prefabGoldAgent = Instantiate(Resources.Load("gold")) as GameObject;
         if (agent.prefabGoldAgent is not null)
-            agent.prefabGoldAgent.transform.position = GetAgentMapOffset(agent.coord);
+            agent.prefabGoldAgent.transform.position = GetAgentMapOffset(agent.coords);
         agent.prefabGoldMap = Instantiate(Resources.Load("gold")) as GameObject;
         if (agent.prefabGoldMap is not null)
-            agent.prefabGoldMap.transform.position = GetWorldMapOffset(agent.coord);
-            
+            agent.prefabGoldMap.transform.position = GetWorldMapOffset(agent.coords);
     }
 
     public Vector2 GetAgentMapOffset(Vector2Int coord) =>

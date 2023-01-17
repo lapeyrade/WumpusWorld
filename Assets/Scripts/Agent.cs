@@ -7,7 +7,7 @@ using Random = UnityEngine.Random;
 public class Agent : MonoBehaviour
 {
     public Vector2Int startCoord;
-    public Vector2Int coord;
+    public Vector2Int coords;
     public int nbGold;
     public int nbArrow;
 
@@ -28,9 +28,9 @@ public class Agent : MonoBehaviour
         name = $"agent{agentId}";
         tag = "human";
         startCoord = newCoord;
-        coord = startCoord;
+        coords = startCoord;
         nbArrow = nbTotalWumpus;
-        PastMovements.Push(coord);
+        PastMovements.Push(coords);
         transform.position = GameManager.Instance.GetAgentMapOffset(newCoord);
         
         prefabAgentWorld = Instantiate(Resources.Load("human"), transform) as GameObject;
@@ -51,13 +51,13 @@ public class Agent : MonoBehaviour
     private void MoveCell()
     {
         if (Input.GetKeyDown("right"))
-            Move(new Vector2Int(coord.x + 1, coord.y)); 
+            Move(new Vector2Int(coords.x + 1, coords.y)); 
         else if (Input.GetKeyDown("left"))
-            Move(new Vector2Int(coord.x - 1, coord.y));
+            Move(new Vector2Int(coords.x - 1, coords.y));
         else if (Input.GetKeyDown("up"))
-            Move(new Vector2Int(coord.x, coord.y + 1));
+            Move(new Vector2Int(coords.x, coords.y + 1));
         else if (Input.GetKeyDown("down"))
-            Move(new Vector2Int(coord.x, coord.y - 1));
+            Move(new Vector2Int(coords.x, coords.y - 1));
         else if (Input.GetKeyDown("space") || GameManager.Instance.isModeAuto) // IA
             Move(SelectNextMove());
         else if (Input.GetKeyDown("return")) // IA Random
@@ -71,8 +71,8 @@ public class Agent : MonoBehaviour
         
         var moves = new List<Vector2Int>
         {
-            new(coord.x + 1, coord.y), new(coord.x - 1, coord.y),
-            new(coord.x, coord.y + 1), new(coord.x, coord.y - 1)
+            new(coords.x + 1, coords.y), new(coords.x - 1, coords.y),
+            new(coords.x, coords.y + 1), new(coords.x, coords.y - 1)
         };
         
         foreach (var move in moves.Where(SafeCellUnexplored))
@@ -89,8 +89,8 @@ public class Agent : MonoBehaviour
         
         var randomMoves = new List<Vector2Int>
         {
-            new (coord.x + 1, coord.y), new (coord.x - 1, coord.y),
-            new (coord.x, coord.y + 1), new (coord.x, coord.y - 1)
+            new (coords.x + 1, coords.y), new (coords.x - 1, coords.y),
+            new (coords.x, coords.y + 1), new (coords.x, coords.y - 1)
         }.OrderBy(_ => Random.value);
 
         foreach (var move in randomMoves)
@@ -108,16 +108,16 @@ public class Agent : MonoBehaviour
 
     private void SenseCell()
     {
-        if (startCoord == coord && nbGold == 1)
+        if (startCoord == coords && nbGold == 1)
             GameManager.Instance.SetGameOver($"{name} Won!", false);
 
-        foreach (string element in GameManager.Instance.Map[coord.x, coord.y]
-                     .Except(GameManager.Instance.AgentsMap[coord.x, coord.y]).Select(x => x.tag))
+        foreach (string element in GameManager.Instance.Map[coords.x, coords.y]
+                     .Except(GameManager.Instance.AgentsMap[coords.x, coords.y]).Select(x => x.tag))
         {
-            GameManager.Instance.AddToGrids(coord, element);
+            GameManager.Instance.AddToGrids(coords, element);
         }
         
-        if (GameManager.Instance.Map[coord.x, coord.y].Exists(e => e.tag is "pit" or "wumpus"))
+        if (GameManager.Instance.Map[coords.x, coords.y].Exists(e => e.tag is "pit" or "wumpus"))
             GameManager.Instance.SetGameOver($"{name} Lost!", false);
 
         MakeInferences();
@@ -126,11 +126,11 @@ public class Agent : MonoBehaviour
     private void ActionCell()
     {
         // Bump Wall
-        if (GameManager.Instance.AgentsMap[coord.x, coord.y].Exists(e => e.tag is "wall"))
+        if (GameManager.Instance.AgentsMap[coords.x, coords.y].Exists(e => e.tag is "wall"))
             Move(MoveBack());
 
         // PickUp Gold
-        if (GameManager.Instance.AgentsMap[coord.x, coord.y].Exists(e => e.tag is "gold"))
+        if (GameManager.Instance.AgentsMap[coords.x, coords.y].Exists(e => e.tag is "gold"))
             PickUpGold();
 
         // Shoot Arrow
@@ -140,7 +140,7 @@ public class Agent : MonoBehaviour
 
     private void Move(Vector2Int newCoord)
     {
-        GameManager.Instance.RemoveFromGrids(coord, tag);
+        GameManager.Instance.RemoveFromGrids(coords, tag);
         transform.position = GameManager.Instance.GetAgentMapOffset(newCoord);
 
         if (nbGold > 0)
@@ -150,20 +150,20 @@ public class Agent : MonoBehaviour
         }
 
         PastMovements.Push(newCoord);
-        coord = newCoord;
-        GameManager.Instance.AddToGrids(coord, "visited");
+        coords = newCoord;
+        GameManager.Instance.AddToGrids(coords, "visited");
     }
 
     private Vector2Int MoveBack()
     {
-        if (PastMovements.Count <= 1) return coord;
+        if (PastMovements.Count <= 1) return coords;
         PastMovements.Pop();
         return PastMovements.Pop();
     }
 
     private void MakeInferences()
     {
-        if (GameManager.Instance.AgentsMap[coord.x, coord.y].Exists(x
+        if (GameManager.Instance.AgentsMap[coords.x, coords.y].Exists(x
                 => x.tag is "breeze" or "stench" or "wumpus" or "pit"))
             MarkSideCells("undefined", true);
         else
@@ -171,133 +171,126 @@ public class Agent : MonoBehaviour
 
         CheckCellsDanger("wumpus", "stench");
         CheckCellsDanger("pit", "breeze");
-        
-        void MarkSideCells(string element, bool checkDanger)
+    }
+
+    void MarkSideCells(string element, bool checkDanger)
+    {
+        for (int i = 1; i <= 2; i++)
         {
-            for (int i = 1; i <= 2; i++)
-            {
-                if (i > 1)
-                    element = "undefined";
-                MarkCell(new Vector2Int(coord.x + i, coord.y), element, checkDanger);
-                MarkCell(new Vector2Int(coord.x - i, coord.y), element, checkDanger);
-                MarkCell(new Vector2Int(coord.x, coord.y + i), element, checkDanger);
-                MarkCell(new Vector2Int(coord.x, coord.y - i), element, checkDanger);
+            if (i > 1)
+                element = "undefined";
+            MarkCell(new Vector2Int(coords.x + i, coords.y), element, checkDanger);
+            MarkCell(new Vector2Int(coords.x - i, coords.y), element, checkDanger);
+            MarkCell(new Vector2Int(coords.x, coords.y + i), element, checkDanger);
+            MarkCell(new Vector2Int(coords.x, coords.y - i), element, checkDanger);
 
-                if (i <= 1) continue;
-                MarkCell(new Vector2Int(coord.x + (i - 1), coord.y + (i - 1)), element, checkDanger);
-                MarkCell(new Vector2Int(coord.x + (i - 1), coord.y - (i - 1)), element, checkDanger);
-                MarkCell(new Vector2Int(coord.x - (i - 1), coord.y + (i - 1)), element, checkDanger);
-                MarkCell(new Vector2Int(coord.x - (i - 1), coord.y - (i - 1)), element, checkDanger);
-            }
+            if (i <= 1) continue;
+            MarkCell(new Vector2Int(coords.x + (i - 1), coords.y + (i - 1)), element, checkDanger);
+            MarkCell(new Vector2Int(coords.x + (i - 1), coords.y - (i - 1)), element, checkDanger);
+            MarkCell(new Vector2Int(coords.x - (i - 1), coords.y + (i - 1)), element, checkDanger);
+            MarkCell(new Vector2Int(coords.x - (i - 1), coords.y - (i - 1)), element, checkDanger);
         }
+    }
+    
+    private void MarkCell(Vector2Int cell, string element, bool checkDanger)
+    {
+        if (!GameManager.Instance.CellInGridLimits(cell)) return;
+        if (checkDanger && GameManager.Instance.AgentsMap[cell.x, cell.y].Exists(e =>
+                    e.tag is "wumpus" or "wumpusdead" or "pit")) return;
+        if (element is "undefined" && GameManager.Instance.AgentsMap[cell.x, cell.y].Exists(e =>
+                e.tag is "safe" or "wall" or "visited")) return;
 
-        void MarkCell(Vector2Int cell, string element, bool checkDanger)
-        {
-            if (!CellInGridLimits(cell)) return;
-            if (checkDanger)
-                if (GameManager.Instance.AgentsMap[cell.x, cell.y].Exists(e =>
-                        e.tag is "wumpus" or "wumpusdead" or "pit")) return;
-            if (element is "undefined" && GameManager.Instance.AgentsMap[cell.x, cell.y].Exists(e =>
-                    e.tag is "safe" or "wall" or "visited")) return;
+        GameManager.Instance.AddToGrids(cell, element);
+    }
 
-            GameManager.Instance.AddToGrids(cell, element);
-        }
+    private void CheckCellsDanger(string danger, string hint)
+    {
+        CheckDanger(coords, danger, hint);
+        CheckDanger(new Vector2Int(coords.x + 1, coords.y), danger, hint);
+        CheckDanger(new Vector2Int(coords.x - 1, coords.y), danger, hint);
+        CheckDanger(new Vector2Int(coords.x, coords.y + 1), danger, hint);
+        CheckDanger(new Vector2Int(coords.x, coords.y - 1), danger, hint);
+        CheckDanger(new Vector2Int(coords.x + 1, coords.y + 1), danger, hint);
+        CheckDanger(new Vector2Int(coords.x + 1, coords.y - 1), danger, hint);
+        CheckDanger(new Vector2Int(coords.x - 1, coords.y + 1), danger, hint);
+        CheckDanger(new Vector2Int(coords.x - 1, coords.y + 1), danger, hint);
+    }
 
-        void CheckCellsDanger(string danger, string hint)
-        {
-            CheckDanger(coord, danger, hint);
-            CheckDanger(new Vector2Int(coord.x + 1, coord.y), danger, hint);
-            CheckDanger(new Vector2Int(coord.x - 1, coord.y), danger, hint);
-            CheckDanger(new Vector2Int(coord.x, coord.y + 1), danger, hint);
-            CheckDanger(new Vector2Int(coord.x, coord.y - 1), danger, hint);
-            CheckDanger(new Vector2Int(coord.x + 1, coord.y + 1), danger, hint);
-            CheckDanger(new Vector2Int(coord.x + 1, coord.y - 1), danger, hint);
-            CheckDanger(new Vector2Int(coord.x - 1, coord.y + 1), danger, hint);
-            CheckDanger(new Vector2Int(coord.x - 1, coord.y + 1), danger, hint);
-        }
+    private void CheckDanger(Vector2Int cell, string danger, string hint)
+    {
+        if (!GameManager.Instance.CellInGridLimits(cell) ||
+            !GameManager.Instance.AgentsMap[cell.x, cell.y].Exists(e => e.CompareTag(hint))) return;
+        if (DangerInRightCell(cell, danger))
+            AddDanger(new Vector2Int(cell.x + 1, cell.y), danger, hint);
+        if (DangerInLeftCell(cell, danger))
+            AddDanger(new Vector2Int(cell.x - 1, cell.y), danger, hint);
+        if (DangerInUpCell(cell, danger))
+            AddDanger(new Vector2Int(cell.x, cell.y + 1), danger, hint);
+        if (DangerInDownCell(cell, danger))
+            AddDanger(new Vector2Int(cell.x, cell.y - 1), danger, hint);
+    }
 
-        void CheckDanger(Vector2Int cell, string danger, string hint)
-        {
-            if (!CellInGridLimits(cell) ||
-                !GameManager.Instance.AgentsMap[cell.x, cell.y].Exists(e => e.CompareTag(hint))) return;
-            if (DangerInRightCell(cell, danger))
-                AddDanger(new Vector2Int(cell.x + 1, cell.y), danger, hint);
-            if (DangerInLeftCell(cell, danger))
-                AddDanger(new Vector2Int(cell.x - 1, cell.y), danger, hint);
-            if (DangerInUpCell(cell, danger))
-                AddDanger(new Vector2Int(cell.x, cell.y + 1), danger, hint);
-            if (DangerInDownCell(cell, danger))
-                AddDanger(new Vector2Int(cell.x, cell.y - 1), danger, hint);
-        }
+    private void AddDanger(Vector2Int cell, string danger, string hint)
+    {
+        if (danger is "wumpus" &&
+            GameManager.Instance.AgentsMap[cell.x, cell.y].Exists(e => e.tag is "wumpusdead"))
+            return;
+        GameManager.Instance.AddToGrids(cell, danger);
+        GameManager.Instance.AddToGrids(cell, "danger");
+        AddHint(new Vector2Int(cell.x + 1, cell.y), hint);
+        AddHint(new Vector2Int(cell.x - 1, cell.y), hint);
+        AddHint(new Vector2Int(cell.x, cell.y + 1), hint);
+        AddHint(new Vector2Int(cell.x, cell.y - 1), hint);
+    }
 
-        void AddDanger(Vector2Int cell, string danger, string hint)
-        {
-            if (danger is "wumpus" &&
-                GameManager.Instance.AgentsMap[cell.x, cell.y].Exists(e => e.tag is "wumpusdead"))
-                return;
-            GameManager.Instance.AddToGrids(cell, danger);
-            GameManager.Instance.AddToGrids(cell, "danger");
-            AddHint(new Vector2Int(cell.x + 1, cell.y), hint);
-            AddHint(new Vector2Int(cell.x - 1, cell.y), hint);
-            AddHint(new Vector2Int(cell.x, cell.y + 1), hint);
-            AddHint(new Vector2Int(cell.x, cell.y - 1), hint);
-        }
+    private void AddHint(Vector2Int cell, string hint)
+    {
+        if (GameManager.Instance.AgentsMap[cell.x, cell.y].Exists(e => e.tag is "wall")) return;
+        GameManager.Instance.AddToGrids(cell, hint);
+    }
 
-        void AddHint(Vector2Int cell, string hint)
-        {
-            if (GameManager.Instance.AgentsMap[cell.x, cell.y].Exists(e => e.tag is "wall")) return;
-            GameManager.Instance.AddToGrids(cell, hint);
-        }
+    private bool DangerInRightCell(Vector2Int cell, string danger)
+    {
+        return NoDangerInCell(new Vector2Int(cell.x - 1, cell.y), danger) &&
+               NoDangerInCell(new Vector2Int(cell.x, cell.y + 1), danger) &&
+               NoDangerInCell(new Vector2Int(cell.x, cell.y - 1), danger);
+    }
 
-        bool DangerInRightCell(Vector2Int cell, string danger)
-        {
-            return NoDangerInCell(new Vector2Int(cell.x - 1, cell.y), danger) &&
-                   NoDangerInCell(new Vector2Int(cell.x, cell.y + 1), danger) &&
-                   NoDangerInCell(new Vector2Int(cell.x, cell.y - 1), danger);
-        }
+    private bool DangerInLeftCell(Vector2Int cell, string danger)
+    {
+        return NoDangerInCell(new Vector2Int(cell.x + 1, cell.y), danger) &&
+               NoDangerInCell(new Vector2Int(cell.x, cell.y + 1), danger) &&
+               NoDangerInCell(new Vector2Int(cell.x, cell.y - 1), danger);
+    }
 
-        bool DangerInLeftCell(Vector2Int cell, string danger)
-        {
-            return NoDangerInCell(new Vector2Int(cell.x + 1, cell.y), danger) &&
-                   NoDangerInCell(new Vector2Int(cell.x, cell.y + 1), danger) &&
-                   NoDangerInCell(new Vector2Int(cell.x, cell.y - 1), danger);
-        }
+    private bool DangerInUpCell(Vector2Int cell, string danger)
+    {
+        return NoDangerInCell(new Vector2Int(cell.x + 1, cell.y), danger) &&
+               NoDangerInCell(new Vector2Int(cell.x - 1, cell.y), danger) &&
+               NoDangerInCell(new Vector2Int(cell.x, cell.y - 1), danger);
+    }
 
-        bool DangerInUpCell(Vector2Int cell, string danger)
-        {
-            return NoDangerInCell(new Vector2Int(cell.x + 1, cell.y), danger) &&
-                   NoDangerInCell(new Vector2Int(cell.x - 1, cell.y), danger) &&
-                   NoDangerInCell(new Vector2Int(cell.x, cell.y - 1), danger);
-        }
+    private bool DangerInDownCell(Vector2Int cell, string danger)
+    {
+        return NoDangerInCell(new Vector2Int(cell.x + 1, cell.y), danger) &&
+               NoDangerInCell(new Vector2Int(cell.x - 1, cell.y), danger) &&
+               NoDangerInCell(new Vector2Int(cell.x, cell.y + 1), danger);
+    }
 
-        bool DangerInDownCell(Vector2Int cell, string danger)
-        {
-            return NoDangerInCell(new Vector2Int(cell.x + 1, cell.y), danger) &&
-                   NoDangerInCell(new Vector2Int(cell.x - 1, cell.y), danger) &&
-                   NoDangerInCell(new Vector2Int(cell.x, cell.y + 1), danger);
-        }
-
-        bool NoDangerInCell(Vector2Int cell, string danger)
-        {
-            if (!CellInGridLimits(cell)) return false;
-            if (danger == "wumpus" &&
-                GameManager.Instance.AgentsMap[cell.x, cell.y].Exists(e => e.tag is "wumpusdead"))
-                return false;
-            return GameManager.Instance.AgentsMap[cell.x, cell.y].Exists(e => e.tag is "visited" or "safe" or "start") &&
-                   !GameManager.Instance.AgentsMap[cell.x, cell.y].Exists(e => e.CompareTag(danger));
-        }
-
-        bool CellInGridLimits(Vector2Int cell)
-        {
-            return cell.x >= GameManager.Instance.gridMin.x && cell.x < GameManager.Instance.gridMax.x &&
-                   cell.y >= GameManager.Instance.gridMin.y && cell.y < GameManager.Instance.gridMax.y;
-        }
+    private bool NoDangerInCell(Vector2Int cell, string danger)
+    {
+        if (!GameManager.Instance.CellInGridLimits(cell)) return false;
+        if (danger == "wumpus" &&
+            GameManager.Instance.AgentsMap[cell.x, cell.y].Exists(e => e.tag is "wumpusdead"))
+            return false;
+        return GameManager.Instance.AgentsMap[cell.x, cell.y].Exists(e => e.tag is "visited" or "safe" or "start") &&
+               !GameManager.Instance.AgentsMap[cell.x, cell.y].Exists(e => e.CompareTag(danger));
     }
 
     private void PickUpGold()
     {
         nbGold++;
-        GameManager.Instance.RemoveFromGrids(coord, "gold");
+        GameManager.Instance.RemoveFromGrids(coords, "gold");
         GameManager.Instance.AttachGoldToAgent(this);
     }
 
@@ -311,37 +304,37 @@ public class Agent : MonoBehaviour
 
         void ShootIfWumpusRightOfAgent()
         {
-            for (int i = coord.x; i < GameManager.Instance.gridMax.x; i++)
+            for (int i = coords.x; i < GameManager.Instance.gridMax.x; i++)
             {
-                if (GameManager.Instance.AgentsMap[i, coord.y].Exists(e => e.tag is "wumpus"))
-                    ShootWumpus(new Vector2Int(i, coord.y));
+                if (GameManager.Instance.AgentsMap[i, coords.y].Exists(e => e.tag is "wumpus"))
+                    ShootWumpus(new Vector2Int(i, coords.y));
             }
         }
 
         void ShootIfWumpusLeftOfAgent()
         {
-            for (int i = GameManager.Instance.gridMin.x; i < coord.x; i++)
+            for (int i = GameManager.Instance.gridMin.x; i < coords.x; i++)
             {
-                if (GameManager.Instance.AgentsMap[i, coord.y].Exists(e => e.tag is "wumpus"))
-                    ShootWumpus(new Vector2Int(i, coord.y));
+                if (GameManager.Instance.AgentsMap[i, coords.y].Exists(e => e.tag is "wumpus"))
+                    ShootWumpus(new Vector2Int(i, coords.y));
             }
         }
 
         void ShootIfWumpusUpOfAgent()
         {
-            for (int i = coord.y; i < GameManager.Instance.gridMax.y; i++)
+            for (int i = coords.y; i < GameManager.Instance.gridMax.y; i++)
             {
-                if (GameManager.Instance.AgentsMap[coord.x, i].Exists(e => e.tag is "wumpus"))
-                    ShootWumpus(new Vector2Int(coord.x, i));
+                if (GameManager.Instance.AgentsMap[coords.x, i].Exists(e => e.tag is "wumpus"))
+                    ShootWumpus(new Vector2Int(coords.x, i));
             }
         }
 
         void ShootIfWumpusDownOfAgent()
         {
-            for (int i = GameManager.Instance.gridMin.y; i < coord.y; i++)
+            for (int i = GameManager.Instance.gridMin.y; i < coords.y; i++)
             {
-                if (GameManager.Instance.AgentsMap[coord.x, i].Exists(e => e.tag is "wumpus"))
-                    ShootWumpus(new Vector2Int(coord.x, i));
+                if (GameManager.Instance.AgentsMap[coords.x, i].Exists(e => e.tag is "wumpus"))
+                    ShootWumpus(new Vector2Int(coords.x, i));
             }
         }
     }
