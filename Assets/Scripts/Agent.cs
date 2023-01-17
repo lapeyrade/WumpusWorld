@@ -31,13 +31,13 @@ public class Agent : MonoBehaviour
         coords = startCoord;
         nbArrow = nbTotalWumpus;
         PastMovements.Push(coords);
-        transform.position = GameManager.Instance.GetAgentMapOffset(newCoord);
+        transform.position = GridManager.GetAgentMapOffset(newCoord);
         
         prefabAgentWorld = Instantiate(Resources.Load("human"), transform) as GameObject;
         if (prefabAgentWorld is null) return;
         prefabAgentWorld.tag = tag;
         prefabAgentWorld.name = name;
-        prefabAgentWorld.transform.position = GameManager.Instance.GetWorldMapOffset(newCoord);
+        prefabAgentWorld.transform.position = GridManager.GetWorldMapOffset(newCoord);
     }
 
 
@@ -114,7 +114,7 @@ public class Agent : MonoBehaviour
         foreach (string element in GameManager.Instance.Map[coords.x, coords.y]
                      .Except(GameManager.Instance.AgentsMap[coords.x, coords.y]).Select(x => x.tag))
         {
-            GameManager.Instance.AddToGrids(coords, element);
+            GridManager.AddToGrids(coords, element);
         }
         
         if (GameManager.Instance.Map[coords.x, coords.y].Exists(e => e.tag is "pit" or "wumpus"))
@@ -140,8 +140,8 @@ public class Agent : MonoBehaviour
 
     private void Move(Vector2Int newCoord)
     {
-        GameManager.Instance.RemoveFromGrids(coords, tag);
-        transform.position = GameManager.Instance.GetAgentMapOffset(newCoord);
+        GridManager.RemoveFromGrids(coords, tag);
+        transform.position = GridManager.GetAgentMapOffset(newCoord);
 
         if (nbGold > 0)
         {
@@ -151,7 +151,7 @@ public class Agent : MonoBehaviour
 
         PastMovements.Push(newCoord);
         coords = newCoord;
-        GameManager.Instance.AddToGrids(coords, "visited");
+        GridManager.AddToGrids(coords, "visited");
     }
 
     private Vector2Int MoveBack()
@@ -194,13 +194,13 @@ public class Agent : MonoBehaviour
     
     private void MarkCell(Vector2Int cell, string element, bool checkDanger)
     {
-        if (!GameManager.Instance.CellInGridLimits(cell)) return;
+        if (!GridManager.CellInGridLimits(cell)) return;
         if (checkDanger && GameManager.Instance.AgentsMap[cell.x, cell.y].Exists(e =>
                     e.tag is "wumpus" or "wumpusdead" or "pit")) return;
         if (element is "undefined" && GameManager.Instance.AgentsMap[cell.x, cell.y].Exists(e =>
                 e.tag is "safe" or "wall" or "visited")) return;
 
-        GameManager.Instance.AddToGrids(cell, element);
+        GridManager.AddToGrids(cell, element);
     }
 
     private void CheckCellsDanger(string danger, string hint)
@@ -218,7 +218,7 @@ public class Agent : MonoBehaviour
 
     private void CheckDanger(Vector2Int cell, string danger, string hint)
     {
-        if (!GameManager.Instance.CellInGridLimits(cell) ||
+        if (!GridManager.CellInGridLimits(cell) ||
             !GameManager.Instance.AgentsMap[cell.x, cell.y].Exists(e => e.CompareTag(hint))) return;
         if (DangerInRightCell(cell, danger))
             AddDanger(new Vector2Int(cell.x + 1, cell.y), danger, hint);
@@ -235,8 +235,8 @@ public class Agent : MonoBehaviour
         if (danger is "wumpus" &&
             GameManager.Instance.AgentsMap[cell.x, cell.y].Exists(e => e.tag is "wumpusdead"))
             return;
-        GameManager.Instance.AddToGrids(cell, danger);
-        GameManager.Instance.AddToGrids(cell, "danger");
+        GridManager.AddToGrids(cell, danger);
+        GridManager.AddToGrids(cell, "danger");
         AddHint(new Vector2Int(cell.x + 1, cell.y), hint);
         AddHint(new Vector2Int(cell.x - 1, cell.y), hint);
         AddHint(new Vector2Int(cell.x, cell.y + 1), hint);
@@ -246,7 +246,7 @@ public class Agent : MonoBehaviour
     private void AddHint(Vector2Int cell, string hint)
     {
         if (GameManager.Instance.AgentsMap[cell.x, cell.y].Exists(e => e.tag is "wall")) return;
-        GameManager.Instance.AddToGrids(cell, hint);
+        GridManager.AddToGrids(cell, hint);
     }
 
     private bool DangerInRightCell(Vector2Int cell, string danger)
@@ -279,7 +279,7 @@ public class Agent : MonoBehaviour
 
     private bool NoDangerInCell(Vector2Int cell, string danger)
     {
-        if (!GameManager.Instance.CellInGridLimits(cell)) return false;
+        if (!GridManager.CellInGridLimits(cell)) return false;
         if (danger == "wumpus" &&
             GameManager.Instance.AgentsMap[cell.x, cell.y].Exists(e => e.tag is "wumpusdead"))
             return false;
@@ -290,8 +290,8 @@ public class Agent : MonoBehaviour
     private void PickUpGold()
     {
         nbGold++;
-        GameManager.Instance.RemoveFromGrids(coords, "gold");
-        GameManager.Instance.AttachGoldToAgent(this);
+        GridManager.RemoveFromGrids(coords, "gold");
+        GridManager.AttachGoldToAgent(this);
     }
 
     private void TryShootingArrow()
@@ -342,9 +342,9 @@ public class Agent : MonoBehaviour
     private void ShootWumpus(Vector2Int coordWumpus)
     {
         nbArrow--;
-        GameManager.Instance.RemoveFromGrids(coordWumpus, "wumpus");
-        GameManager.Instance.RemoveFromGrids(coordWumpus, "danger");
-        GameManager.Instance.AddToGrids(coordWumpus, "wumpusdead");
-        GameManager.Instance.AddToGrids(coordWumpus, "safe");
+        GridManager.RemoveFromGrids(coordWumpus, "wumpus");
+        GridManager.RemoveFromGrids(coordWumpus, "danger");
+        GridManager.AddToGrids(coordWumpus, "wumpusdead");
+        GridManager.AddToGrids(coordWumpus, "safe");
     }
 }

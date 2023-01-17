@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
-    [Range(0.0f, 1.0f)][SerializeField] public float timerInterval = 0.016f;
     private float _timer;
     
     protected void Start()
@@ -15,7 +14,7 @@ public class GameController : MonoBehaviour
 
     protected void Update()
     {
-        if (GameManager.Instance.isModeAuto && _timer < timerInterval)
+        if (GameManager.Instance.isModeAuto && _timer < GameManager.Instance.timerInterval)
             _timer += Time.deltaTime;
         else
         {

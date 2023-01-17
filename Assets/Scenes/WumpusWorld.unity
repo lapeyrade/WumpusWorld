@@ -237,12 +237,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1979442550}
-  - component: {fileID: 1979442553}
   - component: {fileID: 1979442551}
+  - component: {fileID: 1979442553}
   - component: {fileID: 1979442549}
   - component: {fileID: 1979442552}
   m_Layer: 0
-  m_Name: GridManager
+  m_Name: Grid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -260,7 +260,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e146ff4090db454689f20a6b480911f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timerInterval: 0.05
 --- !u!4 &1979442550
 Transform:
   m_ObjectHideFlags: 0
@@ -290,10 +289,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isGameOver: 0
   isModeAuto: 0
+  timerInterval: 0.016
   randomSeed: 1
   gridMin: {x: 0, y: 0}
   gridMax: {x: 15, y: 15}
   tileSize: 1.05
+  nbPit: 10
+  nbWumpus: 10
+  nbGold: 1
+  nbAgent: 1
   agents: []
 --- !u!114 &1979442552
 MonoBehaviour:
@@ -319,7 +323,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89b0ce3e586534c3981e843f369ab308, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nbPit: 10
-  nbWumpus: 10
-  nbGold: 1
-  nbAgent: 1

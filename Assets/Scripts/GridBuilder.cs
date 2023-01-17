@@ -1,23 +1,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameBuilder : MonoBehaviour
+public class GridBuilder : MonoBehaviour
 {
-    public int nbPit = 4;
-    public int nbWumpus = 2;
-    public int nbGold = 1;
-    public int nbAgent = 2;
-    
-    public void BuildMaps()
+    public void BuildGrid()
     {
-        if (nbPit + nbWumpus + nbGold + nbAgent > GameManager.Instance.gridMax.x * GameManager.Instance.gridMax.y)
+        if (GameManager.Instance.nbPit + GameManager.Instance.nbWumpus + GameManager.Instance.nbGold +
+            GameManager.Instance.nbAgent > GameManager.Instance.gridMax.x * GameManager.Instance.gridMax.y)
         {
             Debug.LogError("Map too small, can't contain all the elements.");
             Application.Quit();
             UnityEditor.EditorApplication.isPlaying = false;
         }
-    
-        GenerateGrid();
+        
+        GenerateCell();
         GenerateWall();
         GenerateHuman();
         GenerateGold();
@@ -25,7 +21,7 @@ public class GameBuilder : MonoBehaviour
         GeneratePit();
     }
     
-    private void GenerateGrid()
+    private void GenerateCell()
     {
         for (int i = GameManager.Instance.gridMin.x; i < GameManager.Instance.gridMax.x; i++)
         {
@@ -33,7 +29,7 @@ public class GameBuilder : MonoBehaviour
             {
                 GameManager.Instance.AgentsMap[i, j] = new List<GameObject>();
                 GameManager.Instance.Map[i, j] = new List<GameObject>();
-                GameManager.Instance.AddToGrids(new Vector2Int(i, j), "cell");
+                GridManager.AddToGrids(new Vector2Int(i, j), "cell");
             }
         }
     }
@@ -41,21 +37,21 @@ public class GameBuilder : MonoBehaviour
     private void GenerateWall()
     {
         for (int i = GameManager.Instance.gridMin.y; i < GameManager.Instance.gridMax.y; i++) // Right
-            GameManager.Instance.AddToGrids(new Vector2Int(GameManager.Instance.gridMax.x - 1, i), "wall");
+            GridManager.AddToGrids(new Vector2Int(GameManager.Instance.gridMax.x - 1, i), "wall");
 
         for (int i = GameManager.Instance.gridMin.y; i < GameManager.Instance.gridMax.y; i++) // Left
-            GameManager.Instance.AddToGrids(new Vector2Int(GameManager.Instance.gridMin.x, i), "wall");
+            GridManager.AddToGrids(new Vector2Int(GameManager.Instance.gridMin.x, i), "wall");
 
         for (int i = GameManager.Instance.gridMin.y + 1; i < GameManager.Instance.gridMax.x - 1; i++) // Top
-            GameManager.Instance.AddToGrids(new Vector2Int(i, GameManager.Instance.gridMax.y - 1), "wall");
+            GridManager.AddToGrids(new Vector2Int(i, GameManager.Instance.gridMax.y - 1), "wall");
 
         for (int i = GameManager.Instance.gridMin.y + 1; i < GameManager.Instance.gridMax.x - 1; i++) // Bottom
-            GameManager.Instance.AddToGrids(new Vector2Int(i, GameManager.Instance.gridMin.y), "wall");
+            GridManager.AddToGrids(new Vector2Int(i, GameManager.Instance.gridMin.y), "wall");
     }
 
     private void GenerateHuman()
     {
-        for (int i = 0; i < nbAgent; i++)
+        for (int i = 0; i < GameManager.Instance.nbAgent; i++)
         {
             Vector2Int coord;
 
@@ -66,16 +62,16 @@ public class GameBuilder : MonoBehaviour
             } while (GameManager.Instance.Map[coord.x, coord.y].Exists(x => x.tag is "start" or "wall"));
             
             if (Instantiate(Resources.Load("human"), transform) is not GameObject agent) continue;
-            agent.GetComponent<Agent>().Init(i, coord, nbWumpus);
+            agent.GetComponent<Agent>().Init(i, coord, GameManager.Instance.nbWumpus);
 
-            GameManager.Instance.AddToGrids(coord, "start");
+            GridManager.AddToGrids(coord, "start");
             GameManager.Instance.agents.Add(agent);
         }
     }
 
     private void GenerateGold()
     {
-        for (int i = 0; i < nbGold; i++)
+        for (int i = 0; i < GameManager.Instance.nbGold; i++)
         {
             Vector2Int coord;
             do
@@ -84,13 +80,13 @@ public class GameBuilder : MonoBehaviour
                     Random.Range(GameManager.Instance.gridMin.y + 1, GameManager.Instance.gridMax.y - 1));
             } while (GameManager.Instance.Map[coord.x, coord.y].Exists(x => x.tag is "start" or "wall" or "gold"));
 
-            GameManager.Instance.AddToGrids(coord, "gold");
+            GridManager.AddToGrids(coord, "gold");
         }
     }
 
     private void GenerateWumpus()
     {
-        for (int i = 0; i < nbWumpus; i++)
+        for (int i = 0; i < GameManager.Instance.nbWumpus; i++)
         {
             Vector2Int coord;
             do
@@ -100,14 +96,14 @@ public class GameBuilder : MonoBehaviour
             } while (GameManager.Instance.Map[coord.x, coord.y].Exists(x =>
                          x.tag is "start" or "wall" or "gold" or "wumpus"));
 
-            GameManager.Instance.AddToGrids(coord, "wumpus");
+            GridManager.AddToGrids(coord, "wumpus");
             GenerateAroundCell(coord, "stench");
         }
     }
 
     private void GeneratePit()
     {
-        for (int i = 0; i < nbPit; i++)
+        for (int i = 0; i < GameManager.Instance.nbPit; i++)
         {
             Vector2Int coord;
             do
@@ -117,7 +113,7 @@ public class GameBuilder : MonoBehaviour
             } while (GameManager.Instance.Map[coord.x, coord.y].Exists(x =>
                          x.tag is "start" or "wall" or "gold" or "wumpus" or "pit"));
 
-            GameManager.Instance.AddToGrids(coord, "pit");
+            GridManager.AddToGrids(coord, "pit");
             GenerateAroundCell(coord, "breeze");
         }
     }
@@ -133,7 +129,7 @@ public class GameBuilder : MonoBehaviour
         {
             if (!GameManager.Instance.Map[coords.x, coords.y].Exists(x => x.CompareTag(elem)) &&
                 !GameManager.Instance.Map[coords.x, coords.y].Exists(x => x.tag is "wall"))
-                GameManager.Instance.AddToGrids(coords, elem);
+                GridManager.AddToGrids(coords, elem);
         }
     }
 }
