@@ -69,9 +69,9 @@ public class GameControllerBt : MonoBehaviour {
     private void PlayTurn()
     {
         Debug.Log("Playing turn");
-        foreach (Human agent in GameManager.Instance.agents)
+        foreach (GameObject agent in GameManager.Instance.agents)
         {
-            agent.PlayTurn();
+            agent.GetComponent<Agent>().PlayTurn();
         }
     }
 }

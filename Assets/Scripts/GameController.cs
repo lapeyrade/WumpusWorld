@@ -7,9 +7,9 @@ public class GameController : MonoBehaviour
     
     protected void Start()
     {
-        foreach (Human agent in GameManager.Instance.agents)
+        foreach (GameObject agent in GameManager.Instance.agents)
         {
-            agent.PlayTurn();
+            agent.GetComponent<Agent>().PlayTurn();
         }
     }
 
@@ -40,9 +40,9 @@ public class GameController : MonoBehaviour
                  Input.GetKeyDown("left") || Input.GetKeyDown("up") || Input.GetKeyDown("down") ||
                  GameManager.Instance.isModeAuto)
         {
-            foreach (Human agent in GameManager.Instance.agents)
+            foreach (GameObject agent in GameManager.Instance.agents)
             {
-                agent.PlayTurn();
+                agent.GetComponent<Agent>().PlayTurn();
             }
         }
     }

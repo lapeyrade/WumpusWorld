@@ -254,12 +254,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1979442548}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2e146ff4090db454689f20a6b480911f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timerInterval: 0.1
+  timerInterval: 0.05
 --- !u!4 &1979442550
 Transform:
   m_ObjectHideFlags: 0
@@ -288,7 +288,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isGameOver: 0
-  isModeAuto: 0
+  isModeAuto: 1
   randomSeed: 1
   gridMin: {x: 0, y: 0}
   gridMax: {x: 15, y: 15}
@@ -305,7 +305,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1979442548}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6409cd61b8662494fa415957813a912e, type: 3}
   m_Name: 

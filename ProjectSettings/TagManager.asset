@@ -3,7 +3,21 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - wall
+  - safe
+  - undefined
+  - visited
+  - stench
+  - breeze
+  - pit
+  - wumpus
+  - gold
+  - start
+  - cell
+  - human
+  - danger
+  - wumpusdead
   layers:
   - Default
   - TransparentFX
