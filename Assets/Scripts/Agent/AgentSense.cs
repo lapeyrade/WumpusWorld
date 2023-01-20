@@ -2,15 +2,15 @@ using UnityEngine;
     
 namespace Agent
 {
-    public class AgentSense : MonoBehaviour
+    public class AgentSense
     {
-        private Agent _agent;
-
-        private void Start()
+        private readonly Agent _agent;
+        
+        public AgentSense(Agent agent)
         {
-            _agent = GetComponent<Agent>();
+            _agent = agent;
         }
-
+        
         public void MakeInferences()
         {
             if (GameManager.Instance.AgentsMap[_agent.coords.x, _agent.coords.y].Exists(x

@@ -4,13 +4,13 @@ using UnityEngine;
 
 namespace Agent
 {
-    public class AgentMove : MonoBehaviour
+    public class AgentMove
     {
-        private Agent _agent;
-        
-        private void Start()
+        private readonly Agent _agent;
+
+        public AgentMove(Agent agent)
         {
-            _agent = GetComponent<Agent>();
+            _agent = agent;
         }
         
         public Vector2Int SelectNextMove()
@@ -59,13 +59,13 @@ namespace Agent
 
         public void Move(Vector2Int newCoord)
         {
-            GridManager.RemoveFromGrids(_agent.coords, tag);
-            transform.position = GridManager.GetAgentMapOffset(newCoord);
+            GridManager.RemoveFromGrids(_agent.coords, _agent.tag);
+            _agent.transform.position = GridManager.GetAgentMapOffset(newCoord);
 
             if (_agent.nbGold > 0)
             {
                 _agent.prefabGoldMap.transform.position = _agent.prefabAgentWorld.transform.position;
-                _agent.prefabGoldAgent.transform.position = transform.position;
+                _agent.prefabGoldAgent.transform.position = _agent.transform.position;
             }
 
             _agent.PastMovements.Push(newCoord);

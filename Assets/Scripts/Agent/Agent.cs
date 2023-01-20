@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Agent
 {
@@ -26,7 +25,7 @@ namespace Agent
         private AgentMove _agentMove;
         private AgentSense _agentSense;
         private AgentAction _agentAction;
-        [FormerlySerializedAs("ai")] public AgentAI agentAI;
+        public AgentAI AgentAI;
 
         public void Init(int agentId, Vector2Int newCoord, int nbTotalWumpus)
         {
@@ -44,10 +43,10 @@ namespace Agent
             prefabAgentWorld.name = name;
             prefabAgentWorld.transform.position = GridManager.GetWorldMapOffset(newCoord);
 
-            _agentMove = gameObject.AddComponent<AgentMove>();
-            _agentSense = gameObject.AddComponent<AgentSense>();
-            _agentAction = gameObject.AddComponent<AgentAction>();
-            agentAI = gameObject.AddComponent<AgentAI>();
+            _agentMove = new AgentMove(this);
+            _agentSense = new AgentSense(this);
+            _agentAction = new AgentAction(this);
+            AgentAI = new AgentAI(this);
         }
 
         public void MoveCell()

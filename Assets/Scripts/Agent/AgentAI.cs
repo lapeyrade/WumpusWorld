@@ -1,14 +1,12 @@
-using UnityEngine;
-
 namespace Agent
 {
-    public class AgentAI : MonoBehaviour
+    public class AgentAI
     {
-        private Agent _agent;
+        private readonly Agent _agent;
     
-        public void Start()
+        public AgentAI(Agent agent)
         {
-            _agent = gameObject.GetComponent<Agent>();
+            _agent = agent;
         }
 
         public void PlayTurn()

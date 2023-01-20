@@ -2,15 +2,15 @@ using UnityEngine;
 
 namespace Agent
 {
-    public class AgentAction : MonoBehaviour
+    public class AgentAction
     {
-        private Agent _agent;
-
-        private void Start()
+        private readonly Agent _agent;
+        
+        public AgentAction(Agent agent)
         {
-            _agent = gameObject.GetComponent<Agent>();
+            _agent = agent;
         }
-
+        
         public void PickUpGold()
         {
             _agent.nbGold++;
