@@ -98,7 +98,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startCoord: {x: 0, y: 0}
-  coord: {x: 0, y: 0}
+  coords: {x: 0, y: 0}
   nbGold: 0
   nbArrow: 0
   prefabAgentWorld: {fileID: 0}
@@ -108,3 +108,4 @@ MonoBehaviour:
   strength: 0
   dexterity: 0
   personalities: []
+  ai: {fileID: 0}

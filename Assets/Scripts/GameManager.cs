@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour
 {
@@ -34,6 +33,7 @@ public class GameManager : MonoBehaviour
         
         GetComponent<GridBuilder>().BuildGrid();
         GameObject.Find("Main Camera").GetComponent<CameraController>().AdjustCameraPosition();
+        gameObject.AddComponent<GameController>();
     }
 
     public void SetGameOver(string message, bool exitApp)

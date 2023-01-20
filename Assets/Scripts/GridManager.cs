@@ -80,7 +80,7 @@ public class GridManager : MonoBehaviour
         cell.x >= GameManager.Instance.gridMin.x && cell.x < GameManager.Instance.gridMax.x &&
         cell.y >= GameManager.Instance.gridMin.y && cell.y < GameManager.Instance.gridMax.y;
 
-    public static void AttachGoldToAgent(Agent agent)
+    public static void AttachGoldToAgent(Agent.Agent agent)
     {
         agent.prefabGoldAgent = Instantiate(Resources.Load("gold")) as GameObject;
         if (agent.prefabGoldAgent is not null)

@@ -62,7 +62,7 @@ public class GridBuilder : MonoBehaviour
             } while (GameManager.Instance.Map[coord.x, coord.y].Exists(x => x.tag is "start" or "wall"));
             
             if (Instantiate(Resources.Load("human"), transform) is not GameObject agent) continue;
-            agent.GetComponent<Agent>().Init(i, coord, GameManager.Instance.nbWumpus);
+            agent.GetComponent<Agent.Agent>().Init(i, coord, GameManager.Instance.nbWumpus);
 
             GridManager.AddToGrids(coord, "start");
             GameManager.Instance.agents.Add(agent);

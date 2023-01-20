@@ -8,7 +8,7 @@ public class GameController : MonoBehaviour
     {
         foreach (GameObject agent in GameManager.Instance.agents)
         {
-            agent.GetComponent<Agent>().PlayTurn();
+            agent.GetComponent<Agent.Agent>().agentAI.PlayTurn();
         }
     }
 
@@ -41,7 +41,7 @@ public class GameController : MonoBehaviour
         {
             foreach (GameObject agent in GameManager.Instance.agents)
             {
-                agent.GetComponent<Agent>().PlayTurn();
+                agent.GetComponent<Agent.Agent>().agentAI.PlayTurn();
             }
         }
     }
