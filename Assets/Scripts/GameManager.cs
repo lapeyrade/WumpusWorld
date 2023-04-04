@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -36,10 +37,20 @@ public class GameManager : MonoBehaviour
         gameObject.AddComponent<GameController>();
     }
 
+    public void UpdateMoveGUI(string message)
+    {
+        GameObject.Find("AgentMove").GetComponent<TextMeshProUGUI>().text = "Last Move: " + message;
+    }
+    
+    public void UpdateActionGUI(string message)
+    {
+        GameObject.Find("AgentAction").GetComponent<TextMeshProUGUI>().text = "Last Action: " + message;
+    }
+
     public void SetGameOver(string message, bool exitApp)
     {
         isGameOver = true;
-        Debug.Log(message);
+        GameObject.Find("GameOver").GetComponent<TextMeshProUGUI>().text = message;
         if (!exitApp) return;
         Application.Quit();
         UnityEditor.EditorApplication.isPlaying = false;

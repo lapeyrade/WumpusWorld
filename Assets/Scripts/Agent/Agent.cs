@@ -70,29 +70,27 @@ namespace Agent
             if (startCoord == coords && nbGold == 1)
                 GameManager.Instance.SetGameOver($"{name} Won!", false);
 
-            foreach (string element in GameManager.Instance.Map[coords.x, coords.y]
+            foreach (var element in GameManager.Instance.Map[coords.x, coords.y]
                          .Except(GameManager.Instance.AgentsMap[coords.x, coords.y]).Select(x => x.tag))
             {
                 GridManager.AddToGrids(coords, element);
             }
 
-            if (GameManager.Instance.Map[coords.x, coords.y].Exists(e => e.tag is "pit" or "wumpus"))
-                GameManager.Instance.SetGameOver($"{name} Lost!", false);
-
-            _agentSense.MakeInferences();
+            if (!GameManager.Instance.Map[coords.x, coords.y].Exists(e => e.tag is "pit" or "wumpus"))
+                _agentSense.MakeInferences(); 
+            else GameManager.Instance.SetGameOver($"{name} Lost!", false);
         }
 
         public void ActionCell()
         {
-            // Bump Wall
+            if(GameManager.Instance.isGameOver) return;
+            
             if (GameManager.Instance.AgentsMap[coords.x, coords.y].Exists(e => e.tag is "wall"))
                 _agentMove.BumpWall();
-
-            // PickUp Gold
+            
             if (GameManager.Instance.AgentsMap[coords.x, coords.y].Exists(e => e.tag is "gold"))
                 _agentAction.PickUpGold();
-
-            // Shoot Arrow
+            
             if (nbArrow > 0)
                 _agentAction.TryShootingArrow();
         }

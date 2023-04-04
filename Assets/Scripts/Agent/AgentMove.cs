@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 
 namespace Agent
@@ -7,26 +8,21 @@ namespace Agent
     public class AgentMove
     {
         private readonly Agent _agent;
+        private readonly List<Vector2Int> _moves;
 
         public AgentMove(Agent agent)
         {
             _agent = agent;
+            _moves = new List<Vector2Int> { Vector2Int.right, Vector2Int.left, Vector2Int.up, Vector2Int.down };
         }
         
         public Vector2Int SelectNextMove()
         {
-            if (_agent.nbGold > 0)
-                return MoveBack();
+            if (_agent.nbGold > 0) return MoveBack();
 
-            var moves = new List<Vector2Int>
+            foreach (var move in _moves.Where(move => SafeCellUnexplored(_agent.coords + move)))
             {
-                new(_agent.coords.x + 1, _agent.coords.y), new(_agent.coords.x - 1, _agent.coords.y),
-                new(_agent.coords.x, _agent.coords.y + 1), new(_agent.coords.x, _agent.coords.y - 1)
-            };
-
-            foreach (var move in moves.Where(SafeCellUnexplored))
-            {
-                return move;
+                return _agent.coords + move;
             }
 
             return MoveBack();
@@ -36,29 +32,32 @@ namespace Agent
         {
             if (_agent.nbGold > 0)
                 return MoveBack();
+            
+            var randomMoves = _moves.OrderBy(_ => Random.value);
 
-            var randomMoves = new List<Vector2Int>
-            {
-                new(_agent.coords.x + 1, _agent.coords.y), new(_agent.coords.x - 1, _agent.coords.y),
-                new(_agent.coords.x, _agent.coords.y + 1), new(_agent.coords.x, _agent.coords.y - 1)
-            }.OrderBy(_ => Random.value);
-
-            foreach (var move in randomMoves)
-            {
-                if (SafeCellUnexplored(move)) return move;
+            foreach (var move in randomMoves.Where(move => SafeCellUnexplored(_agent.coords + move)))
+            { 
+                return _agent.coords + move;
             }
 
             return MoveBack();
         }
 
-        private bool SafeCellUnexplored(Vector2Int cell)
-        {
-            return GameManager.Instance.AgentsMap[cell.x, cell.y].Exists(e => e.tag is "safe") &&
-                   !GameManager.Instance.AgentsMap[cell.x, cell.y].Exists(e => e.tag is "visited");
-        }
+        private static bool SafeCellUnexplored(Vector2Int cell) =>
+            GameManager.Instance.AgentsMap[cell.x, cell.y].Exists(e => e.tag is "safe") && 
+            !GameManager.Instance.AgentsMap[cell.x, cell.y].Exists(e => e.tag is "visited");
 
         public void Move(Vector2Int newCoord)
         {
+            if (newCoord == _agent.coords + Vector2Int.right)
+                GameManager.Instance.UpdateMoveGUI("Moving right");
+            else if (newCoord == _agent.coords + Vector2Int.left)
+                GameManager.Instance.UpdateMoveGUI("Moving left");
+            else if (newCoord == _agent.coords + Vector2Int.up)
+                GameManager.Instance.UpdateMoveGUI("Moving up");
+            else if (newCoord == _agent.coords + Vector2Int.down)
+                GameManager.Instance.UpdateMoveGUI("Moving down");
+
             GridManager.RemoveFromGrids(_agent.coords, _agent.tag);
             _agent.transform.position = GridManager.GetAgentMapOffset(newCoord);
 
@@ -75,7 +74,8 @@ namespace Agent
 
         private Vector2Int MoveBack()
         {
-            Debug.Log("MoveBack");
+            GameManager.Instance.UpdateMoveGUI("Moving back");
+
             if (_agent.PastMovements.Count <= 1) return _agent.coords;
             _agent.PastMovements.Pop();
             return _agent.PastMovements.Pop();
@@ -83,6 +83,7 @@ namespace Agent
         
         public void BumpWall()
         {
+            GameManager.Instance.UpdateActionGUI("Bumping wall");;
             Move(MoveBack());
         }
     }

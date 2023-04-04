@@ -6,7 +6,7 @@ public class GameController : MonoBehaviour
     
     protected void Start()
     {
-        foreach (GameObject agent in GameManager.Instance.agents)
+        foreach (var agent in GameManager.Instance.agents)
         {
             agent.GetComponent<Agent.Agent>().AgentAI.PlayTurn();
         }
@@ -23,7 +23,7 @@ public class GameController : MonoBehaviour
         }
     }
 
-    private void PlayTurn()
+    private static void PlayTurn()
     {
         if ((!Input.anyKeyDown && !GameManager.Instance.isModeAuto) || GameManager.Instance.isGameOver) return;
         
@@ -39,7 +39,7 @@ public class GameController : MonoBehaviour
                  Input.GetKeyDown("left") || Input.GetKeyDown("up") || Input.GetKeyDown("down") ||
                  GameManager.Instance.isModeAuto)
         {
-            foreach (GameObject agent in GameManager.Instance.agents)
+            foreach (var agent in GameManager.Instance.agents)
             {
                 agent.GetComponent<Agent.Agent>().AgentAI.PlayTurn();
             }

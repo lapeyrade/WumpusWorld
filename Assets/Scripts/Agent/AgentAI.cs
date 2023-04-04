@@ -15,6 +15,5 @@ namespace Agent
             _agent.SenseCell();
             _agent.ActionCell();
         }
-    
     }
 }
