@@ -21,11 +21,11 @@ public class GridBuilder : MonoBehaviour
         GeneratePit();
     }
     
-    private void GenerateCell()
+    private static void GenerateCell()
     {
-        for (int i = GameManager.Instance.gridMin.x; i < GameManager.Instance.gridMax.x; i++)
+        for (var i = GameManager.Instance.gridMin.x; i < GameManager.Instance.gridMax.x; i++)
         {
-            for (int j = GameManager.Instance.gridMin.y; j < GameManager.Instance.gridMax.y; j++)
+            for (var j = GameManager.Instance.gridMin.y; j < GameManager.Instance.gridMax.y; j++)
             {
                 GameManager.Instance.AgentsMap[i, j] = new List<GameObject>();
                 GameManager.Instance.Map[i, j] = new List<GameObject>();
@@ -34,24 +34,24 @@ public class GridBuilder : MonoBehaviour
         }
     }
 
-    private void GenerateWall()
+    private static void GenerateWall()
     {
-        for (int i = GameManager.Instance.gridMin.y; i < GameManager.Instance.gridMax.y; i++) // Right
+        for (var i = GameManager.Instance.gridMin.y; i < GameManager.Instance.gridMax.y; i++) // Right
             GridManager.AddToGrids(new Vector2Int(GameManager.Instance.gridMax.x - 1, i), "wall");
 
-        for (int i = GameManager.Instance.gridMin.y; i < GameManager.Instance.gridMax.y; i++) // Left
+        for (var i = GameManager.Instance.gridMin.y; i < GameManager.Instance.gridMax.y; i++) // Left
             GridManager.AddToGrids(new Vector2Int(GameManager.Instance.gridMin.x, i), "wall");
 
-        for (int i = GameManager.Instance.gridMin.y + 1; i < GameManager.Instance.gridMax.x - 1; i++) // Top
+        for (var i = GameManager.Instance.gridMin.y + 1; i < GameManager.Instance.gridMax.x - 1; i++) // Top
             GridManager.AddToGrids(new Vector2Int(i, GameManager.Instance.gridMax.y - 1), "wall");
 
-        for (int i = GameManager.Instance.gridMin.y + 1; i < GameManager.Instance.gridMax.x - 1; i++) // Bottom
+        for (var i = GameManager.Instance.gridMin.y + 1; i < GameManager.Instance.gridMax.x - 1; i++) // Bottom
             GridManager.AddToGrids(new Vector2Int(i, GameManager.Instance.gridMin.y), "wall");
     }
 
     private void GenerateHuman()
     {
-        for (int i = 0; i < GameManager.Instance.nbAgent; i++)
+        for (var i = 0; i < GameManager.Instance.nbAgent; i++)
         {
             Vector2Int coord;
 
@@ -69,9 +69,9 @@ public class GridBuilder : MonoBehaviour
         }
     }
 
-    private void GenerateGold()
+    private static void GenerateGold()
     {
-        for (int i = 0; i < GameManager.Instance.nbGold; i++)
+        for (var i = 0; i < GameManager.Instance.nbGold; i++)
         {
             Vector2Int coord;
             do
@@ -84,9 +84,9 @@ public class GridBuilder : MonoBehaviour
         }
     }
 
-    private void GenerateWumpus()
+    private static void GenerateWumpus()
     {
-        for (int i = 0; i < GameManager.Instance.nbWumpus; i++)
+        for (var i = 0; i < GameManager.Instance.nbWumpus; i++)
         {
             Vector2Int coord;
             do
@@ -101,9 +101,9 @@ public class GridBuilder : MonoBehaviour
         }
     }
 
-    private void GeneratePit()
+    private static void GeneratePit()
     {
-        for (int i = 0; i < GameManager.Instance.nbPit; i++)
+        for (var i = 0; i < GameManager.Instance.nbPit; i++)
         {
             Vector2Int coord;
             do
@@ -118,7 +118,7 @@ public class GridBuilder : MonoBehaviour
         }
     }
 
-    private void GenerateAroundCell(Vector2Int coord, string element)
+    private static void GenerateAroundCell(Vector2Int coord, string element)
     {
         Generate(new Vector2Int(coord.x + 1, coord.y), element); // Right cell
         Generate(new Vector2Int(coord.x - 1, coord.y), element); // Left cell

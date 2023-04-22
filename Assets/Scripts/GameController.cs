@@ -1,14 +1,15 @@
+using Agent.AI;
 using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
     private float _timer;
-    
+
     protected void Start()
     {
         foreach (var agent in GameManager.Instance.agents)
         {
-            agent.GetComponent<Agent.Agent>().AgentAI.PlayTurn();
+            agent.GetComponent<AIBasic>().FirstTurn();
         }
     }
 
@@ -41,7 +42,7 @@ public class GameController : MonoBehaviour
         {
             foreach (var agent in GameManager.Instance.agents)
             {
-                agent.GetComponent<Agent.Agent>().AgentAI.PlayTurn();
+                agent.GetComponent<AIBasic>().PlayTurn();
             }
         }
     }

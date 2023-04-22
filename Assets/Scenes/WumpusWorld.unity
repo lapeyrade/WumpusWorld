@@ -372,6 +372,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
@@ -853,7 +854,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isGameOver: 0
   isModeAuto: 0
-  timerInterval: 0.5
+  timerInterval: 0.1
   randomSeed: 1
   gridMin: {x: 0, y: 0}
   gridMax: {x: 15, y: 15}
@@ -862,6 +863,8 @@ MonoBehaviour:
   nbWumpus: 10
   nbGold: 1
   nbAgent: 1
+  aiType: 1
+  personalities: 0000000003000000
   agents: []
 --- !u!114 &1979442553
 MonoBehaviour:
@@ -887,7 +890,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 638a6ed3871f47929af0a093d8ab118e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugFileLog: 0
-  consoleLog: 0
-  query: situation(Elem, [X, Y])
+  query: genObjective(Elem1, P, Obj, Elem2)
   askQuery: 0

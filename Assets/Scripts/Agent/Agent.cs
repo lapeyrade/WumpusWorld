@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Agent.AI;
 using UnityEngine;
 
 namespace Agent
@@ -10,22 +11,16 @@ namespace Agent
         public Vector2Int coords;
         public int nbGold;
         public int nbArrow;
+        public List<GameManager.Personalities> personalities;
+        
+        public enum Objectives { Wealth, Abstinence, Safety, Fight, Explore, Unconstrained }
+        public List<Objectives> objectives = new ();
 
         public GameObject prefabAgentWorld;
         public GameObject prefabGoldAgent;
         public GameObject prefabGoldMap;
 
         public readonly Stack<Vector2Int> PastMovements = new();
-
-        [SerializeField] public int intelligence = 3;
-        [SerializeField] public int strength = 5;
-        [SerializeField] public int dexterity = 7;
-        [SerializeField] public List<string> personalities;
-
-        private AgentMove _agentMove;
-        private AgentSense _agentSense;
-        private AgentAction _agentAction;
-        public AgentAI AgentAI;
 
         public void Init(int agentId, Vector2Int newCoord, int nbTotalWumpus)
         {
@@ -43,26 +38,40 @@ namespace Agent
             prefabAgentWorld.name = name;
             prefabAgentWorld.transform.position = GridManager.GetWorldMapOffset(newCoord);
 
-            _agentMove = new AgentMove(this);
-            _agentSense = new AgentSense(this);
-            _agentAction = new AgentAction(this);
-            AgentAI = new AgentAI(this);
+            switch (GameManager.Instance.aiType)
+            {
+                case GameManager.AIType.Prolog:
+                    gameObject.AddComponent<AIProlog>();
+                    break;
+                case GameManager.AIType.BehaviourTree:
+                    gameObject.AddComponent<AIBehaviourTree>();
+                    break;
+                case GameManager.AIType.Gpt:
+                    gameObject.AddComponent<AIGpt>();
+                    break;
+                case GameManager.AIType.Basic:
+                default:
+                    gameObject.AddComponent<AIBasic>();
+                    break;
+            }
+                
+            personalities = GameManager.Instance.personalities;
         }
 
         public void MoveCell()
         {
             if (Input.GetKeyDown("right"))
-                _agentMove.Move(new Vector2Int(coords.x + 1, coords.y));
+                GetComponent<Move>().MoveAgent(new Vector2Int(coords.x + 1, coords.y));
             else if (Input.GetKeyDown("left"))
-                _agentMove.Move(new Vector2Int(coords.x - 1, coords.y));
+                GetComponent<Move>().MoveAgent(new Vector2Int(coords.x - 1, coords.y));
             else if (Input.GetKeyDown("up"))
-                _agentMove.Move(new Vector2Int(coords.x, coords.y + 1));
+                GetComponent<Move>().MoveAgent(new Vector2Int(coords.x, coords.y + 1));
             else if (Input.GetKeyDown("down"))
-                _agentMove.Move(new Vector2Int(coords.x, coords.y - 1));
+                GetComponent<Move>().MoveAgent(new Vector2Int(coords.x, coords.y - 1));
             else if (Input.GetKeyDown("space") || GameManager.Instance.isModeAuto) // IA
-                _agentMove.Move(_agentMove.SelectNextMove());
+                GetComponent<Move>().MoveAgent(GetComponent<Move>().SelectNextMove());
             else if (Input.GetKeyDown("return")) // IA Random
-                _agentMove.Move(_agentMove.SelectRandomMove());
+                GetComponent<Move>().MoveAgent(GetComponent<Move>().SelectRandomMove());
         }
 
         public void SenseCell()
@@ -77,7 +86,7 @@ namespace Agent
             }
 
             if (!GameManager.Instance.Map[coords.x, coords.y].Exists(e => e.tag is "pit" or "wumpus"))
-                _agentSense.MakeInferences(); 
+                GetComponent<Sense>().MakeInferences();
             else GameManager.Instance.SetGameOver($"{name} Lost!", false);
         }
 
@@ -86,13 +95,23 @@ namespace Agent
             if(GameManager.Instance.isGameOver) return;
             
             if (GameManager.Instance.AgentsMap[coords.x, coords.y].Exists(e => e.tag is "wall"))
-                _agentMove.BumpWall();
+                GetComponent<Move>().BumpWall();
             
             if (GameManager.Instance.AgentsMap[coords.x, coords.y].Exists(e => e.tag is "gold"))
-                _agentAction.PickUpGold();
+                GetComponent<Action>().PickUpGold();
             
-            if (nbArrow > 0)
-                _agentAction.TryShootingArrow();
+            GetComponent<Action>().TryShootingArrow();
+        }
+
+        public void GenerateObjective()
+        {
+            if (GetComponent<Agent>().personalities.Contains(GameManager.Personalities.Cupid) &&
+                GameManager.Instance.AgentsMap[GetComponent<Agent>().coords.x, GetComponent<Agent>().coords.y]
+                    .Exists(e => e.tag is "valuable_item"))
+            {
+                Debug.Log("Objective: Wealthy");
+                GetComponent<Agent>().objectives.Add(Agent.Objectives.Wealth);
+            }
         }
     }
 }

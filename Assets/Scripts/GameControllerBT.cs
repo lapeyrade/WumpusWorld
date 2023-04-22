@@ -1,3 +1,4 @@
+using Agent.AI;
 using UnityEngine;
 using CleverCrow.Fluid.BTs.Tasks;
 using CleverCrow.Fluid.BTs.Trees;
@@ -61,17 +62,17 @@ public class GameControllerBt : MonoBehaviour {
             .Build();
     }
 
-    private void Update () {
-        // Update our tree every frame
-        tree.Tick();
+    private void Update ()
+    {
+        tree.Tick();  // Update the tree every frame
     }
 
-    private void PlayTurn()
+    private static void PlayTurn()
     {
         Debug.Log("Playing turn");
-        foreach (GameObject agent in GameManager.Instance.agents)
+        foreach (var agent in GameManager.Instance.agents)
         {
-            agent.GetComponent<Agent.Agent>().AgentAI.PlayTurn();
+            agent.GetComponent<AIBasic>().PlayTurn();
         }
     }
 }

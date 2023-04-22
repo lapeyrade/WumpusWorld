@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Ontology;
 using TMPro;
 using UnityEngine;
 
@@ -18,13 +19,30 @@ public class GameManager : MonoBehaviour
     public int nbWumpus = 2;
     public int nbGold = 1;
     public int nbAgent = 2;
+    public enum AIType { Prolog, BehaviourTree, Gpt, Basic}
+    public AIType aiType = AIType.Basic;
+    public enum Personalities { Cupid, Ascetic, Brave, Coward}
+    public List<Personalities> personalities = new (){ Personalities.Brave };
 
+    public List<GameObject> agents;
+    
     public List<GameObject>[,] Map;
     public List<GameObject>[,] AgentsMap;
-    public List<GameObject> agents;
 
     protected void Awake()
     {
+        var dog = new GameObject("dog");
+        dog.AddComponent<Animal>();
+        dog.AddComponent<Cupid>();
+        
+        // if dog is type of Cupid then
+        
+        if (dog.GetComponent<Cupid>() != null)
+        {
+            Debug.Log("dog is type of Cupid");
+        }
+ 
+
         Instance = this;
         Random.InitState(randomSeed);
 
@@ -37,12 +55,12 @@ public class GameManager : MonoBehaviour
         gameObject.AddComponent<GameController>();
     }
 
-    public void UpdateMoveGUI(string message)
+    public static void UpdateMoveGUI(string message)
     {
         GameObject.Find("AgentMove").GetComponent<TextMeshProUGUI>().text = "Last Move: " + message;
     }
     
-    public void UpdateActionGUI(string message)
+    public static void UpdateActionGUI(string message)
     {
         GameObject.Find("AgentAction").GetComponent<TextMeshProUGUI>().text = "Last Action: " + message;
     }

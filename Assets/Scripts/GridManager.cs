@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
+using Ontology;
 using UnityEngine;
 
 public class GridManager : MonoBehaviour
@@ -53,7 +55,6 @@ public class GridManager : MonoBehaviour
         if (map[coords.x, coords.y].Exists(x => x.name == element || x.tag is "wall")) return;
         if (element != "cell" && element != "wumpusdead" && map == GameManager.Instance.AgentsMap &&
            !GameManager.Instance.Map[coords.x, coords.y].Exists( x => x.name == element)) return;
-        // if (Instantiate(Resources.Load(element), transform) is not GameObject cell) return;
         if (Instantiate(Resources.Load(element)) is not GameObject cell) return;
         cell.tag = element;
         cell.name = element;
@@ -70,7 +71,7 @@ public class GridManager : MonoBehaviour
     private static void RemoveGameObjectMap(List<GameObject>[,] map, Vector2Int coords, string element)
     {
         if (!map[coords.x, coords.y].Exists(x => x.name == element)) return;
-        GameObject cellMap = map[coords.x, coords.y].Find(x => x.CompareTag(element));
+        var cellMap = map[coords.x, coords.y].Find(x => x.CompareTag(element));
         if (cellMap.name is "cell") return;
         Destroy(cellMap);
         map[coords.x, coords.y].Remove(cellMap);
