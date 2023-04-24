@@ -5,10 +5,13 @@ namespace Ontology
     public class Element : MonoBehaviour { }
     public class Being : Element { }
     public class Object : Element  { }
+    public class Environment : Element { }
+    public class Breeze : Environment { }
+    public class Stench : Environment { }
     public class Trap : Object { }
     public class Item : Object { }
     public class Obstacle : Object { }
-    public class Wall : Object { }
+    public class Wall : Obstacle { }
     public class ValuableItem : Item { }
     public class CommonItem : Item { }
     public class UnvaluableItem : Item { }

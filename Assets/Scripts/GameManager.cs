@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using Ontology;
 using TMPro;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
 {
@@ -31,18 +33,6 @@ public class GameManager : MonoBehaviour
 
     protected void Awake()
     {
-        var dog = new GameObject("dog");
-        dog.AddComponent<Animal>();
-        dog.AddComponent<Cupid>();
-        
-        // if dog is type of Cupid then
-        
-        if (dog.GetComponent<Cupid>() != null)
-        {
-            Debug.Log("dog is type of Cupid");
-        }
- 
-
         Instance = this;
         Random.InitState(randomSeed);
 
@@ -57,18 +47,18 @@ public class GameManager : MonoBehaviour
 
     public static void UpdateMoveGUI(string message)
     {
-        GameObject.Find("AgentMove").GetComponent<TextMeshProUGUI>().text = "Last Move: " + message;
+        // GameObject.Find("AgentMove").GetComponent<TextMeshProUGUI>().text = "Last Move: " + message;
     }
     
     public static void UpdateActionGUI(string message)
     {
-        GameObject.Find("AgentAction").GetComponent<TextMeshProUGUI>().text = "Last Action: " + message;
+        // GameObject.Find("AgentAction").GetComponent<TextMeshProUGUI>().text = "Last Action: " + message;
     }
 
     public void SetGameOver(string message, bool exitApp)
     {
         isGameOver = true;
-        GameObject.Find("GameOver").GetComponent<TextMeshProUGUI>().text = message;
+        // GameObject.Find("GameOver").GetComponent<TextMeshProUGUI>().text = message;
         if (!exitApp) return;
         Application.Quit();
         UnityEditor.EditorApplication.isPlaying = false;

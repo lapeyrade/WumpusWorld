@@ -1,4 +1,6 @@
 using Prolog;
+using TMPro;
+using UnityEngine;
 
 namespace Agent.AI
 {
@@ -20,18 +22,18 @@ namespace Agent.AI
             var results = GameManager.Instance.GetComponent<PrologInterface>().QueryKb(GetComponent<Agent>().name);
             
             if (results.Contains("attack"))
-                GetComponent<Action>().TryShootingArrow();
-            else if (results.Contains("pick")) 
-                GetComponent<Action>().PickUpGold();
+                GetComponent<AgentAction>().TryShootingArrow();
+            else if (results.Contains("pickup")) 
+                GetComponent<AgentAction>().PickUpGold();
             else if (results.Contains("drop"))
                 return;
-            else if (results.Contains("bump_wall"))
-                GetComponent<Move>().BumpWall();
-            else if (results.Contains("move_back"))
-                GetComponent<Move>().MoveAgent(GetComponent<Move>().MoveBack());
+            else if (results.Contains("bumpwall"))
+                GetComponent<AgentMove>().BumpWall();
+            else if (results.Contains("moveback"))
+                GetComponent<AgentMove>().MoveAgent(GetComponent<AgentMove>().MoveBack());
             else if (results.Contains("move"))
                 GetComponent<Agent>().MoveCell();
-            
+
             GetComponent<Agent>().SenseCell();
             GameManager.Instance.GetComponent<PrologInterface>().UpdateKb();
         }

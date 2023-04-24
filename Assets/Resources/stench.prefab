@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5133902000274312046}
   - component: {fileID: 4946272336841674620}
   m_Layer: 0
-  m_Name: stenchyes
+  m_Name: Stench
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

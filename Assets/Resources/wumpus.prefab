@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5267428991656226592}
   - component: {fileID: 8099718915211420535}
   m_Layer: 0
-  m_Name: wumpus
+  m_Name: Wumpus
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

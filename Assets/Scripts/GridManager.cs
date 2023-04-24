@@ -1,6 +1,6 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using Ontology;
 using UnityEngine;
 
@@ -8,23 +8,23 @@ public class GridManager : MonoBehaviour
 {
     private static readonly Dictionary<string, Color> CellColor = new()
     {
-        {"start", Color.gray},
-        {"wall", Color.black},
-        {"visited", Color.cyan},
-        {"danger", Color.red},
-        {"safe", new Color(0.145f, 0.701f, 0.294f, 1)},
-        {"undefined", new Color(1.0f, 0.64f, 0.0f)},
-        {"cell", Color.white},
+        {"StartCell", Color.gray},
+        {"Wall", Color.black},
+        {"VisitedCell", Color.cyan},
+        {"DangerousCell", Color.red},
+        {"SafeCell", new Color(0.145f, 0.701f, 0.294f, 1)},
+        {"UnknownCell", new Color(1.0f, 0.64f, 0.0f)},
+        {"Cell", Color.white},
     };
     
     public static void AddToGrids(Vector2Int coords, string element)
     {
-        if (element is "human") return;
+        if (element is "Human") return;
         
         if (CellColor.Keys.Contains(element))
             ChangeColorMap(coords, element);
 
-        if (element is not "cell" && CellColor.Keys.Contains(element)) return;
+        if (element is not "Cell" && CellColor.Keys.Contains(element)) return;
         AddGameObjectMap(GameManager.Instance.AgentsMap, coords, element, GetAgentMapOffset(coords));
         AddGameObjectMap(GameManager.Instance.Map, coords, element, GetWorldMapOffset(coords));
     }
@@ -32,33 +32,39 @@ public class GridManager : MonoBehaviour
     private static void ChangeColorMap(Vector2Int coords, string element)
     {
         ChangeColorCell(GameManager.Instance.AgentsMap, coords, element);
-        if (element is "wall" or "start")
+        if (element is "Wall" or "StartCell")
             ChangeColorCell(GameManager.Instance.Map, coords, element);
     }
 
     private static void ChangeColorCell(List<GameObject>[,] map, Vector2Int coords, string element)
     {
-        if (map[coords.x, coords.y].Find(x => x.name is "cell") is not {} cell) return;
+        if (map[coords.x, coords.y].Find(x => x.name is "Cell") is not {} cell) return;
         if (map[coords.x, coords.y].Exists(x => x.CompareTag(element))) return;
-        if (element == "wall" && map == GameManager.Instance.AgentsMap &&
+        if (element == "Wall" && map == GameManager.Instance.AgentsMap &&
             !GameManager.Instance.Map[coords.x, coords.y].Exists( x => x.CompareTag(element))) return;
-        if (element != "wall" &&
-            map[coords.x, coords.y].Find(x => x.name is "cell").tag is "start" or "wall" or "visited") return;
-        if (element != "safe" && map[coords.x, coords.y].Find(x => x.name is "cell").tag is "danger") return;
+        if (element != "Wall" &&
+            map[coords.x, coords.y].Find(x => x.name is "Cell").tag is "StartCell" or "Wall" or "VisitedCell") return;
+        if (element != "SafeCell" && map[coords.x, coords.y].Find(x => x.name is "Cell").tag is "DangerousCell") return;
         
         cell.tag = element;
         cell.GetComponent<SpriteRenderer>().color = CellColor[element];
+        
+        foreach (var component in cell.GetComponents<Component>().Where(x => x is Cell))
+            Destroy(component);
+        
+        cell.AddComponent(Type.GetType("Ontology." + element[0].ToString().ToUpper() + element[1..]));
     }
 
     private static void AddGameObjectMap(List<GameObject>[,] map, Vector2Int coords, string element, Vector2 newPosition)
     {
-        if (map[coords.x, coords.y].Exists(x => x.name == element || x.tag is "wall")) return;
-        if (element != "cell" && element != "wumpusdead" && map == GameManager.Instance.AgentsMap &&
+        if (map[coords.x, coords.y].Exists(x => x.name == element || x.tag is "Wall")) return;
+        if (element != "Cell" && element != "DeadWumpus" && map == GameManager.Instance.AgentsMap &&
            !GameManager.Instance.Map[coords.x, coords.y].Exists( x => x.name == element)) return;
         if (Instantiate(Resources.Load(element)) is not GameObject cell) return;
         cell.tag = element;
         cell.name = element;
         cell.transform.position = newPosition;
+        cell.AddComponent(Type.GetType("Ontology." + element[0].ToString().ToUpper() + element[1..]));
         map[coords.x, coords.y].Add(cell);
     }
 
@@ -72,7 +78,7 @@ public class GridManager : MonoBehaviour
     {
         if (!map[coords.x, coords.y].Exists(x => x.name == element)) return;
         var cellMap = map[coords.x, coords.y].Find(x => x.CompareTag(element));
-        if (cellMap.name is "cell") return;
+        if (cellMap.name is "Cell") return;
         Destroy(cellMap);
         map[coords.x, coords.y].Remove(cellMap);
     }
@@ -83,10 +89,10 @@ public class GridManager : MonoBehaviour
 
     public static void AttachGoldToAgent(Agent.Agent agent)
     {
-        agent.prefabGoldAgent = Instantiate(Resources.Load("gold")) as GameObject;
+        agent.prefabGoldAgent = Instantiate(Resources.Load("Gold")) as GameObject;
         if (agent.prefabGoldAgent is not null)
             agent.prefabGoldAgent.transform.position = GetAgentMapOffset(agent.coords);
-        agent.prefabGoldMap = Instantiate(Resources.Load("gold")) as GameObject;
+        agent.prefabGoldMap = Instantiate(Resources.Load("Gold")) as GameObject;
         if (agent.prefabGoldMap is not null)
             agent.prefabGoldMap.transform.position = GetWorldMapOffset(agent.coords);
     }

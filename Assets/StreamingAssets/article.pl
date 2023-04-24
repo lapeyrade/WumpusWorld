@@ -13,13 +13,13 @@ subClassOf(trap, object).
 subClassOf(item, object).
 subClassOf(obstacle, object).
 subClassOf(wall, obstacle).
-subClassOf(valuable_item, item).
-subClassOf(common_item, item).
-subClassOf(unvaluable_item, item).
+subClassOf(valuableitem, item).
+subClassOf(commonitem, item).
+subClassOf(unvaluableitem, item).
 subClassOf(being, element).
 subClassOf(plant, being).
-subClassOf(gold, valuable_item).
-subClassOf(rock, unvaluable_item).
+subClassOf(gold, valuableitem).
+subClassOf(rock, unvaluableitem).
 subClassOf(weapon, item).
 subClassOf(bow, weapon).
 subClassOf(sword, weapon).
@@ -31,10 +31,15 @@ subClassOf(pit, trap).
 subClassOf(monster, danger).
 subClassOf(trap, danger).
 
-subClassOf(visited, safe).
+/*** Cell Hierachy ***/
+subClassOf(startcell, cell).
+subClassOf(safecell, cell).
+subClassOf(visitedcell, cell).
+subClassOf(dangerouscell, cell).
+subClassOf(unknwoncell, cell).
 
 /* Some individuals */
-subClassOf(human0, human).
+% subClassOf(human0, human).
 subClassOf(human1, human).
 subClassOf(human2, human).
 subClassOf(human3, human).
@@ -45,14 +50,14 @@ subClassOf(rock0, rock).
 
 /*** Actions Hierachy ***/
 subClassOf(interact, action).
-subClassOf(fight, action).
+subClassOf(attack, action).
 subClassOf(move, action).
-subClassOf(move_back, action).
-subClassOf(bump_wall, action).
-subClassOf(pick, interact).
+subClassOf(moveback, action).
+subClassOf(bumpwall, action).
+subClassOf(pickup, interact).
 subClassOf(drop, interact).
-subClassOf(shoot, fight).
-subClassOf(shoot_arrow, shoot).
+subClassOf(shoot, attack).
+subClassOf(shootarrow, shoot).
 
 /*** Personalities Hierachy ***/
 subClassOf(ambitious, personality).
@@ -102,12 +107,12 @@ desirable(P, SubO):-
     desirable(P, O), subClassOf(SubO, O).
 
 /* Link Element-Objective */
-motivation(valuable_item, wealth).
-motivation(common_item, abstinence).
-motivation(unvaluable_item, abstinence).
+motivation(valuableitem, wealth).
+motivation(item, abstinence).
 motivation(monster, fight).
 motivation(danger, safety).
-motivation(safe, explore).
+motivation(safecell, explore).
+motivation(visitedcell, explore).
 motivation(obstacle, unconstrained).
 motivation(SubE, O):-
     motivation(E, O), subClassOf(SubE, E).
@@ -146,13 +151,13 @@ same_or_adjacent_cell(Elem1, Elem2):-
     ).
 
 /* Link Objective-Action */
-satisfy(wealth, pick).
+satisfy(wealth, pickup).
 satisfy(abstinence, drop).
-satisfy(safety, move_back).
+satisfy(safety, moveback).
 satisfy(safety, attack).
 satisfy(fight, attack).
 satisfy(explore, move).
-satisfy(unconstrained, bump_wall).
+satisfy(unconstrained, bumpwall).
 satisfy(SubO, A):- 
     satisfy(O, A), subClassOf(SubO, O).
 satisfy(O, SubA):-
@@ -161,10 +166,10 @@ satisfy(O, SubA):-
 /* Link Personality-Action */
 encline(cupid, interact).
 encline(ascetic, interact).
-encline(coward, move_back).
+encline(coward, moveback).
 encline(brave, attack).
 encline(personality, move).
-encline(personality, bump_wall).
+encline(personality, bumpwall).
 encline(SubP, A):-
     encline(P, A), subClassOf(SubP, P).
 encline(P, SubA):-

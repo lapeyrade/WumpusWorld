@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6195897998440729512}
   - component: {fileID: 8705416848407798995}
   m_Layer: 0
-  m_Name: breezeyes
+  m_Name: Breeze
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

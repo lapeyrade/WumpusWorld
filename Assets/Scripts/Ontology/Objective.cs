@@ -13,5 +13,4 @@ namespace Ontology
     public class Fight : Success { }
     public class Abstinence : Healthiness { }
     public class Safety : Healthiness { }
-    
 }

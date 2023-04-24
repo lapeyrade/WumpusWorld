@@ -4,20 +4,20 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - wall
-  - safe
-  - undefined
-  - visited
-  - stench
-  - breeze
-  - pit
-  - wumpus
-  - gold
-  - start
-  - cell
-  - human
-  - danger
-  - wumpusdead
+  - Wall
+  - SafeCell
+  - UnknownCell
+  - VisitedCell
+  - Stench
+  - Breeze
+  - Pit
+  - Wumpus
+  - Gold
+  - StartCell
+  - Cell
+  - Human
+  - DangerousCell
+  - DeadWumpus
   layers:
   - Default
   - TransparentFX

@@ -1,5 +1,7 @@
+using System.Linq;
 using CleverCrow.Fluid.BTs.Tasks;
 using CleverCrow.Fluid.BTs.Trees;
+using Ontology;
 using UnityEngine;
 
 namespace Agent.AI
@@ -12,65 +14,88 @@ namespace Agent.AI
         private void Awake() {
             tree = new BehaviorTreeBuilder(gameObject)
                 .Sequence("Play Turn")
-                .Do("Move Cell", () =>
+                    .Do("Sense Cell", () =>
+                    {
+                        GetComponent<Agent>().SenseCell();
+                        return TaskStatus.Success;
+                    })
+                    .Do("Generate Objective", () =>
+                    {
+                        GetComponent<Agent>().GenerateObjective();
+                        return TaskStatus.Success;
+                    })
+                    .Do("Generate Action", () =>
+                    {
+                        GetComponent<Agent>().GenerateAction();
+                        return TaskStatus.Success;
+                    })
+                    .Selector("Action or Move")
+                        .Sequence("Attack")
+                            .Condition("Attack Generated", () => GetComponent<Agent>().GetComponent<Attack>())
+                            .Do("Shoot Monster", () =>
+                            {
+                                GetComponent<AgentAction>().TryShootingArrow();
+                                return TaskStatus.Success;
+                            })
+                        .End()
+                        .Sequence("PickUp")
+                            .Condition("PickUp Generated", () => GetComponent<Agent>().GetComponent<PickUp>())
+                            .Do("PickUp ValuableItem", () =>
+                            {
+                                GetComponent<AgentAction>().PickUpGold();
+                                return TaskStatus.Success;
+                            })
+                        .End()
+                        .Sequence("Drop")
+                            .Condition("Drop Generated", () => GetComponent<Agent>().GetComponent<Drop>())
+                            .Do("Drop Item", () =>
+                            {
+                                Debug.Log("Droping Item!");
+                                return TaskStatus.Success;
+                            })
+                        .End()
+                        .Sequence("Bump")
+                            .Condition("BumpWall Generated", () => GetComponent<Agent>().GetComponent<BumpWall>())
+                            .Do("Bump Wall", () =>
+                            {
+                                GetComponent<AgentMove>().BumpWall();
+                                return TaskStatus.Success;
+                            })
+                        .End()
+                        .Sequence("MoveBack")
+                            .Condition("MoveBack Generated", () => GetComponent<Agent>().GetComponent<MoveBack>())
+                            .Do("Move Back", () =>
+                            {
+                                GetComponent<AgentMove>().MoveAgent(GetComponent<AgentMove>().MoveBack());
+                                return TaskStatus.Success;
+                            })
+                        .End()
+                        .Sequence("Move")
+                            .Condition("Move Action Generated", () => GetComponent<Agent>().GetComponent<Move>())
+                            .Do("Move", () =>
+                            {
+                                GetComponent<Agent>().MoveCell();
+                                return TaskStatus.Success;
+                            })
+                        .End()
+                    .End()
+                    .Do("Sense Cell", () =>
+                    {
+                        GetComponent<Agent>().SenseCell();
+                        return TaskStatus.Success;
+                    })
+                    .Do("Resetting Objectives and Actions", () =>
+                    {
+                        foreach (var component in GetComponents<Component>().Where(c => c is Objective or Move or Action))
                         {
-                            GetComponent<Agent>().MoveCell();
-                            return TaskStatus.Success;
-                        }).Do("Sense Cell", () =>
-                        {
-                            GetComponent<Agent>().SenseCell();
-                            return TaskStatus.Success;
-                        })
-                        .Do("Generate Objective", () =>
-                        {
-                            GenerateObjective();
-                            return TaskStatus.Success;
-                        })
-                        .Do("Action Cell", () =>
-                        {
-                            GetComponent<Agent>().ActionCell();
-                            return TaskStatus.Success;
-                        })
+                            Debug.Log(component);
+                            Destroy(component);
+                        }
+                        return TaskStatus.Success;
+                    })
+                
                 .End()
                 .Build();
-        }
-
-        private void GenerateObjective()
-        {
-            GetComponent<Agent>().objectives.Clear();
-            
-            if (GetComponent<Agent>().personalities.Contains(GameManager.Personalities.Cupid) &&
-                GameManager.Instance.AgentsMap[GetComponent<Agent>().coords.x, GetComponent<Agent>().coords.y]
-                    .Exists(e => e.tag is "valuable_item"))
-            {
-                Debug.Log("Objective: Wealthy");
-                GetComponent<Agent>().objectives.Add(Agent.Objectives.Wealth);
-            }
-            else if (GetComponent<Agent>().personalities.Contains(GameManager.Personalities.Brave) &&
-                     GameManager.Instance.AgentsMap[GetComponent<Agent>().coords.x, GetComponent<Agent>().coords.y]
-                         .Exists(e => e.tag is "wall"))
-            {
-                Debug.Log("Objective: Unstuck");
-                GetComponent<Agent>().objectives.Add(Agent.Objectives.Unconstrained);
-            }
-            else if (Sense.DangerInRightCell(GetComponent<Agent>().coords, "wumpus") ||
-                     Sense.DangerInLeftCell(GetComponent<Agent>().coords, "wumpus") ||
-                     Sense.DangerInUpCell(GetComponent<Agent>().coords, "wumpus") ||
-                     Sense.DangerInDownCell(GetComponent<Agent>().coords, "wumpus"))
-            {
-                Debug.Log("Objective: Battle");
-                GetComponent<Agent>().objectives.Add(Agent.Objectives.Fight);
-                Debug.Log("Objective: Safety");
-                GetComponent<Agent>().objectives.Add(Agent.Objectives.Safety);
-            }
-            else if (Sense.DangerInRightCell(GetComponent<Agent>().coords, "pit") ||
-                     Sense.DangerInLeftCell(GetComponent<Agent>().coords, "pit") ||
-                     Sense.DangerInUpCell(GetComponent<Agent>().coords, "pit") ||
-                     Sense.DangerInDownCell(GetComponent<Agent>().coords, "pit"))
-            {
-                Debug.Log("Objective: Safety");
-                GetComponent<Agent>().objectives.Add(Agent.Objectives.Safety);
-            }
         }
 
         public override void PlayTurn ()
