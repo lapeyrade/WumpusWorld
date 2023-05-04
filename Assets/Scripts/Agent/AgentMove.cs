@@ -7,29 +7,48 @@ namespace Agent
     public class AgentMove : MonoBehaviour
     {
         private readonly List<Vector2Int> _moves = new() { Vector2Int.right, Vector2Int.left, Vector2Int.up, Vector2Int.down };
-        
-        public Vector2Int SelectNextMove()
+        private Agent Agent => GetComponent<Agent>();
+        private Vector2Int Coords
         {
-            if (GetComponent<Agent>().nbGold > 0) return MoveBack();
+            get => Agent.coords;
+            set => Agent.coords = value;
+        }
 
-            foreach (var move in _moves.Where(move => SafeCellUnexplored(GetComponent<Agent>().coords + move)))
-            {
-                return GetComponent<Agent>().coords + move;
-            }
+        public void MoveCell()
+        {
+            if (Input.GetKeyDown("right"))
+                MoveAgent(new Vector2Int(Coords.x + 1, Coords.y));
+            else if (Input.GetKeyDown("left"))
+                MoveAgent(new Vector2Int(Coords.x - 1, Coords.y));
+            else if (Input.GetKeyDown("up"))
+                MoveAgent(new Vector2Int(Coords.x, Coords.y + 1));
+            else if (Input.GetKeyDown("down"))
+                MoveAgent(new Vector2Int(Coords.x, Coords.y - 1));
+            else if (Input.GetKeyDown("space") || GameManager.Instance.isModeAuto) // IA
+                MoveAgent(SelectNextMove());
+            else if (Input.GetKeyDown("return")) // IA Random
+                MoveAgent(SelectRandomMove());
+        }
+        
+        private Vector2Int SelectNextMove()
+        {
+            if (Agent.nbGold > 0) return MoveBack();
+
+            foreach (var move in _moves.Where(move => SafeCellUnexplored(Coords + move)))
+                return Coords + move;
 
             return MoveBack();
         }
 
-        public Vector2Int SelectRandomMove()
+        private Vector2Int SelectRandomMove()
         {
-            if (GetComponent<Agent>().nbGold > 0) return MoveBack();
+            if (Agent.nbGold > 0) return MoveBack();
             
             var randomMoves = _moves.OrderBy(_ => Random.value);
 
-            foreach (var move in randomMoves.Where(move => SafeCellUnexplored(GetComponent<Agent>().coords + move)))
-            { 
-                return GetComponent<Agent>().coords + move;
-            }
+            foreach (var move in randomMoves.Where(move => SafeCellUnexplored(Coords + move)))
+                return Coords + move;
+            
             return MoveBack();
         }
 
@@ -39,36 +58,36 @@ namespace Agent
 
         public void MoveAgent(Vector2Int newCoord)
         {
-            if (newCoord == GetComponent<Agent>().coords + Vector2Int.right)
+            if (newCoord == Coords + Vector2Int.right)
                 GameManager.UpdateMoveGUI("Moving right");
-            else if (newCoord == GetComponent<Agent>().coords + Vector2Int.left)
+            else if (newCoord == Coords + Vector2Int.left)
                 GameManager.UpdateMoveGUI("Moving left");
-            else if (newCoord == GetComponent<Agent>().coords + Vector2Int.up)
+            else if (newCoord == Coords + Vector2Int.up)
                 GameManager.UpdateMoveGUI("Moving up");
-            else if (newCoord == GetComponent<Agent>().coords + Vector2Int.down)
+            else if (newCoord == Coords + Vector2Int.down)
                 GameManager.UpdateMoveGUI("Moving down");
 
-            GridManager.RemoveFromGrids(GetComponent<Agent>().coords, GetComponent<Agent>().tag);
-            GetComponent<Agent>().transform.position = GridManager.GetAgentMapOffset(newCoord);
+            GridManager.RemoveFromGrids(Coords, tag);
+            Agent.transform.position = GridManager.GetAgentMapOffset(newCoord);
 
-            if (GetComponent<Agent>().nbGold > 0)
+            if (Agent.nbGold > 0)
             { 
-                GetComponent<Agent>().prefabGoldMap.transform.position = GetComponent<Agent>().prefabAgentWorld.transform.position;
-                GetComponent<Agent>().prefabGoldAgent.transform.position = GetComponent<Agent>().transform.position;
+                Agent.prefabGoldMap.transform.position = Agent.prefabAgentWorld.transform.position;
+                Agent.prefabGoldAgent.transform.position = Agent.transform.position;
             }
 
-            GetComponent<Agent>().PastMovements.Push(newCoord);
-            GetComponent<Agent>().coords = newCoord;
-            GridManager.AddToGrids(GetComponent<Agent>().coords, "VisitedCell");
+            Agent.PastMovements.Push(newCoord);
+            Coords = newCoord;
+            GridManager.AddToGrids(Coords, "VisitedCell");
         }
 
         public Vector2Int MoveBack()
         {
             GameManager.UpdateMoveGUI("Moving back");
 
-            if (GetComponent<Agent>().PastMovements.Count <= 1) return GetComponent<Agent>().coords; 
-                GetComponent<Agent>().PastMovements.Pop();
-            return GetComponent<Agent>().PastMovements.Pop();
+            if (Agent.PastMovements.Count <= 1) return Coords; 
+                Agent.PastMovements.Pop();
+            return Agent.PastMovements.Pop();
         }
         
         public void BumpWall()

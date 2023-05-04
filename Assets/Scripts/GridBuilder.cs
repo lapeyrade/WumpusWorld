@@ -54,18 +54,18 @@ public class GridBuilder : MonoBehaviour
     {
         for (var i = 0; i < GameManager.Instance.nbAgent; i++)
         {
-            Vector2Int coord;
+            Vector2Int coords;
 
             do
             {
-                coord = new Vector2Int(Random.Range(GameManager.Instance.gridMin.x + 1, GameManager.Instance.gridMax.x - 1),
+                coords = new Vector2Int(Random.Range(GameManager.Instance.gridMin.x + 1, GameManager.Instance.gridMax.x - 1),
                     Random.Range(GameManager.Instance.gridMin.y + 1, GameManager.Instance.gridMax.y - 1));
-            } while (GameManager.Instance.Map[coord.x, coord.y].Exists(x => x.tag is "StartCell" or "Wall"));
+            } while (GameManager.Instance.Map[coords.x, coords.y].Exists(x => x.tag is "StartCell" or "Wall"));
             
             if (Instantiate(Resources.Load("Human"), transform) is not GameObject agent) continue;
-            agent.GetComponent<Agent.Agent>().Init(i, coord, GameManager.Instance.nbWumpus);
+            agent.GetComponent<Agent.Agent>().Init(i, coords, GameManager.Instance.nbWumpus);
 
-            GridManager.AddToGrids(coord, "StartCell");
+            GridManager.AddToGrids(coords, "StartCell");
             GameManager.Instance.agents.Add(agent);
         }
     }
@@ -74,14 +74,14 @@ public class GridBuilder : MonoBehaviour
     {
         for (var i = 0; i < GameManager.Instance.nbGold; i++)
         {
-            Vector2Int coord;
+            Vector2Int coords;
             do
             {
-                coord = new Vector2Int(Random.Range(GameManager.Instance.gridMin.x + 1, GameManager.Instance.gridMax.x - 1),
+                coords = new Vector2Int(Random.Range(GameManager.Instance.gridMin.x + 1, GameManager.Instance.gridMax.x - 1),
                     Random.Range(GameManager.Instance.gridMin.y + 1, GameManager.Instance.gridMax.y - 1));
-            } while (GameManager.Instance.Map[coord.x, coord.y].Exists(x => x.tag is "StartCell" or "Wall" or "Gold"));
+            } while (GameManager.Instance.Map[coords.x, coords.y].Exists(x => x.tag is "StartCell" or "Wall" or "Gold"));
 
-            GridManager.AddToGrids(coord, "Gold");
+            GridManager.AddToGrids(coords, "Gold");
         }
     }
 
@@ -89,16 +89,16 @@ public class GridBuilder : MonoBehaviour
     {
         for (var i = 0; i < GameManager.Instance.nbWumpus; i++)
         {
-            Vector2Int coord;
+            Vector2Int coords;
             do
             {
-                coord = new Vector2Int(Random.Range(GameManager.Instance.gridMin.x + 1, GameManager.Instance.gridMax.x - 1),
+                coords = new Vector2Int(Random.Range(GameManager.Instance.gridMin.x + 1, GameManager.Instance.gridMax.x - 1),
                     Random.Range(GameManager.Instance.gridMin.y + 1, GameManager.Instance.gridMax.y - 1));
-            } while (GameManager.Instance.Map[coord.x, coord.y].Exists(x =>
+            } while (GameManager.Instance.Map[coords.x, coords.y].Exists(x =>
                          x.tag is "StartCell" or "Wall" or "Gold" or "Wumpus"));
 
-            GridManager.AddToGrids(coord, "Wumpus");
-            GenerateAroundCell(coord, "Stench");
+            GridManager.AddToGrids(coords, "Wumpus");
+            GenerateAroundCell(coords, "Stench");
         }
     }
 
@@ -106,31 +106,31 @@ public class GridBuilder : MonoBehaviour
     {
         for (var i = 0; i < GameManager.Instance.nbPit; i++)
         {
-            Vector2Int coord;
+            Vector2Int coords;
             do
             {
-                coord = new Vector2Int(Random.Range(GameManager.Instance.gridMin.x + 1, GameManager.Instance.gridMax.x - 1),
+                coords = new Vector2Int(Random.Range(GameManager.Instance.gridMin.x + 1, GameManager.Instance.gridMax.x - 1),
                     Random.Range(GameManager.Instance.gridMin.y + 1, GameManager.Instance.gridMax.y - 1));
-            } while (GameManager.Instance.Map[coord.x, coord.y].Exists(x =>
+            } while (GameManager.Instance.Map[coords.x, coords.y].Exists(x =>
                          x.tag is "StartCell" or "Wall" or "Gold" or "Wumpus" or "Pit"));
 
-            GridManager.AddToGrids(coord, "Pit");
-            GenerateAroundCell(coord, "Breeze");
+            GridManager.AddToGrids(coords, "Pit");
+            GenerateAroundCell(coords, "Breeze");
         }
     }
 
-    private static void GenerateAroundCell(Vector2Int coord, string element)
+    private static void GenerateAroundCell(Vector2Int coords, string element)
     {
-        Generate(new Vector2Int(coord.x + 1, coord.y), element); // Right cell
-        Generate(new Vector2Int(coord.x - 1, coord.y), element); // Left cell
-        Generate(new Vector2Int(coord.x, coord.y + 1), element); // Top cell
-        Generate(new Vector2Int(coord.x, coord.y - 1), element); // Bottom cell
+        Generate(new Vector2Int(coords.x + 1, coords.y), element); // Right cell
+        Generate(new Vector2Int(coords.x - 1, coords.y), element); // Left cell
+        Generate(new Vector2Int(coords.x, coords.y + 1), element); // Top cell
+        Generate(new Vector2Int(coords.x, coords.y - 1), element); // Bottom cell
 
-        void Generate(Vector2Int coords, string elem)
+        void Generate(Vector2Int newCoords, string elem)
         {
-            if (!GameManager.Instance.Map[coords.x, coords.y].Exists(x => x.CompareTag(elem)) &&
-                !GameManager.Instance.Map[coords.x, coords.y].Exists(x => x.tag is "Wall"))
-                GridManager.AddToGrids(coords, elem);
+            if (!GameManager.Instance.Map[newCoords.x, newCoords.y].Exists(x => x.CompareTag(elem)) &&
+                !GameManager.Instance.Map[newCoords.x, newCoords.y].Exists(x => x.tag is "Wall"))
+                GridManager.AddToGrids(newCoords, elem);
         }
     }
 }

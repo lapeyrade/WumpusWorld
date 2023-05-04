@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
-using Ontology;
-using TMPro;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -62,5 +60,11 @@ public class GameManager : MonoBehaviour
         if (!exitApp) return;
         Application.Quit();
         UnityEditor.EditorApplication.isPlaying = false;
+    }
+
+    public static bool IsWithinGrid(int newX, int newY)
+    {
+        return newX >= Instance.gridMin.x && newX < Instance.gridMax.x && newY >= Instance.gridMin.y &&
+               newY < Instance.gridMax.y;
     }
 }

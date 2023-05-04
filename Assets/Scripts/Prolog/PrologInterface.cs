@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using TMPro;
@@ -78,36 +76,38 @@ namespace Prolog
             }
         }
 
-        public List<string> QueryKb(string agentName)
+        public string QueryKb(string agentName)
         {
-            _prologThread.QueryAsync($"genAction({agentName}, Perso, Obj, Elem2, Act)", false);
+            _prologThread.QueryAsync($"genAction({agentName}, Perso, Obj, Elem2, Act, Uti)", false);
 
-            var results = new List<string>();
-            var guiList = new List<string> {"UpperTopLeft", "UpperBotLeft", "UpperTopRight", "UpperBotRight",
-                "LowerTopLeft", "LowerBotLeft", "LowerTopRight", "LowerBotRight"};
-
-            foreach (var gui in guiList)
-                GameObject.Find(gui).GetComponent<TextMeshProUGUI>().text = "";
+            var action = "";
+            var maxUtil = 0;
+            var chosenExplanation = "";
+            
+            GameObject.Find("Dropdown").GetComponent<TMP_Dropdown>().ClearOptions();
             
             while (true)
             {
                 var answer = _prologThread.QueryAsyncResult();
                 if (answer is null) break;
 
-                results.Add(answer.ElementAt(3)[1]);
                 var explanation = $"<b>{agentName}</b>" + " is <b>" + answer.ElementAt(0)[1] +
-                                  "</b> and wants to <b>" + answer.ElementAt(1)[1] + "</b> regarding the <b>" +
-                                  answer.ElementAt(2)[1] + "</b> so he will <b>" + answer.ElementAt(3)[1] + "</b>.";
+                                  "</b> and wanted to <b>" + answer.ElementAt(1)[1] + "</b> regarding the <b>" +
+                                  answer.ElementAt(2)[1] + "</b> so one possible action was to <b>" + answer.ElementAt(3)[1] + 
+                                  "</b> with a utility of <b>" + answer.ElementAt(4)[1];
                 
-                foreach (var gui in guiList.Where(gui => GameObject.Find(gui).GetComponent<TextMeshProUGUI>().text == ""))
+                if (Convert.ToInt32(answer.ElementAt(4)[1]) > maxUtil)
                 {
-                    GameObject.Find(gui).GetComponent<TextMeshProUGUI>().text = explanation;
-                    break;
+                    action = answer.ElementAt(3)[1];
+                    maxUtil = Convert.ToInt32(answer.ElementAt(4)[1]);
+                    chosenExplanation = explanation;
                 }
+                
+                GameObject.Find("Dropdown").GetComponent<TMP_Dropdown>().options.Add(new TMP_Dropdown.OptionData(explanation));
             }
-            
-            Debug.Log(results.Aggregate("", (current, r) => current + r + ", "));
-            return results;
+            GameObject.Find("Dropdown").GetComponent<TMP_Dropdown>().captionText.text = chosenExplanation;
+
+            return action;
         }
     }
 }

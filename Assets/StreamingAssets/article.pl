@@ -1,5 +1,4 @@
-:- table (subClassOf/2, trait/2, desirable/2, location/2, motivation/2,
-    satisfy/2, encline/2, genObjective/4, genAction/5) as incremental.
+:- table (subClassOf/2, trait/2, desirable/2, location/2, motivation/2, satisfy/2, encline/3, genObjective/4, genAction/6) as incremental.
 
 :- dynamic([subClassOf/2, location/2, trait/2], [incremental(true)]).
 
@@ -27,6 +26,7 @@ subClassOf(monster, animal).
 subClassOf(human, animal).
 subClassOf(dragon, monster).
 subClassOf(wumpus, monster).
+subClassOf(bat, monster).
 subClassOf(pit, trap).
 subClassOf(monster, danger).
 subClassOf(trap, danger).
@@ -164,18 +164,18 @@ satisfy(O, SubA):-
     satisfy(O, A), subClassOf(SubA, A).
 
 /* Link Personality-Action */
-encline(cupid, interact).
-encline(ascetic, interact).
-encline(coward, moveback).
-encline(brave, attack).
-encline(personality, move).
-encline(personality, bumpwall).
-encline(SubP, A):-
-    encline(P, A), subClassOf(SubP, P).
-encline(P, SubA):-
-    encline(P, A), subClassOf(SubA, A).
+encline(cupid, interact, 5).
+encline(ascetic, interact, 3).
+encline(coward, moveback, 10).
+encline(brave, attack, 9).
+encline(personality, move, 1).
+encline(personality, bumpwall, 2).
+encline(SubP, A, U):-
+    encline(P, A, U), subClassOf(SubP, P).
+encline(P, SubA, U):-
+    encline(P, A, U), subClassOf(SubA, A).
 
 /*** Generate Actions ***/
-genAction(Elem1, Perso, Obj, Elem2, Act):-
-  encline(Perso, Act), satisfy(Obj, Act),
+genAction(Elem1, Perso, Obj, Elem2, Act, Utility):-
+  encline(Perso, Act, Utility), satisfy(Obj, Act),
   genObjective(Elem1, Perso, Obj, Elem2).

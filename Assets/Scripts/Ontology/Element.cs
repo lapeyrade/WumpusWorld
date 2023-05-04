@@ -1,14 +1,16 @@
+using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 namespace Ontology
 {
-    public class Element : MonoBehaviour { }
+    public class Element : MonoBehaviour{}
     public class Being : Element { }
     public class Object : Element  { }
     public class Environment : Element { }
     public class Breeze : Environment { }
     public class Stench : Environment { }
-    public class Trap : Object { }
+    public class Trap : Object, IDangerous { }
     public class Item : Object { }
     public class Obstacle : Object { }
     public class Wall : Obstacle { }
@@ -22,10 +24,13 @@ namespace Ontology
     public class Weapon : Item { }
     public class Bow : Weapon { }
     public class Sword : Weapon { }
-    public class Monster : Animal { }
+    public class Monster : Animal, IDangerous { }
     public class Human : Animal { }
     public class Dog : Animal { }
     public class Dragon : Monster { }
+    public class Bat : Monster { }
     public class Wumpus : Monster { }
     public class Pit : Trap { }
+    
+    public interface IDangerous {}
 }

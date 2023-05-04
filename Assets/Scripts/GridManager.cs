@@ -97,11 +97,11 @@ public class GridManager : MonoBehaviour
             agent.prefabGoldMap.transform.position = GetWorldMapOffset(agent.coords);
     }
 
-    public static Vector2 GetAgentMapOffset(Vector2Int coord) =>
-        new((coord.x - GameManager.Instance.gridMax.x / 1.95f)
-         * GameManager.Instance.tileSize, coord.y * GameManager.Instance.tileSize);
+    public static Vector2 GetAgentMapOffset(Vector2Int coords) =>
+        new((coords.x - GameManager.Instance.gridMax.x / 1.95f)
+         * GameManager.Instance.tileSize, coords.y * GameManager.Instance.tileSize);
 
-    public static Vector2 GetWorldMapOffset(Vector2Int coord) =>
-        new((coord.x + GameManager.Instance.gridMax.x / 1.95f)
-         * GameManager.Instance.tileSize, coord.y * GameManager.Instance.tileSize);
+    public static Vector2 GetWorldMapOffset(Vector2Int coords) =>
+        new((coords.x + GameManager.Instance.gridMax.x / 1.95f)
+         * GameManager.Instance.tileSize, coords.y * GameManager.Instance.tileSize);
 }
