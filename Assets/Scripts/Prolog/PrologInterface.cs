@@ -10,19 +10,22 @@ namespace Prolog
     {
         [SerializeField] public string query = "";
         [SerializeField] public bool askQuery;
+        private TMP_Dropdown _dropdown;
 
         private readonly string _prologFilePath = Path.Combine(Application.streamingAssetsPath, "article.pl");
-
         private PrologMqi _mqi;
         public PrologThread PrologThread;
 
+        // Initialize the Prolog interface
         public void Init()
         {
             _mqi = new PrologMqi(prologPath:"/opt/homebrew/bin/");
             PrologThread = _mqi.CreateThread();
             PrologThread.Query($"consult('{_prologFilePath}')");
+            _dropdown = GameObject.Find("Dropdown").GetComponent<TMP_Dropdown>();
         }
 
+        // Ask a query to Prolog
         protected void Update()
         {
             if (!askQuery) return; /* Prolog query inside Unity Inspector */
@@ -51,6 +54,7 @@ namespace Prolog
             }
         }
 
+        // Update the knowledge base with the current state of the game
         public void UpdateKb()
         {
             foreach (var agent in GameManager.Instance.agents)
@@ -67,6 +71,7 @@ namespace Prolog
             }
         }
 
+        // Query the knowledge base for agent actions
         public string QueryKb(string agentName)
         {
             PrologThread.QueryAsync($"genAction({agentName}, Perso, Obj, Elem2, Act, Uti)", false);
@@ -75,7 +80,7 @@ namespace Prolog
             var maxUtil = 0;
             var chosenExplanation = "";
             
-            GameObject.Find("Dropdown").GetComponent<TMP_Dropdown>().ClearOptions();
+            _dropdown.ClearOptions();
             
             while (true)
             {
@@ -93,9 +98,9 @@ namespace Prolog
                     maxUtil = Convert.ToInt32(answer.ElementAt(4)[1]);
                     chosenExplanation = explanation;
                 }
-                GameObject.Find("Dropdown").GetComponent<TMP_Dropdown>().options.Add(new TMP_Dropdown.OptionData(explanation));
+                _dropdown.options.Add(new TMP_Dropdown.OptionData(explanation));
             }
-            GameObject.Find("Dropdown").GetComponent<TMP_Dropdown>().captionText.text = chosenExplanation;
+            _dropdown.captionText.text = chosenExplanation;
            
             return action;
         }

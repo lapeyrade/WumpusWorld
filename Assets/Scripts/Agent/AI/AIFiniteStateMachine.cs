@@ -6,6 +6,7 @@ namespace Agent.AI
 {
     public class AIFiniteStateMachine : AIBasic
     {
+        // Define the possible states for the finite state machine
         private enum State
         {
             GenerateObjective,
@@ -19,33 +20,34 @@ namespace Agent.AI
         
         public override void FirstTurn()
         {
-            GetComponent<AgentMove>().MoveCell();
-            GetComponent<AgentSense>().SenseCell();
+            GetComponent<AgentMove>().MoveCell(); // Move to a cell
+            GetComponent<AgentSense>().SenseCell(); // Sense the current cell
         }
 
         public override void PlayTurn()
         {
             switch (_state)
             {
-                case State.GenerateObjective:
+                case State.GenerateObjective: // Generate the objective for the agent
                     GetComponent<AgentObjective>().GenerateObjective();
                     _state = State.GenerateAction;
                     break;
-                case State.GenerateAction:
+                case State.GenerateAction: // Generate the action for the agent
                     GetComponent<AgentAction>().GenerateAction();
                     _state = State.GenerateUtility;
                     break;
-                case State.GenerateUtility:
+                case State.GenerateUtility: // Generate the utility for the agent's actions
                     GetComponent<AgentAction>().GenerateUtility();
                     _state = State.ExecuteHighestUtilityAction;
                     break;
-                case State.ExecuteHighestUtilityAction:
+                case State.ExecuteHighestUtilityAction: // Execute the action with the highest utility
                     GetComponent<AgentAction>().ExecuteHighestUtility();
                     _state = State.SenseCell;
                     break;
                 case State.SenseCell:
                 default :
-                    GetComponent<AgentSense>().SenseCell();
+                    GetComponent<AgentSense>().SenseCell(); // Sense the current cell
+                    // Clean up the components related to Objective, Move, and Action
                     GetComponents<Component>().Where(c => c is Objective or Move or Action).ToList().ForEach(Destroy);
                     _state = State.GenerateObjective;
                     break;

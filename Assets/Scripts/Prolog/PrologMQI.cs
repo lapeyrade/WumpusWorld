@@ -1,11 +1,4 @@
-﻿/* swiplserver SWI Prolog integration library
-    Author:        Sylvain Lapeyrade
-    E-mail:        sylvain.lapeyrade@uca.fr
-    WWW:           https://www.sylvainlapeyrade.github.io
-    Copyright (c)  2021, Eric Zinda
-*/
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -88,8 +81,7 @@ namespace Prolog
 
         public PrologMqi(bool launchMqi = true, int? port = null!, string password = null, string unixDomainSocket = null,
             float? queryTimeoutSeconds = null, int? pendingConnectionCount = null, string outputFileName = null,
-            string prologPath = null, string prologPathArgs = null, string mqiTraces = null
-            )
+            string prologPath = null, string prologPathArgs = null, string mqiTraces = null)
         {
             Port = port;
             Password = password;
@@ -113,7 +105,7 @@ namespace Prolog
             {
                 if (pid is PlatformID.Win32NT or PlatformID.Win32S or PlatformID.Win32Windows or PlatformID.WinCE)
                     throw new ArgumentException("Unix domain sockets are not supported on Windows");
-                else if (Port != null)
+                if (Port != null)
                     throw new ArgumentException("Must only provide one of: port or unix_domain_socket");
             }
 
