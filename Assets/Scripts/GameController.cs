@@ -8,9 +8,7 @@ public class GameController : MonoBehaviour
     protected void Start()
     {
         foreach (var agent in GameManager.Instance.agents)
-        {
             agent.GetComponent<AIBasic>().FirstTurn();
-        }
     }
 
     protected void Update()
@@ -29,7 +27,7 @@ public class GameController : MonoBehaviour
         if ((!Input.anyKeyDown && !GameManager.Instance.isModeAuto) || GameManager.Instance.isGameOver) return;
         
         if (Input.GetKeyDown("escape"))
-            GameManager.Instance.SetGameOver("Exit Game!", true);
+            GameManager.Instance.SetGameOver(true);
         else if (Input.GetKeyDown("backspace"))
         {
             ScreenCapture.CaptureScreenshot("Screenshots/screenshot " +
@@ -42,7 +40,10 @@ public class GameController : MonoBehaviour
         {
             foreach (var agent in GameManager.Instance.agents)
             {
+                var watch = System.Diagnostics.Stopwatch.StartNew();
                 agent.GetComponent<AIBasic>().PlayTurn();
+                watch.Stop();
+                Debug.Log($"Execution Time: {watch.ElapsedMilliseconds} ms");
             }
         }
     }

@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using UnityEditor.PackageManager;
+using Prolog;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
     public int nbWumpus = 2;
     public int nbGold = 1;
     public int nbAgent = 2;
-    public enum AIType { Prolog, BehaviourTree, Gpt, Basic}
+    public enum AIType { Prolog, BehaviourTree, Gpt, Basic, FiniteStateMachine}
     public AIType aiType = AIType.Basic;
     public enum Personalities { Cupid, Ascetic, Brave, Coward}
     public List<Personalities> personalities = new (){ Personalities.Brave };
@@ -37,34 +37,23 @@ public class GameManager : MonoBehaviour
         Map = new List<GameObject>[gridMax.x, gridMax.y];
         AgentsMap = new List<GameObject>[gridMax.x, gridMax.y];
         agents = new List<GameObject>();
+
+        if (aiType is AIType.Prolog)
+            GetComponent<PrologInterface>().Init();
         
         GetComponent<GridBuilder>().BuildGrid();
         GameObject.Find("Main Camera").GetComponent<CameraController>().AdjustCameraPosition();
-        gameObject.AddComponent<GameController>();
+        gameObject.AddComponent<GameController>(); 
     }
 
-    public static void UpdateMoveGUI(string message)
-    {
-        // GameObject.Find("AgentMove").GetComponent<TextMeshProUGUI>().text = "Last Move: " + message;
-    }
-    
-    public static void UpdateActionGUI(string message)
-    {
-        // GameObject.Find("AgentAction").GetComponent<TextMeshProUGUI>().text = "Last Action: " + message;
-    }
-
-    public void SetGameOver(string message, bool exitApp)
+    public void SetGameOver(bool exitApp)
     {
         isGameOver = true;
-        // GameObject.Find("GameOver").GetComponent<TextMeshProUGUI>().text = message;
         if (!exitApp) return;
         Application.Quit();
         UnityEditor.EditorApplication.isPlaying = false;
     }
 
-    public static bool IsWithinGrid(int newX, int newY)
-    {
-        return newX >= Instance.gridMin.x && newX < Instance.gridMax.x && newY >= Instance.gridMin.y &&
-               newY < Instance.gridMax.y;
-    }
+    public static bool IsWithinGrid(int newX, int newY) =>
+        newX >= Instance.gridMin.x && newX < Instance.gridMax.x && newY >= Instance.gridMin.y && newY < Instance.gridMax.y;
 }

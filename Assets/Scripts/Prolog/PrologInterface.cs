@@ -14,26 +14,27 @@ namespace Prolog
         private readonly string _prologFilePath = Path.Combine(Application.streamingAssetsPath, "article.pl");
 
         private PrologMqi _mqi;
-        private PrologThread _prologThread;
+        public PrologThread PrologThread;
 
-        public void Awake()
+        public void Init()
         {
             _mqi = new PrologMqi(prologPath:"/opt/homebrew/bin/");
-            _prologThread = _mqi.CreateThread();
-            _prologThread.Query($"consult('{_prologFilePath}')");
+            PrologThread = _mqi.CreateThread();
+            PrologThread.Query($"consult('{_prologFilePath}')");
         }
 
         protected void Update()
         {
             if (!askQuery) return; /* Prolog query inside Unity Inspector */
-            _prologThread.QueryAsync(query, false);
+            PrologThread.QueryAsync(query, false);
 
             while (askQuery)
             {
                 try
                 {
-                    var answer = _prologThread.QueryAsyncResult();
-                    if (answer is null) askQuery = false;
+                    var answer = PrologThread.QueryAsyncResult();
+                    if (answer is null)
+                        askQuery = false;
                     else
                     {
                         var result = "";
@@ -41,8 +42,7 @@ namespace Prolog
                             result += answer.ElementAt(i)[0] + " = " + answer.ElementAt(i)[1] + "; ";
                         Debug.Log(result);
                     }
-                }
-                catch (PrologNoQueryError e)
+                } catch (PrologNoQueryError e)
                 {
                     Debug.LogError(e);
                     askQuery = false;
@@ -53,33 +53,24 @@ namespace Prolog
 
         public void UpdateKb()
         {
-            _prologThread.Query("retractall(location(_, _))");
-            _prologThread.Query("retractall(trait(_, _))");
-
             foreach (var agent in GameManager.Instance.agents)
             {
-                _prologThread.Query($"assertz(location({agent.name}, [{agent.GetComponent<Agent.Agent>().coords.x}," +
+                PrologThread.Query($"retract(location({agent.name}, _))");
+                PrologThread.Query($"retractall(trait({agent.name}, _))");
+                
+                PrologThread.Query($"assertz(location({agent.name}, [{agent.GetComponent<Agent.Agent>().coords.x}," +
                                     $" {agent.GetComponent<Agent.Agent>().coords.y}]))");
-
+            
                 foreach (var perso in GameManager.Instance.personalities.Where(perso =>
                              agent.GetComponent(Type.GetType("Ontology." + perso))))
-                    _prologThread.Query($"assertz(trait({agent.name}, {perso.ToString().ToLower()}))");
-            }
-
-            for (var i = GameManager.Instance.gridMin.x; i < GameManager.Instance.gridMax.x; i++)
-            {
-                for (var j = GameManager.Instance.gridMin.y; j < GameManager.Instance.gridMax.y; j++)
-                {
-                    foreach (var element in GameManager.Instance.AgentsMap[i, j].Select(x => x.tag))
-                        _prologThread.Query($"assertz(location({element.ToLower()}, [{i}, {j}]))");
-                }
+                    PrologThread.Query($"assertz(trait({agent.name}, {perso.ToString().ToLower()}))");
             }
         }
 
         public string QueryKb(string agentName)
         {
-            _prologThread.QueryAsync($"genAction({agentName}, Perso, Obj, Elem2, Act, Uti)", false);
-
+            PrologThread.QueryAsync($"genAction({agentName}, Perso, Obj, Elem2, Act, Uti)", false);
+            
             var action = "";
             var maxUtil = 0;
             var chosenExplanation = "";
@@ -88,7 +79,7 @@ namespace Prolog
             
             while (true)
             {
-                var answer = _prologThread.QueryAsyncResult();
+                var answer = PrologThread.QueryAsyncResult();
                 if (answer is null) break;
 
                 var explanation = $"<b>{agentName}</b>" + " is <b>" + answer.ElementAt(0)[1] +
@@ -102,11 +93,10 @@ namespace Prolog
                     maxUtil = Convert.ToInt32(answer.ElementAt(4)[1]);
                     chosenExplanation = explanation;
                 }
-                
                 GameObject.Find("Dropdown").GetComponent<TMP_Dropdown>().options.Add(new TMP_Dropdown.OptionData(explanation));
             }
             GameObject.Find("Dropdown").GetComponent<TMP_Dropdown>().captionText.text = chosenExplanation;
-
+           
             return action;
         }
     }

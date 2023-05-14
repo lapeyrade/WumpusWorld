@@ -11,7 +11,7 @@ namespace Agent
         public void SenseCell()
         {
             if (Agent.startCoord == Coords && Agent.nbGold == 1)
-                GameManager.Instance.SetGameOver($"{name} Won!", false);
+                GameManager.Instance.SetGameOver(false);
 
             foreach (var element in GameManager.Instance.Map[Coords.x, Coords.y]
                          .Except(GameManager.Instance.AgentsMap[Coords.x, Coords.y]).Select(x => x.tag))
@@ -19,7 +19,7 @@ namespace Agent
 
             if (!GameManager.Instance.Map[Coords.x, Coords.y].Exists(e => e.tag is "Pit" or "Wumpus"))
                 GetComponent<AgentSense>().MakeInferences();
-            else GameManager.Instance.SetGameOver($"{name} Lost!", false);
+            else GameManager.Instance.SetGameOver(false);
         }
 
         private void MakeInferences()

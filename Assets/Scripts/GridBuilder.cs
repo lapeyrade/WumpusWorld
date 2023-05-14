@@ -13,7 +13,6 @@ public class GridBuilder : MonoBehaviour
             Application.Quit();
             UnityEditor.EditorApplication.isPlaying = false;
         }
-        
         GenerateCell();
         GenerateWall();
         GenerateHuman();

@@ -42,6 +42,9 @@ namespace Agent
                 case GameManager.AIType.BehaviourTree:
                     gameObject.AddComponent<AIBehaviourTree>();
                     break;
+                case GameManager.AIType.FiniteStateMachine:
+                    gameObject.AddComponent<AIFiniteStateMachine>();
+                    break;
                 case GameManager.AIType.Gpt:
                     gameObject.AddComponent<AIGpt>();
                     break;

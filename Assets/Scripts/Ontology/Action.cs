@@ -9,13 +9,18 @@ namespace Ontology
         public virtual void Act() { }
     }
     public class Interact : Action { }
-    public class Attack : Action { public override void Act() { GetComponent<AgentAction>().TryShootingArrow();} }
-    public class BumpWall : Action { public override void Act() { GetComponent<AgentMove>().BumpWall();} }
-    public class Move : Action { public override void Act() { GetComponent<AgentMove>().MoveCell();} }
-    public class MoveBack : Action { public override void Act() { GetComponent<AgentMove>().MoveAgent(GetComponent<AgentMove>().MoveBack());} }
-    
-    public class PickUp : Interact { public override void Act() { GetComponent<AgentAction>().PickUpGold();}}
-    public class Drop : Interact { public override void Act() { Debug.Log("Drop");} }
+
+    public class Attack : Action { public override void Act() => GetComponent<AgentAction>().TryShootingArrow(); }
+
+    public class BumpWall : Action { public override void Act() => GetComponent<AgentMove>().BumpWall(); }
+
+    public class Move : Action { public override void Act() => GetComponent<AgentMove>().MoveCell(); }
+
+    public class MoveBack : Action { public override void Act() => GetComponent<AgentMove>().MoveAgent(GetComponent<AgentMove>().MoveBack()); }
+
+    public class PickUp : Interact { public override void Act() => GetComponent<AgentAction>().PickUpGold(); }
+
+    public class Drop : Interact { public override void Act() => Debug.Log("Drop"); }
     public class Shoot : Attack { }
     public class ShootArrow : Shoot { }
 }

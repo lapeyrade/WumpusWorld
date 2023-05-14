@@ -1,5 +1,8 @@
+using System.Linq;
 using Ontology;
+using TMPro;
 using UnityEngine;
+using Action = Ontology.Action;
 
 namespace Agent
 {
@@ -7,20 +10,7 @@ namespace Agent
     {
         private Agent Agent => GetComponent<Agent>();
         private Vector2Int Coords => Agent.coords;
-        
-        public void ActionCell()
-        {
-            if(GameManager.Instance.isGameOver) return;
-            
-            if (GameManager.Instance.AgentsMap[Coords.x, Coords.y].Exists(e => e.tag is "Wall"))
-                GetComponent<AgentMove>().BumpWall();
-            
-            if (GameManager.Instance.AgentsMap[Coords.x, Coords.y].Exists(e => e.tag is "Gold"))
-                GetComponent<AgentAction>().PickUpGold();
-            
-            GetComponent<AgentAction>().TryShootingArrow();
-        }
-        
+
         public void GenerateAction()
         {
             if (GetComponent<Wealth>() && GetComponent<Cupid>())
@@ -55,17 +45,25 @@ namespace Agent
                 gameObject.GetComponent<BumpWall>().Utility = 2;
         }
         
+        public void ExecuteHighestUtility()
+        {
+            var highestUtility = gameObject.GetComponents<Action>().OrderByDescending(c => c.Utility).First();
+            highestUtility.Act();
+            
+            GameObject.Find("Dropdown").GetComponent<TMP_Dropdown>().captionText.text = $"{Agent.name} chose the" +
+                $" action {highestUtility.GetType().Name} with a utility of {highestUtility.Utility}.";
+        }
+        
         public void PickUpGold()
         {
-            GameManager.UpdateActionGUI($"Picking up gold");
-            Agent.nbGold++;
+            GetComponent<Agent>().nbGold++;
             GridManager.RemoveFromGrids(Coords, "Gold");
             GridManager.AttachGoldToAgent(GetComponent<Agent>());
         }
 
         public void TryShootingArrow()
         {
-            if (Agent.nbArrow < 1) return;
+            if (GetComponent<Agent>().nbArrow < 1) return;
             
             ShootIfWumpusRightOfAgent();
             ShootIfWumpusLeftOfAgent();
@@ -78,7 +76,7 @@ namespace Agent
             for (var i = Coords.x; i < GameManager.Instance.gridMax.x; i++)
             {
                 if (GameManager.Instance.AgentsMap[i, Coords.y].Exists(e => e.tag is "Wumpus"))
-                    ShootWumpus(new Vector2Int(i, Coords.y), "right");
+                    ShootWumpus(new Vector2Int(i, Coords.y));
             }
         }
 
@@ -87,7 +85,7 @@ namespace Agent
             for (var i = GameManager.Instance.gridMin.x; i < Coords.x; i++)
             {
                 if (GameManager.Instance.AgentsMap[i, Coords.y].Exists(e => e.tag is "Wumpus"))
-                    ShootWumpus(new Vector2Int(i, Coords.y), "left");
+                    ShootWumpus(new Vector2Int(i, Coords.y));
             }
         }
 
@@ -96,7 +94,7 @@ namespace Agent
             for (var i = Coords.y; i < GameManager.Instance.gridMax.y; i++)
             {
                 if (GameManager.Instance.AgentsMap[Coords.x, i].Exists(e => e.tag is "Wumpus"))
-                    ShootWumpus(new Vector2Int(Coords.x, i), "up");
+                    ShootWumpus(new Vector2Int(Coords.x, i));
             }
         }
 
@@ -105,13 +103,12 @@ namespace Agent
             for (var i = GameManager.Instance.gridMin.y; i < Coords.y; i++)
             {
                 if (GameManager.Instance.AgentsMap[Coords.x, i].Exists(e => e.tag is "Wumpus"))
-                    ShootWumpus(new Vector2Int(Coords.x, i), "down");
+                    ShootWumpus(new Vector2Int(Coords.x, i));
             }
         }
 
-        private void ShootWumpus(Vector2Int coordWumpus, string direction)
+        private void ShootWumpus(Vector2Int coordWumpus)
         {
-            GameManager.UpdateActionGUI($"Shooting arrow {direction}");
             Agent.nbArrow--;
             GridManager.RemoveFromGrids(coordWumpus, "Wumpus");
             GridManager.RemoveFromGrids(coordWumpus, "DangerousCell");

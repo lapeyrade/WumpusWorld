@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Ontology;
+using Prolog;
 using UnityEngine;
 
 public class GridManager : MonoBehaviour
@@ -16,7 +17,7 @@ public class GridManager : MonoBehaviour
         {"UnknownCell", new Color(1.0f, 0.64f, 0.0f)},
         {"Cell", Color.white},
     };
-    
+
     public static void AddToGrids(Vector2Int coords, string element)
     {
         if (element is "Human") return;
@@ -47,6 +48,15 @@ public class GridManager : MonoBehaviour
         if (element != "SafeCell" && map[coords.x, coords.y].Find(x => x.name is "Cell").tag is "DangerousCell") return;
         
         cell.tag = element;
+
+        if (GameManager.Instance.aiType is GameManager.AIType.Prolog && map == GameManager.Instance.AgentsMap)
+        {
+            GameManager.Instance.GetComponent<PrologInterface>().PrologThread.Query(
+                $"retract(location({element.ToLower()}, [{coords.x}, {coords.y}]))");
+            GameManager.Instance.GetComponent<PrologInterface>().PrologThread.Query(
+                $"assertz(location({element.ToLower()}, [{coords.x}, {coords.y}]))");
+        }
+        
         cell.GetComponent<SpriteRenderer>().color = CellColor[element];
         
         foreach (var component in cell.GetComponents<Component>().Where(x => x is Cell))
@@ -62,6 +72,12 @@ public class GridManager : MonoBehaviour
            !GameManager.Instance.Map[coords.x, coords.y].Exists( x => x.name == element)) return;
         if (Instantiate(Resources.Load(element)) is not GameObject cell) return;
         cell.tag = element;
+
+
+        if (GameManager.Instance.aiType is GameManager.AIType.Prolog && map == GameManager.Instance.AgentsMap)
+            GameManager.Instance.GetComponent<PrologInterface>().PrologThread.Query(
+                $"assertz(location({element.ToLower()}, [{coords.x}, {coords.y}]))");
+
         cell.name = element;
         cell.transform.position = newPosition;
         cell.AddComponent(Type.GetType("Ontology." + element[0].ToString().ToUpper() + element[1..]));
@@ -81,6 +97,10 @@ public class GridManager : MonoBehaviour
         if (cellMap.name is "Cell") return;
         Destroy(cellMap);
         map[coords.x, coords.y].Remove(cellMap);
+        
+        if (GameManager.Instance.aiType is GameManager.AIType.Prolog && map == GameManager.Instance.AgentsMap)
+            GameManager.Instance.GetComponent<PrologInterface>().PrologThread.Query(
+                $"retract(location({element.ToLower()}, [{coords.x}, {coords.y}]))");
     }
 
     public static bool CellInGridLimits(Vector2Int cell) => 

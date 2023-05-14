@@ -36,7 +36,7 @@ namespace Agent
 
             foreach (var move in _moves.Where(move => SafeCellUnexplored(Coords + move)))
                 return Coords + move;
-
+            
             return MoveBack();
         }
 
@@ -58,15 +58,6 @@ namespace Agent
 
         public void MoveAgent(Vector2Int newCoord)
         {
-            if (newCoord == Coords + Vector2Int.right)
-                GameManager.UpdateMoveGUI("Moving right");
-            else if (newCoord == Coords + Vector2Int.left)
-                GameManager.UpdateMoveGUI("Moving left");
-            else if (newCoord == Coords + Vector2Int.up)
-                GameManager.UpdateMoveGUI("Moving up");
-            else if (newCoord == Coords + Vector2Int.down)
-                GameManager.UpdateMoveGUI("Moving down");
-
             GridManager.RemoveFromGrids(Coords, tag);
             Agent.transform.position = GridManager.GetAgentMapOffset(newCoord);
 
@@ -83,17 +74,11 @@ namespace Agent
 
         public Vector2Int MoveBack()
         {
-            GameManager.UpdateMoveGUI("Moving back");
-
-            if (Agent.PastMovements.Count <= 1) return Coords; 
-                Agent.PastMovements.Pop();
+            if (Agent.PastMovements.Count <= 1) return Coords;
+            Agent.PastMovements.Pop();
             return Agent.PastMovements.Pop();
         }
-        
-        public void BumpWall()
-        {
-            GameManager.UpdateActionGUI("Bumping wall");
-            MoveAgent(MoveBack());
-        }
+
+        public void BumpWall() => MoveAgent(MoveBack());
     }
 }

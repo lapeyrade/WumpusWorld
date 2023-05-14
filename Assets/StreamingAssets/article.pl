@@ -36,7 +36,7 @@ subClassOf(startcell, cell).
 subClassOf(safecell, cell).
 subClassOf(visitedcell, cell).
 subClassOf(dangerouscell, cell).
-subClassOf(unknwoncell, cell).
+subClassOf(unknowncell, cell).
 
 /* Some individuals */
 % subClassOf(human0, human).

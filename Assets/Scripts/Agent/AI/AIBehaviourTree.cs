@@ -2,7 +2,6 @@ using System.Linq;
 using CleverCrow.Fluid.BTs.Tasks;
 using CleverCrow.Fluid.BTs.Trees;
 using Ontology;
-using TMPro;
 using UnityEngine;
 
 namespace Agent.AI
@@ -148,27 +147,17 @@ namespace Agent.AI
                     })
                     .Do("Execute Highest Utility Action", () =>
                         {
-                            agent.GetComponents<Component>()
-                            .Where(c => c is Action)
-                            .OrderByDescending(c => c.GetComponent<Action>().Utility)
-                            .First().GetComponent<Action>().Act();
-                            
-                            var highestUtilityComponent = agent.GetComponents<Component>()
-                                .Where(c => c is Action)
-                                .OrderByDescending(c => c.GetComponent<Action>().Utility)
-                                .First().GetComponent<Action>();
-                            
-                            GameObject.Find("Dropdown").GetComponent<TMP_Dropdown>().captionText.text =
-                                $"{agent.name} chose the action {highestUtilityComponent} with a utility of" +
-                                $" {highestUtilityComponent.GetComponent<Action>().Utility}.";
-                            
-                            GetComponents<Component>().Where(c => c is Objective or Move or Action).ToList().ForEach(Destroy);
-
+                            GetComponent<AgentAction>().ExecuteHighestUtility();
                             return TaskStatus.Success;
                         })
                     .Do("Sense Cell", () =>
                     {
                         GetComponent<AgentSense>().SenseCell();
+                        return TaskStatus.Success;
+                    })
+                    .Do("Remove Previous Action", ()=>
+                    {
+                        GetComponents<Component>().Where(c => c is Objective or Move or Action).ToList().ForEach(Destroy);
                         return TaskStatus.Success;
                     })
                 .End()

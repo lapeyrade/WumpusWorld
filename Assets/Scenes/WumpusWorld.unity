@@ -1479,9 +1479,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1979442550}
   - component: {fileID: 1979442551}
-  - component: {fileID: 1979442553}
+  - component: {fileID: 1979442556}
   - component: {fileID: 1979442555}
-  - component: {fileID: 1979442554}
+  - component: {fileID: 1979442553}
   m_Layer: 0
   m_Name: Grid
   m_TagString: Untagged
@@ -1542,20 +1542,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89b0ce3e586534c3981e843f369ab308, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1979442554
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1979442548}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 638a6ed3871f47929af0a093d8ab118e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  query: genObjective(Elem1, P, Obj, Elem2)
-  askQuery: 0
 --- !u!114 &1979442555
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1568,6 +1554,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 607f6d7af72a7472ba3646c541615bcc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1979442556
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1979442548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 638a6ed3871f47929af0a093d8ab118e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  query: 
+  askQuery: 0
 --- !u!1 &2138976747
 GameObject:
   m_ObjectHideFlags: 0

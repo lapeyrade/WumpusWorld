@@ -30,7 +30,7 @@ public class GameControllerBt : MonoBehaviour {
                     .Condition("Escape key pressed", () => Input.GetKeyDown(KeyCode.Escape))
                     .Do("Setting game over", () =>
                     {
-                        GameManager.Instance.SetGameOver("Exit Game!", true);
+                        GameManager.Instance.SetGameOver(true);
                         return TaskStatus.Success;
                     })
                 .End()

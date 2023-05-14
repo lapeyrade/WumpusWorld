@@ -1,8 +1,6 @@
 using System.Linq;
 using Ontology;
-using TMPro;
 using UnityEngine;
-using Action = Ontology.Action;
 
 namespace Agent.AI
 {
@@ -19,22 +17,9 @@ namespace Agent.AI
             GetComponent<AgentObjective>().GenerateObjective();
             GetComponent<AgentAction>().GenerateAction();
             GetComponent<AgentAction>().GenerateUtility();
-            
-            var highestUtilityComponent = GetComponent<Agent>().GetComponents<Component>()
-                .Where(c => c is Action)
-                .OrderByDescending(c => c.GetComponent<Action>().Utility)
-                .First().GetComponent<Action>();
-            
-            highestUtilityComponent.Act();
-            
-            GameObject.Find("Dropdown").GetComponent<TMP_Dropdown>().captionText.text =
-                $"{GetComponent<Agent>().name} chose the action {highestUtilityComponent} with a utility of" +
-                $" {highestUtilityComponent.GetComponent<Action>().Utility}.";
-
+            GetComponent<AgentAction>().ExecuteHighestUtility();
             GetComponent<AgentSense>().SenseCell();
-            
             GetComponents<Component>().Where(c => c is Objective or Move or Action).ToList().ForEach(Destroy);
         }
-
     }
 }
