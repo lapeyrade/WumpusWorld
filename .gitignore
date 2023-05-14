@@ -80,3 +80,4 @@ ignore.conf
 /Recordings/
 
 .DS_Store
+/Assets/Scripts/Agent/AI/gpt_key.txt*
