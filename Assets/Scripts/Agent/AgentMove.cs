@@ -8,31 +8,29 @@ namespace Agent
     {
         private readonly List<Vector2Int> _moves = new() { Vector2Int.right, Vector2Int.left, Vector2Int.up, Vector2Int.down };
         private Agent Agent => GetComponent<Agent>();
-        private Vector2Int Coords
-        {
-            get => Agent.coords;
-            set => Agent.coords = value;
-        }
+        private Vector2Int Coords => Agent.coords;
 
         public void MoveCell()
         {
-            if (Input.GetKeyDown("right"))
-                MoveAgent(new Vector2Int(Coords.x + 1, Coords.y));
-            else if (Input.GetKeyDown("left"))
-                MoveAgent(new Vector2Int(Coords.x - 1, Coords.y));
-            else if (Input.GetKeyDown("up"))
-                MoveAgent(new Vector2Int(Coords.x, Coords.y + 1));
-            else if (Input.GetKeyDown("down"))
-                MoveAgent(new Vector2Int(Coords.x, Coords.y - 1));
-            else if (Input.GetKeyDown("space") || GameManager.Instance.isModeAuto) // IA
+            if (Input.GetKeyDown(KeyCode.RightArrow))
+                MoveAgent(Coords + Vector2Int.right);
+            else if (Input.GetKeyDown(KeyCode.LeftArrow))
+                MoveAgent(Coords + Vector2Int.left);
+            else if (Input.GetKeyDown(KeyCode.UpArrow))
+                MoveAgent(Coords + Vector2Int.up);
+            else if (Input.GetKeyDown(KeyCode.DownArrow))
+                MoveAgent(Coords + Vector2Int.down);
+            else if (Input.GetKeyDown(KeyCode.Space) || GameManager.Instance.isModeAuto)
                 MoveAgent(SelectNextMove());
-            else if (Input.GetKeyDown("return")) // IA Random
+            else if (Input.GetKeyDown(KeyCode.Return))
                 MoveAgent(SelectRandomMove());
         }
         
+        // Selects the next move based on the agent's state and surroundings
         private Vector2Int SelectNextMove()
         {
-            if (Agent.nbGold > 0) return MoveBack();
+            if (Agent.nbGold > 0)
+                return MoveBack();
 
             foreach (var move in _moves.Where(move => SafeCellUnexplored(Coords + move)))
                 return Coords + move;
@@ -40,9 +38,11 @@ namespace Agent
             return MoveBack();
         }
 
+        // Selects a random move based on the agent's state and surroundings
         private Vector2Int SelectRandomMove()
         {
-            if (Agent.nbGold > 0) return MoveBack();
+            if (Agent.nbGold > 0)
+                return MoveBack();
             
             var randomMoves = _moves.OrderBy(_ => Random.value);
 
@@ -52,10 +52,12 @@ namespace Agent
             return MoveBack();
         }
 
+        // Checks if the specified cell is a safe, unexplored cell
         private static bool SafeCellUnexplored(Vector2Int cell) =>
             GameManager.Instance.AgentsMap[cell.x, cell.y].Exists(e => e.tag is "SafeCell") && 
             !GameManager.Instance.AgentsMap[cell.x, cell.y].Exists(e => e.tag is "VisitedCell");
 
+        // Moves the agent to the specified new coordinate
         public void MoveAgent(Vector2Int newCoord)
         {
             GridManager.RemoveFromGrids(Coords, tag);
@@ -68,17 +70,21 @@ namespace Agent
             }
 
             Agent.PastMovements.Push(newCoord);
-            Coords = newCoord;
+            Agent.coords = newCoord;
             GridManager.AddToGrids(Coords, "VisitedCell");
         }
 
+        // Moves the agent back to the previous position
         public Vector2Int MoveBack()
         {
-            if (Agent.PastMovements.Count <= 1) return Coords;
+            if (Agent.PastMovements.Count <= 1)
+                return Coords;
+
             Agent.PastMovements.Pop();
             return Agent.PastMovements.Pop();
         }
 
+        // Moves the agent back when it bumps into a wall
         public void BumpWall() => MoveAgent(MoveBack());
     }
 }

@@ -11,22 +11,24 @@ public class GridBuilder : MonoBehaviour
         ValidateGridSize(); // Check if the grid size is valid.
         GenerateCell(); // Generate cells in the grid.
         GenerateWall(); // Generate walls around the grid.
-        GenerateElement("Human", GameManager.Instance.nbAgent, new List<string> { "StartCell", "Wall" }, false); // Generate human agents on the grid.
-        GenerateElement("Gold", GameManager.Instance.nbGold, new List<string> { "StartCell", "Wall", "Gold" }); // Generate gold on the grid.
-        GenerateElement("Wumpus", GameManager.Instance.nbWumpus, new List<string> { "StartCell", "Wall", "Gold", "Wumpus" }, true, "Stench"); // Generate Wumpus on the grid.
-        GenerateElement("Pit", GameManager.Instance.nbPit, new List<string> { "StartCell", "Wall", "Gold", "Wumpus", "Pit" }, true, "Breeze"); // Generate pits on the grid.
+        GenerateElement("Human", GameManager.Instance.nbAgent, // Generate human agents on the grid.
+         new List<string> { "StartCell", "Wall" }, false); 
+        GenerateElement("Gold", GameManager.Instance.nbGold, // Generate gold on the grid.
+         new List<string> { "StartCell", "Wall", "Gold" }); 
+        GenerateElement("Wumpus", GameManager.Instance.nbWumpus, // Generate Wumpus on the grid.
+         new List<string> { "StartCell", "Wall", "Gold", "Wumpus" }, true, "Stench"); 
+        GenerateElement("Pit", GameManager.Instance.nbPit, // Generate pits on the grid.
+         new List<string> { "StartCell", "Wall", "Gold", "Wumpus", "Pit" }, true, "Breeze"); 
     }
 
     // Validate if the grid size is enough to contain all elements.
-    private void ValidateGridSize()
+    private static void ValidateGridSize()
     {
         if (GameManager.Instance.nbPit + GameManager.Instance.nbWumpus + GameManager.Instance.nbGold +
-            GameManager.Instance.nbAgent > GameManager.Instance.gridMax.x * GameManager.Instance.gridMax.y)
-        {
-            Debug.LogError("Map too small, can't contain all the elements.");
-            Application.Quit();
-            UnityEditor.EditorApplication.isPlaying = false;
-        }
+            GameManager.Instance.nbAgent <= GameManager.Instance.gridMax.x * GameManager.Instance.gridMax.y) return;
+        Debug.LogError("Map too small, can't contain all the elements.");
+        Application.Quit();
+        UnityEditor.EditorApplication.isPlaying = false;
     }
 
     // Generate cells in the grid.
@@ -60,9 +62,9 @@ public class GridBuilder : MonoBehaviour
     }
 
     // Generate the specified element on the grid.
-    private void GenerateElement(string element, int count, List<string> occupiedTags, bool generateAround = false, string aroundElement = "")
+    private void GenerateElement(string elem, int count, ICollection<string> occupiedTags, bool genAround = false, string aroundElem = "")
     {
-        for (int i = 0; i < count; i++)
+        for (var i = 0; i < count; i++)
         {
             Vector2Int coords;
 
@@ -73,7 +75,7 @@ public class GridBuilder : MonoBehaviour
             } while (GameManager.Instance.Map[coords.x, coords.y].Exists(x => occupiedTags.Contains(x.tag)));
 
             // Instantiate and initialize human agents on the grid.
-            if (element == "Human")
+            if (elem == "Human")
             {
                 if (Instantiate(Resources.Load("Human"), transform) is not GameObject agent) continue;
                 agent.GetComponent<Agent.Agent>().Init(i, coords, GameManager.Instance.nbWumpus);
@@ -83,11 +85,11 @@ public class GridBuilder : MonoBehaviour
             }
 
             // Add the element to the grid.
-            GridManager.AddToGrids(coords, element);
+            GridManager.AddToGrids(coords, elem);
 
             // Generate elements around the main element (e.g., Stench around Wumpus, Breeze around Pit).
-            if (generateAround)
-                GenerateAroundCell(coords, aroundElement);
+            if (genAround)
+                GenerateAroundCell(coords, aroundElem);
         }
     }
 
