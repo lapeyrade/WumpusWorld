@@ -9,7 +9,7 @@
 
 This project is an extended version of the classic logic game Wumpus World featured in the book [Artificial intelligence: A Modern Approach](https://aima.cs.berkeley.edu) (Russel & Norvig), inspired by the game [Hunt the Wumpus](https://en.wikipedia.org/wiki/Hunt_the_Wumpus). The game was coded in Unity (so the scripts are in C#). Several "Artificial Intelligence" techniques are available to control the agent, including a [simple set of ad-hoc if-then-else rules](Assets/Scripts/Agent/AI/AIBasic.cs), a [Finite State Machine](Assets/Scripts/Agent/AI/AIFiniteStateMachine.cs) and a [Behavior Tree](Assets/Scripts/Agent/AI/AIBehaviourTree.cs) implementations, all written in C#.
 Another AI approach uses [rules and ontologies written in Prolog](Assets/StreamingAssets/article.pl), so an [interface](Assets/Scripts/Prolog/PrologInterface.cs) exists between the Prolog engine and Unity.
-Another approach aims to use a [Large Language Model](Assets/Scripts/Agent/AI/AIGpt.cs), but has not yet been finalized.
+Another approach aims to use a [Large Language Model](Assets/Scripts/Agent/AI/AIGpt.cs) (LLM), but has not yet been finalized.
 
 ## Showcase video
 A small demo of this project is available by clicking on the following image:
@@ -19,9 +19,9 @@ A small demo of this project is available by clicking on the following image:
 In the left of the screen we can see the world as seen by the agent, and in the right the world as it is. A gray cell indicates a start location, light blue is for visited cells, green for cells without danger (surrounded with at least one cell without breeze or stench), red cell for danger (wumpus or pit), orange are for uncertain cells and the black cells contain walls (i.e. the agent can't go in them).
 
 ## Game rules
-* An agent is in a cave with pits, gold and monsters (Wumpus). The agent must find the gold and exit the cave without dying.
+* An agent is in a cave with pits, gold and monsters a.k.a Wumpus. The agent must find the gold and exit the cave without dying.
 * Pits and Wumpus are deadly and can be detected by the agent since there are breezes and stenches surrounding them.
-* The agent can move one cell at a time and kill the wumpus by throwing an arrow in its direction, but its arrows are limited.
+* The agent can move one cell at a time and kill the Wumpus by throwing an arrow in its direction, but its arrows are limited.
 
 # Getting Started
 
