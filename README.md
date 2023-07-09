@@ -26,7 +26,7 @@ In the left of the screen we can see the world as seen by the agent, and in the 
 # Getting Started
 
 ## Dependencies
-* **[Unity](https://unity.com/download)**: tested with version 2020 and beyond (latest LTS preferred)
+* **[Unity](https://unity.com/download)**: tested with version 2020 and beyond (see the [ProjectVersion](ProjectSettings/ProjectVersion.txt) file for exact version used)
 * **[SWI-Prolog](https://www.swi-prolog.org/Download.html)**: tested with version 9 and beyond.
 
 ## Setup
@@ -57,7 +57,7 @@ Choose the settings you want for your game environment :
 ## Play
 - You can use the directional keys (up, down, rigth, left) to control the agent.
 - To make the agent play one action, use the "space" key or the "return" key if you don't want the agent to always explore the cave in the same way.
-- Tick the "Is Mode Auto" box (see the #Run section) to call for new agent actions automatically.
+- Tick the "Is Mode Auto" box (see the [Run](#Run) section) to call for new agent actions automatically.
 
 # Credits
 * This project is currently under review, so the authors must remain anonymous for the time being.
