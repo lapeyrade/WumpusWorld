@@ -8,8 +8,8 @@
 <br/>
 
 This project is an extended version of the classic logic game Wumpus World featured in the book [Artificial intelligence: A Modern Approach](https://aima.cs.berkeley.edu) (Russel & Norvig), inspired by the game [Hunt the Wumpus](https://en.wikipedia.org/wiki/Hunt_the_Wumpus). The game was coded in Unity (so the scripts are in C#). Several "Artificial Intelligence" techniques are available to control the agent, including a [simple set of ad-hoc if-then-else rules](Assets/Scripts/Agent/AI/AIBasic.cs), a [Finite State Machine](Assets/Scripts/Agent/AI/AIFiniteStateMachine.cs) and a [Behavior Tree](Assets/Scripts/Agent/AI/AIBehaviourTree.cs) implementations, all written in C#.
-Another AI approach uses rules and ontologies written in Prolog, so an interface exists between the Prolog engine and Unity.
-A final approach aims to use a Large Language Model, but has not yet been finalized.
+Another AI approach uses [rules and ontologies written in Prolog](Assets/StreamingAssets/article.pl), so an [interface](Assets/Scripts/Prolog/PrologInterface.cs) exists between the Prolog engine and Unity.
+Another approach aims to use a [Large Language Model](Assets/Scripts/Agent/AI/AIGpt.cs), but has not yet been finalized.
 
 ## Showcase video
 A small demo of this project is available by clicking on the following image:
