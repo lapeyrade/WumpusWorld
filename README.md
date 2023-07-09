@@ -12,7 +12,8 @@ Another AI approach uses rules and ontologies written in Prolog, so an interface
 A final approach aims to use a Large Language Model, but has not yet been finalized.
 
 ## Showcase video
-A small demo of this project is available by clicking on the following image :
+A small demo of this project is available by clicking on the following image:
+
   [![Demo](https://img.youtube.com/vi/dhP5YQKlUbU/0.jpg)](https://youtu.be/dhP5YQKlUbU)
 
 ## Game rules
