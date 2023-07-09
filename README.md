@@ -36,6 +36,10 @@ In the left of the screen we can see the world as seen by the agent, and in the 
 * Select the right Unity Scene
 
 ## Run
+<p>
+	<img src="https://i.imgur.com/jcIbTZh.png" width="500">
+</p>
+
 Choose the settings you want for your game environment :
 * Select the "Grid" GameObject
 * In the Unity Inspector, adjust the following values for the Game Manager Script Component:
@@ -50,14 +54,15 @@ Choose the settings you want for your game environment :
   * **Personalities**: set the personalities of the agent(s), you can add as many as you want (even if some are contradictory)
 * Run the game using the play button
 
-<p align="center">
-	<img src="https://i.imgur.com/jcIbTZh.png" width="500">
-</p>
-
 ## Play
 - You can use the directional keys (up, down, rigth, left) to control the agent.
 - To make the agent play one action, use the "space" key or the "return" key if you don't want the agent to always explore the cave in the same way.
 - Tick the "Is Mode Auto" box (see the [Run](#Run) section) to call for new agent actions automatically.
+
+## Prolog with ontologies architecture
+<p>
+	<img src="https://i.imgur.com/zWpLHiF.png" width="500">
+</p>
 
 # Credits
 This project is currently under review, so the authors must remain anonymous for the time being.
