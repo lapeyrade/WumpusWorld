@@ -211,7 +211,7 @@ namespace Prolog
             var passwordString = _process.StandardOutput.ReadLine();
             if (passwordString == "")
                 throw new PrologLaunchError("no password found in stdout");
-            
+
             if (passwordString != null)
             {
                 Password = passwordString.Trim('\n');
@@ -263,7 +263,7 @@ namespace Prolog
 
             Start();
         }
-        
+
         private void Start()
         {
             // using StreamWriter file = new("output.txt", append: true);
@@ -322,7 +322,7 @@ namespace Prolog
 
             if (jsonResult.GetProperty("functor").ToString() != "true")
                 throw new PrologLaunchError($"Failed to accept password: {jsonResult}");
-            
+
             // _communicationThreadId = jsonResult.GetProperty("args")[0][0][0].GetProperty("args")[0].ToString();
             // _goalThreadId = jsonResult.GetProperty("args")[0][0][0].GetProperty("args")[1].ToString();
 
@@ -397,7 +397,7 @@ namespace Prolog
             var utf8Value = Encoding.UTF8.GetString(valueBytes);
 
             // file.WriteLine("Utf8 Value: " + utf8value);
-            
+
             var messageLen = _serverProtocolMajor == 0 ? value.Length : utf8Value.Length;
 
             var msgHeader = messageLen.ToString() + ".\n";
@@ -445,7 +445,7 @@ namespace Prolog
             value = value.Trim();
             value = value.Trim('\n');
 
-            var timeoutString = "_"; 
+            var timeoutString = "_";
             if (queryTimeoutSeconds is not null)
                 timeoutString = queryTimeoutSeconds.ToString();
 
@@ -516,11 +516,12 @@ namespace Prolog
 
             if (jsonResult.ToString() != "false" && jsonResult.GetProperty("functor").ToString() == "exception")
             {
-                if (jsonResult.GetProperty("args")[0].ToString() == "no_more_results") return null;
+                if (jsonResult.GetProperty("args")[0].ToString() == "no_more_results")
+                    return null;
                 if (jsonResult.GetProperty("args")[0].ToString() == "connection_failed")
                     _prologServer.ConnectionFailed = true;
                 // else if (!typeof(string).IsInstanceOfType(jsonResult.GetProperty("args")[0]))
-                    // throw new PrologLaunchError(jsonResult.ToString());
+                // throw new PrologLaunchError(jsonResult.ToString());
 
                 if (jsonResult.GetProperty("args")[0].ToString() == "connection_failed")
                     throw new PrologConnectionFailedError(jsonResult.GetProperty("args")[0].ToString());
@@ -530,15 +531,13 @@ namespace Prolog
                     throw new PrologNoQueryError(jsonResult.GetProperty("args")[0].ToString());
                 if (jsonResult.GetProperty("args")[0].ToString() == "cancel_goal")
                     throw new PrologQueryCancelledError(jsonResult.GetProperty("args")[0].ToString());
-                if (jsonResult.GetProperty("args")[0].ToString() == "result_not_available") throw new PrologResultNotAvailableError(jsonResult.GetProperty("args")[0].ToString());
+                if (jsonResult.GetProperty("args")[0].ToString() == "result_not_available")
+                    throw new PrologResultNotAvailableError(jsonResult.GetProperty("args")[0].ToString());
             }
             else
             {
                 if (jsonResult.ToString() == "false" || jsonResult.GetProperty("functor").ToString() == "false")
-                    return null;
-
-                // if (jsonResult.ToString() != "true" && jsonResult.GetProperty("functor").ToString() != "true")
-                //     return null;
+                    return new List<string[]> { new[] { "false", "null" } };
 
                 for (var i = 0; i < jsonResult.GetProperty("args")[0].GetArrayLength(); i++)
                 {
@@ -592,7 +591,7 @@ namespace Prolog
         {
             if (IsPrologAtom(jsonTerm) || IsPrologVariable(jsonTerm))
                 return jsonTerm;
-            
+
             return jsonTerm.GetProperty("functor");
         }
 
@@ -636,132 +635,5 @@ namespace Prolog
         //     else:
         //         # must be an atom, number or variable
         //         return str(quote_prolog_identifier(json_term))
-    }
-
-
-    public static class Test
-    {
-        public static void Main()
-        {
-            PrologMqi mqi = new();
-            var prologThread = mqi.CreateThread();
-
-            /*************************************************************************
-            TEST 0 : Test of the consult command to use a prolog file 
-            *************************************************************************/
-            Console.WriteLine("TEST 0 : Consult command and query after consult\n");
-            Console.WriteLine("Query: consult(test).");
-            Console.WriteLine(prologThread.Query("consult(test)").ElementAt(0)[0]);
-            Console.WriteLine("Query: father(bob).");
-            Console.WriteLine(prologThread.Query("father(bob)").ElementAt(0)[0]);
-
-            /*************************************************************************
-            TEST 1 : Query with only one answer (i.e. true ou false)
-            *************************************************************************/
-            Console.WriteLine("\n\nTEST 1 : Query with only one answer (i.e. true ou false)\n");
-            Console.WriteLine("Query: assertz(father(michael)).");
-            Console.WriteLine(prologThread.Query("assertz(father(michael))").ElementAt(0)[0]);
-            Console.WriteLine("\nQuery: father(michael).");
-            Console.WriteLine(prologThread.Query("father(michael)").ElementAt(0)[0]);
-            Console.WriteLine("\nQuery: father(paul).");
-            Console.WriteLine(prologThread.Query("father(paul)").ElementAt(0)[0]);
-
-            /*************************************************************************
-            TEST 2 : Query with one atom and multiple answers
-            *************************************************************************/
-            Console.WriteLine("\n\nTEST 2 : Query with one argument and multiple answers\n");
-            Console.WriteLine("Query: father(X)\n");
-            prologThread.QueryAsync("father(X)", false);
-            
-            while (true)
-            {
-                var test2Result = prologThread.QueryAsyncResult();
-
-                if (test2Result is null)
-                {
-                    Console.WriteLine("No more results");
-                    break;
-                }
-                
-                for (var i = 0; i < test2Result.Count; i++)
-                {
-                    Console.WriteLine(test2Result.ElementAt(i)[0] + " = " + test2Result.ElementAt(i)[1]);
-                }
-            }
-
-            /*************************************************************************
-            TEST 3 : Query with two arguments and multiple answers
-            *************************************************************************/
-            Console.WriteLine("\n\nTEST 3 : Query with two arguments and multiple answers\n");
-            Console.WriteLine("Query: mother(X, Y)\n");
-            prologThread.QueryAsync("mother(X, Y)", false);
-
-            while (true)
-            {
-                var test3Result = prologThread.QueryAsyncResult();
-
-                if (test3Result is null)
-                {
-                    Console.WriteLine("No more results");
-                    break;
-                }
-                
-                for (var i = 0; i < test3Result.Count; i++)
-                {
-                    Console.WriteLine(test3Result.ElementAt(i)[0] + " = " + test3Result.ElementAt(i)[1]);
-                }
-            }
-
-            /*************************************************************************
-            TEST 4 : Queries with threads
-            *************************************************************************/
-            Console.WriteLine("\n\nTEST 4: Queries with threads\n");
-            Console.WriteLine("Query: prolog_thread2.query_async(sleep(1), father(michael))");
-            Console.WriteLine("Query: prolog_thread1.query_async(father(kevin))");
-            var prologThread1 = mqi.CreateThread();
-            var prologThread2 = mqi.CreateThread();
-            prologThread1.QueryAsync("sleep(1), father(michael)", false);
-            prologThread2.QueryAsync("father(kevin)", false);
-
-            Console.WriteLine("Thread 2: " + prologThread2.QueryAsyncResult().ElementAt(0)[0]);
-            Console.WriteLine("Thread 1: " + prologThread1.QueryAsyncResult().ElementAt(0)[0]);
-
-            /*************************************************************************
-            TEST 5 : Query response time
-            *************************************************************************/
-            Console.WriteLine("\n\nTEST 5: Query response time\n");
-            Console.WriteLine("Query: time(father(bob)).");
-            Stopwatch timer = new();
-            timer.Start();
-            Console.WriteLine(prologThread.Query("time(father(bob))").ElementAt(0)[0]);
-            Console.WriteLine("Time elapsed: {0}", timer.Elapsed);
-            timer.Restart();
-            Console.WriteLine(prologThread.Query("time(father(bob))").ElementAt(0)[0]);
-            Console.WriteLine("Time elapsed: {0}", timer.Elapsed);
-
-
-            /*************************************************************************
-            TEST 6 : Answers with arrays
-            *************************************************************************/
-            Console.WriteLine("\n\nTEST 6: Answers with arrays\n");
-            Console.WriteLine("Query: uncle([Col, Row], X, Y).");
-            prologThread.QueryAsync("uncle([Col, Row], X, Y)", false);
-
-            while (true)
-            {
-                var test6Result = prologThread.QueryAsyncResult();
-
-                if (test6Result is null)
-                {
-                    Console.WriteLine("No more results");
-                    break;
-                }
-                
-                for (var i = 0; i < test6Result.Count; i++)
-                {
-                    Console.WriteLine(test6Result.ElementAt(i)[0] + " = " + test6Result.ElementAt(i)[1]);
-                }
-            }
-        }
     }
 }

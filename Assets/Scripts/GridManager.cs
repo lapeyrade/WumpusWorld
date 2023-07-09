@@ -119,10 +119,10 @@ public class GridManager : MonoBehaviour
     // Attach gold to an agent
     public static void AttachGoldToAgent(Agent.Agent agent)
     {
-        agent.prefabGoldAgent = Instantiate(Resources.Load("Gold")) as GameObject;
+        agent.prefabGoldAgent = Instantiate(Resources.Load("gold")) as GameObject;
         if (agent.prefabGoldAgent is not null)
             agent.prefabGoldAgent.transform.position = GetAgentMapOffset(agent.coords);
-        agent.prefabGoldMap = Instantiate(Resources.Load("Gold")) as GameObject;
+        agent.prefabGoldMap = Instantiate(Resources.Load("gold")) as GameObject;
         if (agent.prefabGoldMap is not null)
             agent.prefabGoldMap.transform.position = GetWorldMapOffset(agent.coords);
     }

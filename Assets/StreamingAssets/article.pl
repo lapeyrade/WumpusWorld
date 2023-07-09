@@ -40,13 +40,13 @@ subClassOf(unknowncell, cell).
 
 /* Some individuals */
 % subClassOf(human0, human).
-subClassOf(human1, human).
-subClassOf(human2, human).
-subClassOf(human3, human).
-subClassOf(dragon0, dragon).
-subClassOf(wumpus, wumpus).
-subClassOf(gold, gold).
-subClassOf(rock0, rock).
+% subClassOf(human1, human).
+% subClassOf(human2, human).
+% subClassOf(human3, human).
+% subClassOf(dragon0, dragon).
+% subClassOf(wumpus, wumpus).
+% subClassOf(gold, gold).
+% subClassOf(rock0, rock).
 
 /*** Actions Hierachy ***/
 subClassOf(interact, action).
@@ -128,7 +128,7 @@ motivation(E, SubO):-
 % location(gold1, [2, 2]).
 % location(rock0, [1, 1]).
 % location(dragon0, [1, 1]).
-% location(safe, [1, 1]).
+% location(safecell, [1, 1]).
 location(SubE, L):-
   location(E, L), subClassOf(SubE, E).
 

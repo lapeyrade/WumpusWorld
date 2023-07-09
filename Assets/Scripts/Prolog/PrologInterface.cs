@@ -30,7 +30,7 @@ namespace Prolog
         {
             if (!askQuery) return; /* Prolog query inside Unity Inspector */
             PrologThread.QueryAsync(query, false);
-
+            
             while (askQuery)
             {
                 try
@@ -42,7 +42,13 @@ namespace Prolog
                     {
                         var result = "";
                         for (var i = 0; i < answer.Count; i++)
-                            result += answer.ElementAt(i)[0] + " = " + answer.ElementAt(i)[1] + "; ";
+                        {
+                            if (answer.ElementAt(i)[0] == "false")
+                                Debug.LogError($"No answer found.");
+                            else result += answer.ElementAt(i)[0] + " = " + answer.ElementAt(i)[1] + "; ";
+                        }
+                        // Append to file the result of the query
+                        File.AppendAllText(Path.Combine(Application.streamingAssetsPath, "result.txt"), result + "\n");
                         Debug.Log(result);
                     }
                 } catch (PrologNoQueryError e)
@@ -64,7 +70,7 @@ namespace Prolog
                 
                 PrologThread.Query($"assertz(location({agent.name}, [{agent.GetComponent<Agent.Agent>().coords.x}," +
                                     $" {agent.GetComponent<Agent.Agent>().coords.y}]))");
-            
+                
                 foreach (var perso in GameManager.Instance.personalities.Where(perso =>
                              agent.GetComponent(Type.GetType("Ontology." + perso))))
                     PrologThread.Query($"assertz(trait({agent.name}, {perso.ToString().ToLower()}))");
