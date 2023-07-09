@@ -16,6 +16,8 @@ A small demo of this project is available by clicking on the following image:
 
   [![Demo](https://img.youtube.com/vi/dhP5YQKlUbU/0.jpg)](https://youtu.be/dhP5YQKlUbU)
 
+In the left of the screen we can see the world as seen by the agent, and in the right the world as it is. A gray cell indicates a start location, light blue is for visited cells, green for cells without danger (surrounded with at least one cell without breeze or stench), red cell for danger (wumpus or pit), orange are for uncertain cells and the black cells contain walls (i.e. the agent can't go in them).
+
 ## Game rules
 * An agent is in a cave with pits, gold and monsters (Wumpus). The agent must find the gold and exit the cave without dying.
 * Pits and Wumpus are deadly and can be detected by the agent since there are breezes and stenches surrounding them.
@@ -24,7 +26,7 @@ A small demo of this project is available by clicking on the following image:
 # Getting Started
 
 ## Dependencies
-* **[Unity](https://unity.com/download)**: tested with version 2020 and beyond (latest LTS prefered)
+* **[Unity](https://unity.com/download)**: tested with version 2020 and beyond (latest LTS preferred)
 * **[SWI-Prolog](https://www.swi-prolog.org/Download.html)**: tested with version 9 and beyond.
 
 ## Setup
