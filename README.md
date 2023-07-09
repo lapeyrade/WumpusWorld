@@ -38,7 +38,7 @@ In the left of the screen we can see the world as seen by the agent, and in the 
 ## Run
 Choose the settings you want for your game environment :
 * Select the "Grid" GameObject
-* In the Unity Inspector, adjust the following values for the Game Manager (Script) Component:
+* In the Unity Inspector, adjust the following values for the Game Manager Script Component:
   * **Is Game Over**: freeze the game, automatically true when the agent has won or lost the game
   * **Is Mode Auto**: the agents play automatically
     * **Timer Interval**: slider for the interval (in ms) between each agent action call
