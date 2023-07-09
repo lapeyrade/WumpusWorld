@@ -55,8 +55,8 @@ Choose the settings you want for your game environment :
 </p>
 
 ## Play
-- You can use the directional keys (up, bas, rigth, left) to control the agent.
-- To make the agent play one action, use the "space" key or the "enter" key if you don't want the agent to always explore the cave in the same way.
+- You can use the directional keys (up, down, rigth, left) to control the agent.
+- To make the agent play one action, use the "space" key or the "return" key if you don't want the agent to always explore the cave in the same way.
 - Tick the "Is Mode Auto" box (see the #Run section) to call for new agent actions automatically.
 
 # Credits
