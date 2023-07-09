@@ -60,4 +60,4 @@ Choose the settings you want for your game environment :
 - Tick the "Is Mode Auto" box (see the [Run](#Run) section) to call for new agent actions automatically.
 
 # Credits
-* This project is currently under review, so the authors must remain anonymous for the time being.
+This project is currently under review, so the authors must remain anonymous for the time being.
