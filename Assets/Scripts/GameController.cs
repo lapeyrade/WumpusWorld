@@ -33,17 +33,17 @@ public class GameController : MonoBehaviour
         if ((!Input.anyKeyDown && !GameManager.Instance.isModeAuto) || GameManager.Instance.isGameOver) return;
 
         // Check for specific key inputs and perform corresponding actions
-        if (Input.GetKeyDown("escape"))
+        if (Input.GetKeyDown(KeyCode.Escape))
             GameManager.Instance.SetGameOver(true);
-        else if (Input.GetKeyDown("backspace"))
+        else if (Input.GetKeyDown(KeyCode.Backspace))
         {
             ScreenCapture.CaptureScreenshot("Screenshots/screenshot " +
                                             System.DateTime.Now.ToString("MM-dd-yy (HH-mm-ss)") + ".png");
             Debug.Log("Screenshot saved!");
         }
         // Play turn if specific keys are pressed or game is in auto mode
-        else if (Input.GetKeyDown("return") || Input.GetKeyDown("space") || Input.GetKeyDown("right") ||
-                 Input.GetKeyDown("left") || Input.GetKeyDown("up") || Input.GetKeyDown("down") ||
+        else if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.RightArrow) ||
+                 Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow) ||
                  GameManager.Instance.isModeAuto)
         {
             // Execute agents' turns and measure the execution time

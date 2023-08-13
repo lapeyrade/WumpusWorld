@@ -44,7 +44,7 @@ public class GridManager : MonoBehaviour
     private static void ChangeColorCell(List<GameObject>[,] map, Vector2Int coords, string element)
     {
         var cell = map[coords.x, coords.y].Find(x => x.name == "Cell");
-        if (cell is null) return;
+        if (cell == null) return;
         if (map[coords.x, coords.y].Exists(x => x.CompareTag(element))) return;
         if (element == "Wall" && map == GameManager.Instance.AgentsMap &&
             !GameManager.Instance.Map[coords.x, coords.y].Exists(x => x.CompareTag(element))) return;
@@ -76,8 +76,7 @@ public class GridManager : MonoBehaviour
         if (map[coords.x, coords.y].Exists(x => x.name == element || x.tag is "Wall")) return;
         if (element != "Cell" && element != "DeadWumpus" && map == GameManager.Instance.AgentsMap &&
            !GameManager.Instance.Map[coords.x, coords.y].Exists(x => x.name == element)) return;
-        var cell = Instantiate(Resources.Load(element)) as GameObject;
-        if (cell is null) return;
+        if (Instantiate(Resources.Load(element)) is not GameObject cell) return;
         cell.tag = element;
 
         if (GameManager.Instance.aiType is GameManager.AIType.Prolog && map == GameManager.Instance.AgentsMap)
@@ -120,10 +119,10 @@ public class GridManager : MonoBehaviour
     public static void AttachGoldToAgent(Agent.Agent agent)
     {
         agent.prefabGoldAgent = Instantiate(Resources.Load("gold")) as GameObject;
-        if (agent.prefabGoldAgent is not null)
+        if (agent.prefabGoldAgent != null)
             agent.prefabGoldAgent.transform.position = GetAgentMapOffset(agent.coords);
         agent.prefabGoldMap = Instantiate(Resources.Load("gold")) as GameObject;
-        if (agent.prefabGoldMap is not null)
+        if (agent.prefabGoldMap != null)
             agent.prefabGoldMap.transform.position = GetWorldMapOffset(agent.coords);
     }
 
