@@ -29,6 +29,8 @@ public class GameController : MonoBehaviour
     // Execute agents' turns based on input
     private static void PlayTurn()
     {
+        var watch = System.Diagnostics.Stopwatch.StartNew();
+
         // Return if no relevant input or game is over
         if ((!Input.anyKeyDown && !GameManager.Instance.isModeAuto) || GameManager.Instance.isGameOver) return;
 
@@ -49,11 +51,11 @@ public class GameController : MonoBehaviour
             // Execute agents' turns and measure the execution time
             foreach (var agent in GameManager.Instance.agents)
             {
-                var watch = System.Diagnostics.Stopwatch.StartNew();
                 agent.GetComponent<AIBasic>().PlayTurn();
-                watch.Stop();
-                Debug.Log($"Execution Time: {watch.ElapsedMilliseconds} ms");
             }
         }
+    
+        watch.Stop();
+        Debug.Log($"Execution Time: {watch.ElapsedMilliseconds} ms");
     }
 }
