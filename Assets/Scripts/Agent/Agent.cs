@@ -19,6 +19,8 @@ namespace Agent
 
         protected internal readonly Stack<Vector2Int> PastMovements = new();
 
+        public string lastAction;
+
         // Initialize agent with given parameters
         public void Init(int agentId, Vector2Int newCoords, int nbTotalWumpus)
         {

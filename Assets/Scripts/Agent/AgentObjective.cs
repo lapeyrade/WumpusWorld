@@ -6,9 +6,9 @@ namespace Agent
     public class AgentObjective : MonoBehaviour
     {
         private Agent _agent;
-        
+
         private void Start() => _agent = GetComponent<Agent>();
-        
+
         // Generates an objective based on the agent's personality and surroundings
         public void GenerateObjective()
         {
@@ -26,10 +26,10 @@ namespace Agent
                 (ExistTypeCell<SafeCell>() || ExistTypeCell<VisitedCell>() || ExistTypeCell<StartCell>()))
                 gameObject.AddComponent<Explore>();
         }
-        
+
         // Checks if the agent has a specific personality
         public bool ExistPersonality<T>() where T : Personality => GetComponent<T>() is not null;
-        
+
         // Checks if the agent has a specific element in its cell
         public bool ExistElementCell<T>() where T : Element =>
             GameManager.Instance.AgentsMap[_agent.coords.x, _agent.coords.y].Exists(e => e.GetComponent<T>());
@@ -46,11 +46,13 @@ namespace Agent
                 for (var y = -1; y <= 1; y++)
                 {
                     if (Mathf.Abs(x) == Mathf.Abs(y)) continue;
-                    
+
                     var newX = _agent.coords.x + x;
                     var newY = _agent.coords.y + y;
 
-                    if (GameManager.IsWithinGrid(newX, newY)
+                    // Check if the cell is within the grid and if there is a specific element in it
+                    if (newX >= GameManager.Instance.gridMin.x && newX < GameManager.Instance.gridMax.x
+                        && newY >= GameManager.Instance.gridMin.y && newY < GameManager.Instance.gridMax.y
                         && GameManager.Instance.AgentsMap[newX, newY].Exists(e => e.GetComponent(typeof(T))))
                         return true;
                 }

@@ -55,7 +55,7 @@ namespace Agent
 
             // Update the UI dropdown text to display the chosen action and its utility
             GameObject.Find("Dropdown").GetComponent<TMP_Dropdown>().captionText.text = $"{Agent.name} chose the" +
-                $" action {highestUtility.GetType().Name} with a utility of {highestUtility.Utility}.";
+                $" action {Agent.lastAction} with a utility of {highestUtility.Utility}.";
         }
 
         public void PickUpGold()
@@ -64,6 +64,7 @@ namespace Agent
             GetComponent<Agent>().nbGold++;
             GridManager.RemoveFromGrids(Coords, "Gold");
             GridManager.AttachGoldToAgent(GetComponent<Agent>());
+            Agent.lastAction = "PickUp";
         }
 
         public void TryShootingArrow()
@@ -80,33 +81,38 @@ namespace Agent
 
         private void ShootIfWumpusExistsInDirection(Vector2Int direction)
         {
-            var currCoords = Coords;
+            var coordWumpus = Coords;
 
-            while (IsInBounds(currCoords))
+            while (IsInBounds(coordWumpus))
             {
                 // Check if a Wumpus is present in the current position
-                if (GameManager.Instance.AgentsMap[currCoords.x, currCoords.y].Exists(e => e.tag is "Wumpus"))
+                if (GameManager.Instance.AgentsMap[coordWumpus.x, coordWumpus.y].Exists(e => e.tag is "Wumpus"))
                 {
                     // Shoot the Wumpus and update the grid
-                    ShootWumpus(currCoords);
+                    Agent.nbArrow--;
+                    GridManager.RemoveFromGrids(coordWumpus, "Wumpus");
+                    GridManager.RemoveFromGrids(coordWumpus, "DangerousCell");
+                    GridManager.AddToGrids(coordWumpus, "DeadWumpus");
+                    GridManager.AddToGrids(coordWumpus, "SafeCell");
+                    Agent.lastAction = "ShootArrow";
+
+                    // Update Agent last action to display/profile data
+                    if (coordWumpus.x > Coords.x)
+                        Agent.lastAction = "ShootRight";
+                    else if (coordWumpus.x < Coords.x)
+                        Agent.lastAction = "ShootLeft";
+                    else if (coordWumpus.y > Coords.y)
+                        Agent.lastAction = "ShootUp";
+                    else if (coordWumpus.y < Coords.y)
+                        Agent.lastAction = "ShootDown";
                     break;
                 }
-                currCoords += direction;
+                coordWumpus += direction;
             }
         }
 
         private static bool IsInBounds(Vector2Int coords) =>
             coords.x >= GameManager.Instance.gridMin.x && coords.x < GameManager.Instance.gridMax.x &&
             coords.y >= GameManager.Instance.gridMin.y && coords.y < GameManager.Instance.gridMax.y;
-
-        private void ShootWumpus(Vector2Int coordWumpus)
-        {
-            // Decrease the agent's arrow count and update the grid to reflect the shot Wumpus
-            Agent.nbArrow--;
-            GridManager.RemoveFromGrids(coordWumpus, "Wumpus");
-            GridManager.RemoveFromGrids(coordWumpus, "DangerousCell");
-            GridManager.AddToGrids(coordWumpus, "DeadWumpus");
-            GridManager.AddToGrids(coordWumpus, "SafeCell");
-        }
     }
 }

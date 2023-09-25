@@ -54,8 +54,19 @@ public class GameController : MonoBehaviour
                 agent.GetComponent<AIBasic>().PlayTurn();
             }
         }
-    
+
+        // Update execution time and agent game data
         watch.Stop();
         Debug.Log($"Execution Time: {watch.ElapsedMilliseconds} ms");
+        GameManager.Instance.turnDuration.Add(watch.ElapsedMilliseconds);
+        
+        // for each agent update coords and last action
+        foreach (var agent in GameManager.Instance.agents)
+        {
+            GameManager.Instance.agentPosition.Add(agent.GetComponent<Agent.Agent>().coords);
+            GameManager.Instance.agentAction.Add(agent.GetComponent<Agent.Agent>().lastAction);
+        }
+
+        
     }
 }

@@ -79,5 +79,5 @@ ignore.conf
 /Screenshots/
 /Recordings/
 
-*.DS_Store
 /Assets/Scripts/Agent/AI/gpt_key.txt*
+**/.DS_Store

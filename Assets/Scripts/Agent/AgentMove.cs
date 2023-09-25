@@ -1,12 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
+using Ontology;
 using UnityEngine;
 
 namespace Agent
 {
     public class AgentMove : MonoBehaviour
     {
-        private readonly List<Vector2Int> _moves = new() { Vector2Int.right, Vector2Int.left, Vector2Int.up, Vector2Int.down };
+        private readonly List<Vector2Int> _moves = 
+            new() { Vector2Int.right, Vector2Int.left, Vector2Int.up, Vector2Int.down };
         private Agent Agent => GetComponent<Agent>();
         private Vector2Int Coords => Agent.coords;
 
@@ -60,6 +62,17 @@ namespace Agent
         // Moves the agent to the specified new coordinate
         public void MoveAgent(Vector2Int newCoord)
         {
+            if(GameManager.Instance.AgentsMap[newCoord.x, newCoord.y].Exists(e => e.tag is "VisitedCell"))
+                Agent.lastAction = "MoveBack";
+            else if(newCoord.x > Coords.x)
+                Agent.lastAction = "MoveRight";
+            else if(newCoord.x < Coords.x)
+                Agent.lastAction = "MoveLeft";
+            else if(newCoord.y > Coords.y)
+                Agent.lastAction = "MoveUp";
+            else if(newCoord.y < Coords.y)
+                Agent.lastAction = "MoveDown";
+
             GridManager.RemoveFromGrids(Coords, tag);
             Agent.transform.position = GridManager.GetAgentMapOffset(newCoord);
 
@@ -71,6 +84,7 @@ namespace Agent
 
             Agent.PastMovements.Push(newCoord);
             Agent.coords = newCoord;
+
             GridManager.AddToGrids(Coords, "VisitedCell");
         }
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Prolog;
 using UnityEngine;
@@ -9,9 +10,10 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
 
     // Game status and settings
+    public bool saveData;
     public bool isGameOver;
     public bool isModeAuto;
-    [Range(0.0f, 1.0f)][SerializeField] public float timerInterval = 0.016f;
+    [Range(0.0f, 1.0f)] public float timerInterval = 0.016f;
 
     // Grid settings
     public int randomSeed = 1;
@@ -35,6 +37,11 @@ public class GameManager : MonoBehaviour
     public List<GameObject> agents;
     public List<GameObject>[,] Map;
     public List<GameObject>[,] AgentsMap;
+
+    // Game data
+    public List<float> turnDuration = new();
+    public List<String> agentAction = new();
+    public List<Vector2Int> agentPosition = new();
 
     // Initialize GameManager and its components
     protected void Awake()
@@ -71,13 +78,51 @@ public class GameManager : MonoBehaviour
     {
         isGameOver = true;
 
+        if (saveData) SaveData();
+
         if (!exitApp) return;
 
         Application.Quit();
         UnityEditor.EditorApplication.isPlaying = false;
     }
 
-    // Check if given coordinates are within the grid bounds
-    public static bool IsWithinGrid(int newX, int newY) =>
-        newX >= Instance.gridMin.x && newX < Instance.gridMax.x && newY >= Instance.gridMin.y && newY < Instance.gridMax.y;
+    // Save game data to JSON file for analysis
+    private void SaveData()
+    {
+        var data = new List<Dictionary<string, object>>
+        {
+            new() {
+                {"randomSeed", randomSeed},
+                {"gridMin", gridMin},
+                {"gridMax", gridMax},
+                {"tileSize", tileSize},
+                {"nbPit", nbPit},
+                {"nbWumpus", nbWumpus},
+                {"nbGold", nbGold},
+                {"nbAgent", nbAgent},
+                {"aiType", aiType.ToString()},
+                {"personalities", personalities},
+                {"agents", agents.Count},
+                {"isGameOver", isGameOver},
+                {"isModeAuto", isModeAuto},
+                {"turnDuration", turnDuration},
+            }
+        };
+
+        // for each agent add all actions and positions
+        for (var i = 0; i < agents.Count; i++)
+        {
+            var agent = agents[i];
+            var agentData = new Dictionary<string, object>
+            {
+                {"agent", agent.name},
+                {"actions", agentAction.GetRange(i * turnDuration.Count, turnDuration.Count)},
+                {"positions", agentPosition.GetRange(i * turnDuration.Count, turnDuration.Count)},
+            };
+            data.Add(agentData);
+        }
+
+        var json = Newtonsoft.Json.JsonConvert.SerializeObject(data, Newtonsoft.Json.Formatting.Indented);
+        System.IO.File.WriteAllText(Application.dataPath + "/../data.json", json);
+    }
 }
