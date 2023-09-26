@@ -136,14 +136,34 @@ location(SubE, L):-
 genObjective(Elem1, P, Obj, Elem2):-
     trait(Elem1, P), desirable(P, Obj),
     motivation(Elem2, Obj),
-    same_or_adjacent_cell(Elem1, Elem2).
+    distance(Elem1, Elem2).
 
-same_or_adjacent_cell(Elem1, Elem2):-
+distance(Elem1, Elem2):-
+    (
+        subClassOf(Elem2, object);
+        subClassOf(Elem2, cell)
+    ),
+    same_cell(Elem1, Elem2).
+
+distance(Elem1, Elem2):-
+      (
+        subClassOf(Elem2, danger);
+        subClassOf(Elem2, cell)
+    ),
+    adjacent_cell(Elem1, Elem2).
+
+
+same_cell(Elem1, Elem2):-
+    location(Elem1, [X1, Y1]),
+    location(Elem2, [X2, Y2]),
+    Elem1 \= Elem2,
+    X1 is X2, Y1 is Y2.
+
+adjacent_cell(Elem1, Elem2):-
     location(Elem1, [X1, Y1]),
     location(Elem2, [X2, Y2]),
     Elem1 \= Elem2,
     (
-        X1 is X2, Y1 is Y2;
         X1 is X2, Y1 is Y2 + 1;
         X1 is X2, Y1 is Y2 - 1;
         X1 is X2 + 1, Y1 is Y2;

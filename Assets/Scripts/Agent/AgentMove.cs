@@ -91,8 +91,7 @@ namespace Agent
         // Moves the agent back to the previous position
         public Vector2Int MoveBack()
         {
-            if (Agent.PastMovements.Count <= 1)
-                return Coords;
+            if (Agent.PastMovements.Count <= 1) return Coords;
 
             Agent.PastMovements.Pop();
             return Agent.PastMovements.Pop();
