@@ -83,7 +83,8 @@ namespace Agent
         {
             var coordWumpus = Coords;
 
-            while (IsInBounds(coordWumpus))
+            while (coordWumpus.x >= GameManager.Instance.gridMin.x && coordWumpus.x < GameManager.Instance.gridMax.x &&
+            coordWumpus.y >= GameManager.Instance.gridMin.y && coordWumpus.y < GameManager.Instance.gridMax.y)
             {
                 // Check if a Wumpus is present in the current position
                 if (GameManager.Instance.AgentsMap[coordWumpus.x, coordWumpus.y].Exists(e => e.tag is "Wumpus"))
@@ -109,10 +110,6 @@ namespace Agent
                 }
                 coordWumpus += direction;
             }
-        }
-
-        private static bool IsInBounds(Vector2Int coords) =>
-            coords.x >= GameManager.Instance.gridMin.x && coords.x < GameManager.Instance.gridMax.x &&
-            coords.y >= GameManager.Instance.gridMin.y && coords.y < GameManager.Instance.gridMax.y;
+        }   
     }
 }
