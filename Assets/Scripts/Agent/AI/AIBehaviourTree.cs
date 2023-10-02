@@ -85,12 +85,12 @@ namespace Agent.AI
                                 return TaskStatus.Success;
                             })
                         .End()
-                        .Sequence("Action: Drop")
+                        .Sequence("Action: Discard")
                             .Condition("Abstinence Objective", () => agent.GetComponent<Abstinence>())
                             .Condition("Personality Ascetic", () => agent.GetComponent<Ascetic>())
-                            .Do("Add Drop", () =>
+                            .Do("Add Discard", () =>
                             {
-                                gameObject.AddComponent<Drop>();
+                                gameObject.AddComponent<Discard>();
                                 return TaskStatus.Success;
                             })
                         .End()

@@ -55,7 +55,7 @@ subClassOf(move, action).
 subClassOf(moveback, action).
 subClassOf(bumpwall, action).
 subClassOf(pickup, interact).
-subClassOf(drop, interact).
+subClassOf(discard, interact).
 subClassOf(shoot, attack).
 subClassOf(shootarrow, shoot).
 
@@ -172,7 +172,7 @@ adjacent_cell(Elem1, Elem2):-
 
 /* Link Objective-Action */
 satisfy(wealth, pickup).
-satisfy(abstinence, drop).
+satisfy(abstinence, discard).
 satisfy(safety, moveback).
 satisfy(safety, attack).
 satisfy(fight, attack).

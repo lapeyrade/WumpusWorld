@@ -2,7 +2,7 @@ using Prolog;
 
 namespace Agent.AI
 {
-    public class AIProlog : AIBasic 
+    public class AIProlog : AIBasic
     {
         public override void FirstTurn()
         {
@@ -22,8 +22,9 @@ namespace Agent.AI
                 case "pickup": // Pick up gold
                     GetComponent<AgentAction>().PickUpGold();
                     break;
-                case "drop": // Do nothing (drop action)
-                    return;
+                case "discard": // Discard the gold (destroy the GameObject)
+                    GetComponent<AgentAction>().Discard();
+                    break;
                 case "bumpwall": // Bump into a wall
                     GetComponent<AgentMove>().BumpWall();
                     break;
@@ -34,7 +35,7 @@ namespace Agent.AI
                     GetComponent<AgentMove>().MoveCell();
                     break;
             }
-            
+
             GetComponent<AgentSense>().SenseCell(); // Sense the current cell
             GameManager.Instance.GetComponent<PrologInterface>().UpdateKb(); // Update the knowledge base
         }

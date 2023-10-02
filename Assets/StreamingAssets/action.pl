@@ -14,7 +14,7 @@
     move(X):- move_right(X).
     move(X):- move_left(X).
     interact(X):- pick_up(X).
-    interact(X):- drop(X).
+    interact(X):- discard(X).
     fight(X):- shoot(X).
     shoot(X):- shoot_arrow(X).
     shoot_arrow(X):- shoot_arrow_up(X).
@@ -49,9 +49,9 @@
     pick_up([Sit,X]):- possible_action(pick_up, [Sit,X]).
     pick_up(Sit):- situation_action(Sit, pick_up).
     pick_up([Obj, Sit]):- objective_action_situation(Obj, pick_up, Sit).
-    drop([Sit, X]):-possible_action(drop, [Sit,X]).
-    drop(Sit):- situation_action(Sit, drop).
-    drop([Obj, Sit]):- objective_action_situation(Obj, drop, Sit).
+    discard([Sit, X]):-possible_action(discard, [Sit,X]).
+    discard(Sit):- situation_action(Sit, discard).
+    discard([Obj, Sit]):- objective_action_situation(Obj, discard, Sit).
     shoot_arrow_up([Sit,X]):- possible_action(shoot_arrow_up, [Sit,X]).
     shoot_arrow_up(Sit):- situation_action(Sit, shoot_arrow_up).
     shoot_arrow_up([Obj, Sit]):- objective_action_situation(Obj, shoot_arrow_up, Sit).
@@ -78,7 +78,7 @@ possible_action(Action, [Situation, X]):-
     % writeln('').
 
 situation_action(object, pick_up).
-situation_action(object, drop).
+situation_action(object, discard).
 situation_action(danger, move_back).
 situation_action(danger, move_right).
 situation_action(danger, move_left).
@@ -94,7 +94,7 @@ trait_objective(cupid, wealth).
 % trait_objective(fearful, safety).
 
 objective_action_situation(wealth, pick_up, valuable_object).
-objective_action_situation(wealth, drop, unvaluable_object).
+objective_action_situation(wealth, discard, unvaluable_object).
 % objective_action_situation(wealth, pick_up, object).
 objective_action_situation(safety, move_back, danger).
 objective_action_situation(safety, move_right, danger).

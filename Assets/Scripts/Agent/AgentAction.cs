@@ -14,7 +14,7 @@ namespace Agent
         {
             // Generate specific actions based on the combination of attached components
             AddComponentIf<Wealth, Cupid, PickUp>();
-            AddComponentIf<Abstinence, Ascetic, Drop>();
+            AddComponentIf<Abstinence, Ascetic, Discard>();
             AddComponentIf<Safety, Coward, MoveBack>();
             AddComponentIf<Safety, Brave, Attack>();
             AddComponentIf<Fight, Brave, Attack>();
@@ -67,6 +67,9 @@ namespace Agent
             Agent.lastAction = "PickUp";
         }
 
+        // remove the gold from the cavern
+        internal void Discard() { GridManager.RemoveFromGrids(Coords, "Gold"); }
+
         public void TryShootingArrow()
         {
             // Check if the agent has arrows available
@@ -110,6 +113,6 @@ namespace Agent
                 }
                 coordWumpus += direction;
             }
-        }   
+        }
     }
 }

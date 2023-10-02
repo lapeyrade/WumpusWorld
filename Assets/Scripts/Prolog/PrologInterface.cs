@@ -48,8 +48,8 @@ namespace Prolog
                             else result += answer.ElementAt(i)[0] + " = " + answer.ElementAt(i)[1] + "; ";
                         }
                         // Append to file the result of the query
-                        File.AppendAllText(Path.Combine(Application.streamingAssetsPath, "result.txt"), result + "\n");
-                        Debug.Log(result);
+                        // File.AppendAllText(Path.Combine(Application.streamingAssetsPath, "result.txt"), result + "\n");
+                        // Debug.Log(result);
                     }
                 } catch (PrologNoQueryError e)
                 {

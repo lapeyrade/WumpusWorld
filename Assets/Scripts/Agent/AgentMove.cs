@@ -7,7 +7,7 @@ namespace Agent
 {
     public class AgentMove : MonoBehaviour
     {
-        private readonly List<Vector2Int> _moves = 
+        private readonly List<Vector2Int> _moves =
             new() { Vector2Int.right, Vector2Int.left, Vector2Int.up, Vector2Int.down };
         private Agent Agent => GetComponent<Agent>();
         private Vector2Int Coords => Agent.coords;
@@ -27,7 +27,7 @@ namespace Agent
             else if (Input.GetKeyDown(KeyCode.Return))
                 MoveAgent(SelectRandomMove());
         }
-        
+
         // Selects the next move based on the agent's state and surroundings
         private Vector2Int SelectNextMove()
         {
@@ -36,7 +36,7 @@ namespace Agent
 
             foreach (var move in _moves.Where(move => SafeCellUnexplored(Coords + move)))
                 return Coords + move;
-            
+
             return MoveBack();
         }
 
@@ -45,39 +45,39 @@ namespace Agent
         {
             if (Agent.nbGold > 0)
                 return MoveBack();
-            
+
             var randomMoves = _moves.OrderBy(_ => Random.value);
 
             foreach (var move in randomMoves.Where(move => SafeCellUnexplored(Coords + move)))
                 return Coords + move;
-            
+
             return MoveBack();
         }
 
         // Checks if the specified cell is a safe, unexplored cell
         private static bool SafeCellUnexplored(Vector2Int cell) =>
-            GameManager.Instance.AgentsMap[cell.x, cell.y].Exists(e => e.tag is "SafeCell") && 
+            GameManager.Instance.AgentsMap[cell.x, cell.y].Exists(e => e.tag is "SafeCell") &&
             !GameManager.Instance.AgentsMap[cell.x, cell.y].Exists(e => e.tag is "VisitedCell");
 
         // Moves the agent to the specified new coordinate
         public void MoveAgent(Vector2Int newCoord)
         {
-            if(GameManager.Instance.AgentsMap[newCoord.x, newCoord.y].Exists(e => e.tag is "VisitedCell"))
+            if (GameManager.Instance.AgentsMap[newCoord.x, newCoord.y].Exists(e => e.tag is "VisitedCell"))
                 Agent.lastAction = "MoveBack";
-            else if(newCoord.x > Coords.x)
+            else if (newCoord.x > Coords.x)
                 Agent.lastAction = "MoveRight";
-            else if(newCoord.x < Coords.x)
+            else if (newCoord.x < Coords.x)
                 Agent.lastAction = "MoveLeft";
-            else if(newCoord.y > Coords.y)
+            else if (newCoord.y > Coords.y)
                 Agent.lastAction = "MoveUp";
-            else if(newCoord.y < Coords.y)
+            else if (newCoord.y < Coords.y)
                 Agent.lastAction = "MoveDown";
 
             GridManager.RemoveFromGrids(Coords, tag);
             Agent.transform.position = GridManager.GetAgentMapOffset(newCoord);
 
             if (Agent.nbGold > 0)
-            { 
+            {
                 Agent.prefabGoldMap.transform.position = Agent.prefabAgentWorld.transform.position;
                 Agent.prefabGoldAgent.transform.position = Agent.transform.position;
             }
