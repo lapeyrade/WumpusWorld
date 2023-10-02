@@ -40,7 +40,7 @@ public class GameManager : MonoBehaviour
 
     // Game data
     public List<float> turnDuration = new();
-    public List<String> agentAction = new();
+    public List<string> agentAction = new();
     public List<Vector2Int> agentPosition = new();
 
     // Initialize GameManager and its components
@@ -61,9 +61,7 @@ public class GameManager : MonoBehaviour
 
         // Initialize Prolog interface if AI type is Prolog
         if (aiType is AIType.Prolog)
-        {
             GetComponent<PrologInterface>().Init();
-        }
 
         // Build grid and adjust camera
         GetComponent<GridBuilder>().BuildGrid();
@@ -123,6 +121,8 @@ public class GameManager : MonoBehaviour
         }
 
         var json = Newtonsoft.Json.JsonConvert.SerializeObject(data, Newtonsoft.Json.Formatting.Indented);
-        System.IO.File.WriteAllText(Application.dataPath + "/../data.json", json);
+        // Create file /../data/DATE-AIType-Personalities.json and write json to it
+        var path = $"data/{DateTime.Now:yy_MM_dd_HH_mm_ss}-{aiType}-{string.Join("-", personalities)}.json";
+        System.IO.File.WriteAllText(path, json);
     }
 }
