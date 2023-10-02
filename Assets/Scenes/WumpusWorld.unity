@@ -1507,16 +1507,16 @@ MonoBehaviour:
   isGameOver: 0
   isModeAuto: 1
   timerInterval: 0
-  randomSeed: 1
+  randomSeed: 3
   gridMin: {x: 0, y: 0}
-  gridMax: {x: 15, y: 15}
+  gridMax: {x: 25, y: 25}
   tileSize: 1.05
-  nbPit: 10
-  nbWumpus: 10
+  nbPit: 35
+  nbWumpus: 35
   nbGold: 1
-  nbAgent: 2
+  nbAgent: 1
   aiType: 0
-  personalities: 0000000002000000
+  personalities: 0100000002000000
   agents: []
   turnDuration: []
   agentAction: []
@@ -1557,7 +1557,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 638a6ed3871f47929af0a093d8ab118e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  query: location(X, Y)
+  query: locgenAction(Elem1, Perso, Obj, Elem2, Act, Utility)ation(X, Y)
   askQuery: 0
 --- !u!1 &2138976747
 GameObject:
