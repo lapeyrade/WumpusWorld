@@ -1,0 +1,106 @@
+[
+  {
+    "randomSeed": 3,
+    "gridMin": {
+      "x": 0,
+      "y": 0,
+      "magnitude": 0.0,
+      "sqrMagnitude": 0
+    },
+    "gridMax": {
+      "x": 25,
+      "y": 25,
+      "magnitude": 35.35534,
+      "sqrMagnitude": 1250
+    },
+    "tileSize": 1.05,
+    "nbPit": 35,
+    "nbWumpus": 35,
+    "nbGold": 1,
+    "nbAgent": 15,
+    "aiType": "FiniteStateMachine",
+    "personalities": [
+      0,
+      2
+    ],
+    "agents": 15,
+    "isGameOver": true,
+    "isModeAuto": true,
+    "turnDuration": []
+  },
+  {
+    "agent": "human0",
+    "actions": [],
+    "positions": []
+  },
+  {
+    "agent": "human1",
+    "actions": [],
+    "positions": []
+  },
+  {
+    "agent": "human2",
+    "actions": [],
+    "positions": []
+  },
+  {
+    "agent": "human3",
+    "actions": [],
+    "positions": []
+  },
+  {
+    "agent": "human4",
+    "actions": [],
+    "positions": []
+  },
+  {
+    "agent": "human5",
+    "actions": [],
+    "positions": []
+  },
+  {
+    "agent": "human6",
+    "actions": [],
+    "positions": []
+  },
+  {
+    "agent": "human7",
+    "actions": [],
+    "positions": []
+  },
+  {
+    "agent": "human8",
+    "actions": [],
+    "positions": []
+  },
+  {
+    "agent": "human9",
+    "actions": [],
+    "positions": []
+  },
+  {
+    "agent": "human10",
+    "actions": [],
+    "positions": []
+  },
+  {
+    "agent": "human11",
+    "actions": [],
+    "positions": []
+  },
+  {
+    "agent": "human12",
+    "actions": [],
+    "positions": []
+  },
+  {
+    "agent": "human13",
+    "actions": [],
+    "positions": []
+  },
+  {
+    "agent": "human14",
+    "actions": [],
+    "positions": []
+  }
+]
