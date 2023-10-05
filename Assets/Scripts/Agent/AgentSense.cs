@@ -19,7 +19,7 @@ namespace Agent
             // Check if the current cell contains a pit or wumpus
             if (!GameManager.Instance.Map[Coords.x, Coords.y].Exists(e => e.tag is "Pit" or "Wumpus"))
                 MakeInferences();
-            else
+                        else
                 // Set game over state if the current cell contains a pit or wumpus
                 GameManager.Instance.SetGameOver(false);
 
@@ -30,10 +30,11 @@ namespace Agent
                     // Set game over if the agent is at the starting coordinate with one gold
                     GameManager.Instance.SetGameOver(true);
                 // Set game over if Agent has no safe cell to visit
-                else if (!GameManager.Instance.AgentsMap[Coords.x + 1, Coords.y].Exists(e => e.tag is "SafeCell")
-                && !GameManager.Instance.AgentsMap[Coords.x - 1, Coords.y].Exists(e => e.tag is "SafeCell")
-                && !GameManager.Instance.AgentsMap[Coords.x, Coords.y + 1].Exists(e => e.tag is "SafeCell")
-                && !GameManager.Instance.AgentsMap[Coords.x, Coords.y - 1].Exists(e => e.tag is "SafeCell"))
+                if (GameManager.Instance.nbAgent is 1
+                    && !GameManager.Instance.AgentsMap[Coords.x + 1, Coords.y].Exists(e => e.tag is "SafeCell")
+                    && !GameManager.Instance.AgentsMap[Coords.x - 1, Coords.y].Exists(e => e.tag is "SafeCell")
+                    && !GameManager.Instance.AgentsMap[Coords.x, Coords.y + 1].Exists(e => e.tag is "SafeCell")
+                    && !GameManager.Instance.AgentsMap[Coords.x, Coords.y - 1].Exists(e => e.tag is "SafeCell"))
                     GameManager.Instance.SetGameOver(false);
             }
         }

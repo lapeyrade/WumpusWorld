@@ -8,29 +8,40 @@ namespace Prolog
 {
     public class PrologInterface : MonoBehaviour
     {
-        [SerializeField] public string query = "";
-        [SerializeField] public bool askQuery;
         private TMP_Dropdown _dropdown;
-
+        public string debug_query = "";
+        public bool askQuery;
         private readonly string _prologFilePath = Path.Combine(Application.streamingAssetsPath, "article.pl");
         private PrologMqi _mqi;
-        public PrologThread PrologThread;
+        private PrologThread PrologThread;
+        public string QueryText = "";
+
 
         // Initialize the Prolog interface
         public void Init()
         {
-            _mqi = new PrologMqi(prologPath:"/opt/homebrew/bin/");
+            _mqi = new PrologMqi(prologPath: "/opt/homebrew/bin/");
             PrologThread = _mqi.CreateThread();
             PrologThread.Query($"consult('{_prologFilePath}')");
             _dropdown = GameObject.Find("Dropdown").GetComponent<TMP_Dropdown>();
+        }
+
+
+        public void RunQuery()
+        {
+            // Remove first 2 characters (", ") if not empty
+            if (QueryText.Length > 2)
+                QueryText = QueryText.Remove(0, 2);
+            PrologThread.Query(QueryText);
+            QueryText = "";
         }
 
         // Ask a query to Prolog
         protected void Update()
         {
             if (!askQuery) return; /* Prolog query inside Unity Inspector */
-            PrologThread.QueryAsync(query, false);
-            
+            PrologThread.QueryAsync(debug_query, false);
+
             while (askQuery)
             {
                 try
@@ -49,9 +60,10 @@ namespace Prolog
                         }
                         // Append to file the result of the query
                         // File.AppendAllText(Path.Combine(Application.streamingAssetsPath, "result.txt"), result + "\n");
-                        // Debug.Log(result);
+                        Debug.Log(result);
                     }
-                } catch (PrologNoQueryError e)
+                }
+                catch (PrologNoQueryError e)
                 {
                     Debug.LogError(e);
                     askQuery = false;
@@ -60,34 +72,17 @@ namespace Prolog
             }
         }
 
-        // Update the knowledge base with the current state of the game
-        public void UpdateKb()
-        {
-            foreach (var agent in GameManager.Instance.agents)
-            {
-                PrologThread.Query($"retract(location({agent.name}, _))");
-                PrologThread.Query($"retractall(trait({agent.name}, _))");
-                
-                PrologThread.Query($"assertz(location({agent.name}, [{agent.GetComponent<Agent.Agent>().coords.x}," +
-                                    $" {agent.GetComponent<Agent.Agent>().coords.y}]))");
-                
-                foreach (var perso in GameManager.Instance.personalities.Where(perso =>
-                             agent.GetComponent(Type.GetType("Ontology." + perso))))
-                    PrologThread.Query($"assertz(trait({agent.name}, {perso.ToString().ToLower()}))");
-            }
-        }
-
         // Query the knowledge base for agent actions
         public string QueryKb(string agentName)
         {
             PrologThread.QueryAsync($"genAction({agentName}, Perso, Obj, Elem2, Act, Uti)", false);
-            
+
             var action = "";
             var maxUtil = 0;
             var chosenExplanation = "";
-            
+
             _dropdown.ClearOptions();
-            
+
             while (true)
             {
                 var answer = PrologThread.QueryAsyncResult();
@@ -95,9 +90,9 @@ namespace Prolog
 
                 var explanation = $"<b>{agentName}</b>" + " is <b>" + answer.ElementAt(0)[1] +
                                   "</b> and wanted to <b>" + answer.ElementAt(1)[1] + "</b> regarding the <b>" +
-                                  answer.ElementAt(2)[1] + "</b> so one possible action was to <b>" + answer.ElementAt(3)[1] + 
+                                  answer.ElementAt(2)[1] + "</b> so one possible action was to <b>" + answer.ElementAt(3)[1] +
                                   "</b> with a utility of <b>" + answer.ElementAt(4)[1];
-                
+
                 if (Convert.ToInt32(answer.ElementAt(4)[1]) > maxUtil)
                 {
                     action = answer.ElementAt(3)[1];
@@ -107,7 +102,7 @@ namespace Prolog
                 _dropdown.options.Add(new TMP_Dropdown.OptionData(explanation));
             }
             _dropdown.captionText.text = chosenExplanation;
-           
+
             return action;
         }
     }

@@ -1,5 +1,6 @@
 using Agent.AI;
 using UnityEngine;
+using Prolog;
 
 public class GameController : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class GameController : MonoBehaviour
         // Initialize agents' first turns
         foreach (var agent in GameManager.Instance.agents)
             agent.GetComponent<AIBasic>().FirstTurn();
+        if (GameManager.Instance.aiType is GameManager.AIType.Prolog)
+            GameManager.Instance.GetComponent<PrologInterface>().RunQuery();
     }
 
     // Called once per frame
@@ -53,6 +56,9 @@ public class GameController : MonoBehaviour
             {
                 agent.GetComponent<AIBasic>().PlayTurn();
             }
+            
+            if (GameManager.Instance.aiType is GameManager.AIType.Prolog)
+                GameManager.Instance.GetComponent<PrologInterface>().RunQuery();
         }
 
         // Update execution time and agent game data

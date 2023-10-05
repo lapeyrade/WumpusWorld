@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using Ontology;
 using UnityEngine;
+using Prolog;
 
 namespace Agent
 {
@@ -86,6 +86,9 @@ namespace Agent
             Agent.coords = newCoord;
 
             GridManager.AddToGrids(Coords, "VisitedCell");
+
+            GameManager.Instance.GetComponent<PrologInterface>().QueryText += $", retract(location({Agent.name}, _))";
+            GameManager.Instance.GetComponent<PrologInterface>().QueryText += $", assertz(location({Agent.name}, [{Agent.coords.x}, {Agent.coords.y}]))";
         }
 
         // Moves the agent back to the previous position

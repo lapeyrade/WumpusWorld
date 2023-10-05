@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using Prolog;
 
 namespace Agent.AI
@@ -8,7 +10,14 @@ namespace Agent.AI
         {
             GetComponent<AgentMove>().MoveCell(); // Move to a cell
             GetComponent<AgentSense>().SenseCell(); // Sense the current cell
-            GameManager.Instance.GetComponent<PrologInterface>().UpdateKb(); // Update the knowledge base
+
+            // Update the knowledge base
+            GameManager.Instance.GetComponent<PrologInterface>().QueryText +=
+                $", assertz(location({GetComponent<Agent>().name}, [{GetComponent<Agent>().coords.x}, {GetComponent<Agent>().coords.y}]))";
+
+            foreach (var perso in GameManager.Instance.personalities.Where(perso => GetComponent<Agent>().GetComponent(Type.GetType("Ontology." + perso))))
+                GameManager.Instance.GetComponent<PrologInterface>().QueryText +=
+                $", assertz(trait({GetComponent<Agent>().name}, {perso.ToString().ToLower()}))";
         }
 
         public override void PlayTurn()
@@ -36,8 +45,8 @@ namespace Agent.AI
                     break;
             }
 
-            GetComponent<AgentSense>().SenseCell(); // Sense the current cell
-            GameManager.Instance.GetComponent<PrologInterface>().UpdateKb(); // Update the knowledge base
+            // Sense the element in the current cell
+            GetComponent<AgentSense>().SenseCell();
         }
     }
 }

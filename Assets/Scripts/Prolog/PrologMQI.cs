@@ -508,7 +508,6 @@ namespace Prolog
 
             List<string[]> answerList = new();
 
-
             using var doc = JsonDocument.Parse(result);
             var jsonResult = doc.RootElement;
 
