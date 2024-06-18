@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>OpenAI</id>
+    <version>1.11.0</version>
+    <title>OpenAI API</title>
+    <authors>OkGoDoIt (Roger Pincombe)</authors>
+    <license type="expression">CC0-1.0</license>
+    <licenseUrl>https://licenses.nuget.org/CC0-1.0</licenseUrl>
+    <icon>nuget_logo.png</icon>
+    <readme>README.md</readme>
+    <projectUrl>https://github.com/OkGoDoIt/OpenAI-API-dotnet</projectUrl>
+    <description>A simple C# / .NET library to use with OpenAI's APIs, including GPT 3.5, GPT 4, ChatGPT, DALL-E, Whisper, etc.  Independently developed, this is not an official library and I am not affiliated with OpenAI.  An OpenAI or Azure OpenAI account is required.</description>
+    <releaseNotes>Adds new embedding models as of March 2024</releaseNotes>
+    <copyright>This library is licensed CC-0, in the public domain</copyright>
+    <tags>OpenAI, AI, ML, API, ChatGPT, DALLE, GPT3, GPT-3, GPT4, GPT-4, DALL-E, Whisper, TTS</tags>
+    <repository type="git" url="https://github.com/OkGoDoIt/OpenAI-API-dotnet" commit="da5be17a23098c6315592ef1fc6a97b0e22ea9be" />
+    <dependencies>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="Microsoft.Bcl.AsyncInterfaces" version="1.1.1" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Http" version="2.1.0" exclude="Build,Analyzers" />
+        <dependency id="Newtonsoft.Json" version="13.0.3" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>

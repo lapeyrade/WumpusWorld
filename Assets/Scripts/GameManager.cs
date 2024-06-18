@@ -120,7 +120,7 @@ public class GameManager : MonoBehaviour
             data.Add(agentData);
         }
 
-        var json = Newtonsoft.Json.JsonConvert.SerializeObject(data, Newtonsoft.Json.Formatting.Indented);
+        var json = System.Text.Json.JsonSerializer.Serialize(data, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
         // Create file /../data/DATE-AIType-Personalities.json and write json to it
         var path = $"data/{DateTime.Now:yy_MM_dd_HH_mm_ss}-{aiType}-{string.Join("-", personalities)}.json";
         System.IO.File.WriteAllText(path, json);
