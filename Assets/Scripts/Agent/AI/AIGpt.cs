@@ -1,4 +1,3 @@
-using OpenAI_API;
 using UnityEngine;
 
 namespace Agent.AI
@@ -6,7 +5,7 @@ namespace Agent.AI
     public class AIGpt : AIBasic
     {
         public override async void PlayTurn()
-        { 
+        {
             /*
             You are an agent in a grid-based game that involves navigating through a cave to find a piece of gold while avoiding pits. Here are the detailed and exhaustive rules of the game:
             Game Objective: The objective of the game is to find the gold without dying and losing the game. Once you have picked the gold, move back to the starting cell to win.
@@ -43,31 +42,31 @@ namespace Agent.AI
             4| G |   | B |   |
                
             */
-            
-            var api = new OpenAIAPI(await System.IO.File.ReadAllTextAsync("gpt_key.txt"));
-            var chat = api.Chat.CreateConversation();
-            chat.AppendSystemMessage(
-                "You are in a grid-based game that involves navigating through a cave to find a piece of gold while avoiding pits. Here are the detailed and exhaustive rules of the game:" +
-                "Game Setup: The game is played on an 4 x 4 grid of cells. The location of the gold, pits is randomly determined for each new game. " +
-                "Game Objective: The objective of the game is to find the gold and then leave the cave without dying. " +
-                "Player: You start at a fixed location (1,1) and can move one cell at a time in any of the four cardinal directions (north, south, east, or west), you are allowed go back to previous cells, one cell at a time. " +
-                "Pits:  If the you are in the same cell as a pit, you die and the game ends immediately. If there is a breeze in your cell, it means that a pit is in an adjacent cell of your current cell. " +
-                "Gold: The gold is randomly placed somewhere in the cave. If you move into a cell containing the gold, you pick it up. " +
-                "Actions: The player can take one of four actions at any time: move south, north, east or west. " +
-                "Sensing: You only know what is in the current cell and the cells you have visited already. It is better to not make risky move and be sure of moving to a safe cell. Since you can only sense pits in adjacent cells, you shall not move to a cell that has a breeze unless you are sure that there is no pit in the adjacent cell. " +
-                "There is no breeze nor gold in the starting cell. Make sure not to die.");
 
-            // give a few examples as user and assistant
-            chat.AppendUserInput("You are now in (1, 1). This is the starting cell. There is no breeze nor gold in the cell. What is your next move");
-            chat.AppendExampleChatbotOutput("north --- The north cell is unexplored, and safe since there is no breeze in my current cell.");
-            chat.AppendUserInput("You are now in (1, 2). There is no breeze nor gold in the cell. What is your next move");
-            chat.AppendExampleChatbotOutput("north --- The north cell is unexplored, and safe since there is no breeze in my current cell.");
+            // var api = new OpenAIAPI(await System.IO.File.ReadAllTextAsync("gpt_key.txt"));
+            // var chat = api.Chat.CreateConversation();
+            // chat.AppendSystemMessage(
+            //     "You are in a grid-based game that involves navigating through a cave to find a piece of gold while avoiding pits. Here are the detailed and exhaustive rules of the game:" +
+            //     "Game Setup: The game is played on an 4 x 4 grid of cells. The location of the gold, pits is randomly determined for each new game. " +
+            //     "Game Objective: The objective of the game is to find the gold and then leave the cave without dying. " +
+            //     "Player: You start at a fixed location (1,1) and can move one cell at a time in any of the four cardinal directions (north, south, east, or west), you are allowed go back to previous cells, one cell at a time. " +
+            //     "Pits:  If the you are in the same cell as a pit, you die and the game ends immediately. If there is a breeze in your cell, it means that a pit is in an adjacent cell of your current cell. " +
+            //     "Gold: The gold is randomly placed somewhere in the cave. If you move into a cell containing the gold, you pick it up. " +
+            //     "Actions: The player can take one of four actions at any time: move south, north, east or west. " +
+            //     "Sensing: You only know what is in the current cell and the cells you have visited already. It is better to not make risky move and be sure of moving to a safe cell. Since you can only sense pits in adjacent cells, you shall not move to a cell that has a breeze unless you are sure that there is no pit in the adjacent cell. " +
+            //     "There is no breeze nor gold in the starting cell. Make sure not to die.");
 
-            // now let's ask it a question'
-            chat.AppendUserInput("You are now in (1, 1). This is the starting cell. There is no breeze nor gold in the cell. What is your next move");
-            // and get the response
-            var response = await chat.GetResponseFromChatbotAsync();
-            Debug.Log(response); // "Yes"
+            // // give a few examples as user and assistant
+            // chat.AppendUserInput("You are now in (1, 1). This is the starting cell. There is no breeze nor gold in the cell. What is your next move");
+            // chat.AppendExampleChatbotOutput("north --- The north cell is unexplored, and safe since there is no breeze in my current cell.");
+            // chat.AppendUserInput("You are now in (1, 2). There is no breeze nor gold in the cell. What is your next move");
+            // chat.AppendExampleChatbotOutput("north --- The north cell is unexplored, and safe since there is no breeze in my current cell.");
+
+            // // now let's ask it a question'
+            // chat.AppendUserInput("You are now in (1, 1). This is the starting cell. There is no breeze nor gold in the cell. What is your next move");
+            // // and get the response
+            // var response = await chat.GetResponseFromChatbotAsync();
+            // Debug.Log(response); // "Yes"
         }
     }
 }
