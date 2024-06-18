@@ -1,0 +1,36 @@
+[
+  {
+    "randomSeed": 3,
+    "gridMin": {
+      "x": 0,
+      "y": 0,
+      "magnitude": 0.0,
+      "sqrMagnitude": 0
+    },
+    "gridMax": {
+      "x": 15,
+      "y": 15,
+      "magnitude": 21.2132034,
+      "sqrMagnitude": 450
+    },
+    "tileSize": 1.05,
+    "nbPit": 10,
+    "nbWumpus": 10,
+    "nbGold": 1,
+    "nbAgent": 1,
+    "aiType": "Basic",
+    "personalities": [
+      1,
+      2
+    ],
+    "agents": 1,
+    "isGameOver": true,
+    "isModeAuto": true,
+    "turnDuration": []
+  },
+  {
+    "agent": "human0",
+    "actions": [],
+    "positions": []
+  }
+]

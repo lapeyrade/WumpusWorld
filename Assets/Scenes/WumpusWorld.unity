@@ -38,7 +38,6 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1509,14 +1508,14 @@ MonoBehaviour:
   timerInterval: 0
   randomSeed: 1
   gridMin: {x: 0, y: 0}
-  gridMax: {x: 15, y: 15}
+  gridMax: {x: 35, y: 35}
   tileSize: 1.05
   nbPit: 10
   nbWumpus: 10
   nbGold: 1
-  nbAgent: 1
-  aiType: 3
-  personalities: 0000000002000000
+  nbAgent: 100
+  aiType: 0
+  personalities: 0100000002000000
   agents: []
   turnDuration: []
   agentAction: []
