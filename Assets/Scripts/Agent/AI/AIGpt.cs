@@ -4,7 +4,8 @@ namespace Agent.AI
 {
     public class AIGpt : AIBasic
     {
-        public override async void PlayTurn()
+        // public override async void PlayTurn()
+        public override void PlayTurn()
         {
             /*
             You are an agent in a grid-based game that involves navigating through a cave to find a piece of gold while avoiding pits. Here are the detailed and exhaustive rules of the game:
