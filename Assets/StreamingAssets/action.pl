@@ -1,3 +1,4 @@
+% situation.pl
 :- multifile [situation/2, trait/2, query_ontology/3].
 :- discontiguous [action/1, possible_action/2, situation_action/2, objective_action_situation/3].
 :- table objective_action_situation/3, possible_action/2, situation_action/2 as incremental.

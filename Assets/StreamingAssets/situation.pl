@@ -1,3 +1,4 @@
+% situation.pl
 :- multifile [query_ontology/3].
 :- discontiguous [element/1, being/1, object/1, valuable/1, common/1, unvaluable/1].
 :- table situation/2, element/1, valuable/1, common/1, unvaluable/1, valuable_object/1, common_object/1, unvaluable_object/1, object/1 as incremental.

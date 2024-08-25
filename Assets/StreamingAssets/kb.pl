@@ -1,3 +1,4 @@
+% kb.pl
 :- consult([situation, action]).
 
 %-----------------------------------
