@@ -17,7 +17,7 @@ namespace Agent.AI
         }
 
         private State _state = State.GenerateObjective;
-        
+
         // The first turn of the agent is different from the rest
         public override void FirstTurn()
         {
@@ -47,7 +47,7 @@ namespace Agent.AI
                     _state = State.SenseCell;
                     break;
                 case State.SenseCell:
-                default :
+                default:
                     GetComponent<AgentSense>().SenseCell();
                     // Clean up the components related to Objective, Move, and Action
                     GetComponents<Component>().Where(c => c is Objective or Move or Action)

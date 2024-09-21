@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace Ontology
 {
-    public class Element : MonoBehaviour{}
+    public class Element : MonoBehaviour { }
     public class Being : Element { }
-    public class Object : Element  { }
+    public class Object : Element { }
     public class Environment : Element { }
     public class Breeze : Environment { }
     public class Stench : Environment { }
@@ -29,6 +29,6 @@ namespace Ontology
     public class Bat : Monster { }
     public class Wumpus : Monster { }
     public class Pit : Trap { }
-    
-    public interface IDangerous {}
+
+    public interface IDangerous { }
 }

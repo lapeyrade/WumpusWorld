@@ -11,10 +11,11 @@ namespace Agent.AI
         [SerializeField]
         private BehaviorTree tree;
 
-        private void Awake() {
+        private void Awake()
+        {
             var agentObjective = GetComponent<AgentObjective>();
             var agent = GetComponent<Agent>();
-            
+
             tree = new BehaviorTreeBuilder(gameObject)
                 .Sequence("Execute Action")
                     .Selector("Generate Objective")
@@ -155,7 +156,7 @@ namespace Agent.AI
                         GetComponent<AgentSense>().SenseCell();
                         return TaskStatus.Success;
                     })
-                    .Do("Remove Previous Action", ()=>
+                    .Do("Remove Previous Action", () =>
                     {
                         GetComponents<Component>().Where(c => c is Objective or Move or Action).ToList().ForEach(Destroy);
                         return TaskStatus.Success;
@@ -164,6 +165,6 @@ namespace Agent.AI
                 .Build();
         }
 
-        public override void PlayTurn () => tree.Tick(); // Update the tree every frame
+        public override void PlayTurn() => tree.Tick(); // Update the tree every frame
     }
 }

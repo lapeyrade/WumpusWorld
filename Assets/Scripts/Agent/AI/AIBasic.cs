@@ -19,7 +19,7 @@ namespace Agent.AI
             GetComponent<AgentAction>().GenerateUtility(); // Generate the utility for the agent's actions
             GetComponent<AgentAction>().ExecuteHighestUtility(); // Execute the action with the highest utility
             GetComponent<AgentSense>().SenseCell(); // Sense the current cell
-            
+
             // Clean up the components related to Objective, Move, and Action
             GetComponents<Component>().Where(c => c is Objective or Move or Action).ToList().ForEach(Destroy);
         }

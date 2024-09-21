@@ -12,13 +12,13 @@ public class GridBuilder : MonoBehaviour
         GenerateCell(); // Generate cells in the grid.
         GenerateWall(); // Generate walls around the grid.
         GenerateElement("Human", GameManager.Instance.nbAgent, // Generate human agents on the grid.
-         new List<string> { "StartCell", "Wall" }, false); 
+         new List<string> { "StartCell", "Wall" }, false);
         GenerateElement("Gold", GameManager.Instance.nbGold, // Generate gold on the grid.
-         new List<string> { "StartCell", "Wall", "Gold" }); 
+         new List<string> { "StartCell", "Wall", "Gold" });
         GenerateElement("Wumpus", GameManager.Instance.nbWumpus, // Generate Wumpus on the grid.
-         new List<string> { "StartCell", "Wall", "Gold", "Wumpus" }, true, "Stench"); 
+         new List<string> { "StartCell", "Wall", "Gold", "Wumpus" }, true, "Stench");
         GenerateElement("Pit", GameManager.Instance.nbPit, // Generate pits on the grid.
-         new List<string> { "StartCell", "Wall", "Gold", "Wumpus", "Pit" }, true, "Breeze"); 
+         new List<string> { "StartCell", "Wall", "Gold", "Wumpus", "Pit" }, true, "Breeze");
     }
 
     // Validate if the grid size is enough to contain all elements.

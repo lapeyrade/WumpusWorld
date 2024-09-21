@@ -56,7 +56,7 @@ public class GameController : MonoBehaviour
             {
                 agent.GetComponent<AIBasic>().PlayTurn();
             }
-            
+
             if (GameManager.Instance.aiType is GameManager.AIType.Prolog)
                 GameManager.Instance.GetComponent<PrologInterface>().RunQuery();
         }

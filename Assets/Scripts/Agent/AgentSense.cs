@@ -19,7 +19,7 @@ namespace Agent
             // Check if the current cell contains a pit or wumpus
             if (!GameManager.Instance.Map[Coords.x, Coords.y].Exists(e => e.tag is "Pit" or "Wumpus"))
                 MakeInferences();
-                        else
+            else
                 // Set game over state if the current cell contains a pit or wumpus
                 GameManager.Instance.SetGameOver(false);
 
