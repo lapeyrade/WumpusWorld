@@ -1,27 +1,49 @@
-# Wumpus World
+# WumpusWorld
 
 ![GameEngine](https://img.shields.io/badge/Game%20Engine-Unity-239120)
 ![Language](https://img.shields.io/badge/Language-C%23-00cf2c)
 ![Language](https://img.shields.io/badge/Language-Prolog-ffcc1)
 ![Open Source](https://badges.frapsoft.com/os/v2/open-source.svg?v=103)
-
+  
 <br/>
 
-This project is an extended version of the classic logic game Wumpus World featured in the book [Artificial intelligence: A Modern Approach by Russel & Norvig](https://aima.cs.berkeley.edu), inspired by the game [Hunt the Wumpus](https://en.wikipedia.org/wiki/Hunt_the_Wumpus). The game was coded in Unity (so the scripts are in C#). Several "Artificial Intelligence" techniques are available to control the agent, including a [simple set of ad-hoc if-then-else rules](Assets/Scripts/Agent/AI/AIBasic.cs), a [Finite State Machine](Assets/Scripts/Agent/AI/AIFiniteStateMachine.cs) and a [Behavior Tree](Assets/Scripts/Agent/AI/AIBehaviourTree.cs) implementations, all written in C#.
-Another AI approach uses [rules and ontologies written in Prolog](Assets/StreamingAssets/article.pl), so an [interface](Assets/Scripts/Prolog/PrologInterface.cs) exists between the Prolog engine and Unity.
-Another approach aims to use a [Large Language Model](Assets/Scripts/Agent/AI/AIGpt.cs) (LLM), but has not yet been finalized.
+This project is an extended version of the classic logic game Wumpus World featured in the book [Artificial intelligence: A Modern Approach by Russel & Norvig](https://aima.cs.berkeley.edu), inspired by the game [Hunt the Wumpus](https://en.wikipedia.org/wiki/Hunt_the_Wumpus). The game was coded in Unity using C# scripts. Several "Artificial Intelligence" techniques are available to control the agent, including a [simple set of ad-hoc if-then-else rules](Assets/Scripts/Agent/AI/AIBasic.cs), a [Finite State Machine](Assets/Scripts/Agent/AI/AIFiniteStateMachine.cs) and a [Behavior Tree](Assets/Scripts/Agent/AI/AIBehaviourTree.cs) implementations, all written in C#.
+Another AI approach based on [logic programming rules and ontologies in Prolog](Assets/StreamingAssets/article.pl), so an [interface](Assets/Scripts/Prolog/PrologInterface.cs) exists between the Prolog engine and Unity.
+Another approach aims to use a [Large Language Model](Assets/Scripts/Agent/AI/AILargeLanguageModel.cs) (LLM), but has not yet been finalized.
+
 
 ## Showcase video
 A small demo of this project is available by clicking on the following image:
 
   [![Demo](https://img.youtube.com/vi/dhP5YQKlUbU/0.jpg)](https://youtu.be/dhP5YQKlUbU)
 
-In the left of the screen we can see the world as seen by the agent, and in the right the world as it is. A gray cell indicates a start location, light blue is for visited cells, green for cells without danger (surrounded with at least one cell without breeze or stench), red cell for danger (wumpus or pit), orange are for uncertain cells and the black cells contain walls (i.e. the agent can't go in them).
+In the video, the screen is split into two parts:
 
-## Game rules
-* An agent is in a cave with pits, gold and monsters a.k.a Wumpus. The agent must find the gold and exit the cave without dying.
-* Pits and Wumpus are deadly and can be detected by the agent since there are breezes and stenches surrounding them.
-* The agent can move one cell at a time and kill the Wumpus by throwing an arrow in its direction, but its arrows are limited.
+1. Left side: The world as seen by the agent
+2. Right side: The actual world state
+
+The cells in the world are color-coded as follows:
+
+- Gray: Start location
+- Light Blue: Visited cells
+- Green: Safe cells (surrounded by at least one cell without breeze or stench)
+- Red: Dangerous cells (containing a Wumpus or pit)
+- Orange: Uncertain cells
+- Black: Walls (inaccessible to the agent)
+
+## Rules of the game
+* The game takes place in a cave-like grid world containing pits, gold, and monsters called Wumpus.
+* The objective is for an agent to find the gold and safely exit the cave without dying.
+* Pits and Wumpus are deadly to the agent if entered.
+* The agent can detect nearby dangers:
+  * Breeze indicates an adjacent pit
+  * Stench indicates an adjacent Wumpus
+* The agent can:
+  * Move one cell at a time in any cardinal direction
+  * Shoot arrows to kill a Wumpus (limited number of arrows)
+* The game ends when the agent:
+  * Dies by falling into a pit or encountering a Wumpus
+  * Successfully retrieves the gold and exits the cave
 
 # Getting Started
 
@@ -30,39 +52,57 @@ In the left of the screen we can see the world as seen by the agent, and in the 
 * **[SWI-Prolog](https://www.swi-prolog.org/Download.html)**: tested with version 9 and beyond.
 
 ## Setup
-* Clone this repository
-* Add the cloned repository to your Unity Hub projects (in Unity Hub: click Open -> Add project from disk)
-* Run it with Unity (the first time will take some time, as it has to generate a lot of files)
-* Select the right Unity Scene
+1. Clone this repository to your local machine using e.g.:
+   ```
+   git clone https://github.com/sylvainlapeyrade/WumpusWorld.git
+   cd wumpus-world-ai
+   ```
+2. Install SWI-Prolog:
+   - Visit the [SWI-Prolog download page](https://www.swi-prolog.org/Download.html)
+   - Download and install the version appropriate for your operating system
+   - Ensure that SWI-Prolog is added to your system's PATH
+2. Open Unity Hub and add the cloned project:
+   - Click on "Open" in Unity Hub
+   - Select "Add project from disk"
+   - Navigate to and select the cloned repository folder
+3. Open the project in Unity:
+   - The first time you open it, Unity will generate necessary files (this may take a few minutes)
+4. Once the project is loaded, select the correct Unity Scene:
+   - In the Project window, navigate to the Scenes folder
+   - Double-click on the main game scene
 
 ## Run
 <p>
 	<img src="https://i.imgur.com/jcIbTZh.png" width="500">
 </p>
 
-Choose the settings you want for your game environment :
-* Select the "Grid" GameObject
-* In the Unity Inspector, adjust the following values for the Game Manager Script Component:
-  * **Is Game Over**: freeze the game, automatically true when the agent has won or lost the game
-  * **Is Mode Auto**: the agents play automatically
-    * **Timer Interval**: slider for the interval (in ms) between each agent action call
-  * **Random Seed**: number used to generate pseudo-randomly the elements of the grid world (same seed will produce same world)
-  * **Grid Min & Max**: minimum and maximum x and y grid coordinates
-  * **Tile Size**: space between the cells (only used for visuals)
-  * **Nb Pit, Wumpus**, Gold, Agent: set the number of corresponding Pit, Wumpus, Gold and Agents. Their number must not exceed the number of free cells in the grid.
-  * **Ai Type**: agent will either be controlled by the set of ad-hoc if-then-else rules, a Finite State Machine, a Behavior Tree, the Prolog with ontologies approach or the LLM (work in progress).
-  * **Personalities**: set the personalities of the agent(s), you can add as many as you want (even if some are contradictory)
-* Run the game using the play button
+Configure your game environment by following these steps:
+
+1. In the Unity Hierarchy, select the "Grid" GameObject.
+2. In the Unity Inspector, locate the Game Manager Script Component and adjust these settings:
+
+   * **Is Game Over**: Freezes the game. Automatically set to true when the agent wins or loses.
+   * **Is Mode Auto**: Enables automatic play for agents.
+     * **Timer Interval**: Set the delay (in milliseconds) between each agent action.
+   * **Random Seed**: Enter a number to generate a specific grid layout. The same seed always produces the same world.
+   * **Grid Min & Max**: Define the grid's dimensions by setting minimum and maximum x and y coordinates.
+   * **Tile Size**: Adjust the visual spacing between cells (affects appearance only).
+   * **Nb Pit, Wumpus, Gold, Agent**: Specify the quantity of each element. Ensure the total doesn't exceed available grid cells.
+   * **AI Type**: Choose the agent's control method:
+     - Ad-hoc if-then-else rules
+     - Finite State Machine
+     - Behavior Tree
+     - Prolog with ontologies
+     - LLM (Large Language Model) - currently in development
+   * **Personalities**: Assign personality traits to your agent(s). You can add multiple traits, even if they conflict.
+
+3. Click the play button in Unity to start the game with your chosen settings.
 
 ## Play
-- You can use the directional keys (up, down, rigth, left) to control the agent.
-- To make the agent play one action, use the "space" key or the "return" key if you don't want the agent to always explore the cave in the same way.
-- Tick the "Is Mode Auto" box (see the [Run](#Run) section) to call for new agent actions automatically.
-
-## Prolog with ontologies architecture
-<p>
-	<img src="https://i.imgur.com/zWpLHiF.png" width="500">
-</p>
-
-# Credits
-This project is currently under review, so the authors must remain anonymous for the time being.
+- Manual Control:
+  - Use the directional keys (up, down, right, left) to move the agent.
+- Semi-Automatic Play:
+  - Press the "space" key to make the agent perform one action.
+  - Use the "return" key for a randomized action, adding variety to the agent's exploration.
+- Fully Automatic Play:
+  - Enable the "Is Mode Auto" option in the Game Manager settings (see the [Run](#Run) section) for continuous automatic agent actions.

@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Agent.AI
 {
-    public class AIGpt : AIBasic
+    public class AILargeLanguageModel : AIBasic
     {
         // public override async void PlayTurn()
         public override void PlayTurn()

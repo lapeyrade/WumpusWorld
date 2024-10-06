@@ -61,7 +61,7 @@ namespace Agent
                 GameManager.AIType.Prolog => typeof(AIProlog),
                 GameManager.AIType.BehaviourTree => typeof(AIBehaviourTree),
                 GameManager.AIType.FiniteStateMachine => typeof(AIFiniteStateMachine),
-                GameManager.AIType.Gpt => typeof(AIGpt),
+                GameManager.AIType.Gpt => typeof(AILlm),
                 _ => typeof(AIBasic),
             };
             gameObject.AddComponent(aiComponentType);
