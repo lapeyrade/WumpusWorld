@@ -106,3 +106,33 @@ Configure your game environment by following these steps:
   - Use the "return" key for a randomized action, adding variety to the agent's exploration.
 - Fully Automatic Play:
   - Enable the "Is Mode Auto" option in the Game Manager settings (see the [Run](#Run) section) for continuous automatic agent actions.
+
+## Repository structure
+```
+WumpusWorld
+├── Assets
+│   ├── Scripts
+│   │   ├── Agent
+│   │   │   ├── AI
+│   │   │   │   ├── AIBasic.cs
+│   │   │   │   ├── AIBehaviourTree.cs
+│   │   │   │   ├── AIFiniteStateMachine.cs
+│   │   │   │   ├── AILargeLanguageModel.cs
+│   │   │   │   ├── AIProlog.cs
+│   │   │   ├── Agent.cs
+│   │   │   ├── AgentAction.cs
+│   │   │   ├── AgentMove.cs
+│   │   │   ├── AgentObjective.cs
+│   │   │   ├── AgentSense.cs
+│   │   ├── Ontology
+│   │   │   ├── Action.cs
+│   │   │   ├── Cell.cs
+│   │   │   ├── Element.cs
+│   │   │   ├── Objective.cs
+│   │   │   ├── Personality.cs
+│   │   ├── Prolog
+│   │   ├── CameraController.cs
+│   │   ├── GameController.cs
+│   │   ├── GameManager.cs
+│   │   ├── GridBuilder.cs
+```
