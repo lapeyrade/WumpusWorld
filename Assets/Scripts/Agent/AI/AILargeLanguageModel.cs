@@ -7,6 +7,8 @@ namespace Agent.AI
         // public override async void PlayTurn()
         public override void PlayTurn()
         {
+
+            Debug.Log("test");
             /*
             You are an agent in a grid-based game that involves navigating through a cave to find a piece of gold while avoiding pits. Here are the detailed and exhaustive rules of the game:
             Game Objective: The objective of the game is to find the gold without dying and losing the game. Once you have picked the gold, move back to the starting cell to win.

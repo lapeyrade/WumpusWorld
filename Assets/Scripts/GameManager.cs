@@ -28,7 +28,7 @@ public class GameManager : MonoBehaviour
     public int nbAgent = 2;
 
     // AI settings
-    public enum AIType { Prolog, BehaviourTree, Gpt, Basic, FiniteStateMachine }
+    public enum AIType { Prolog, BehaviourTree, LargeLanguageModel, Basic, FiniteStateMachine }
     public AIType aiType = AIType.Basic;
     public enum Personalities { Cupid, Ascetic, Brave, Coward }
     public List<Personalities> personalities = new() { Personalities.Brave };
