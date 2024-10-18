@@ -48,7 +48,7 @@ The cells in the world are color-coded as follows:
 # Getting Started
 
 ## Dependencies
-* **[Unity](https://unity.com/download)**: tested with version 2020 and beyond, see the [ProjectVersion.txt](ProjectSettings/ProjectVersion.txt) file for exact version used.
+* **[Unity](https://unity.com/download)**: tested with version 6 and beyond, see the [ProjectVersion.txt](ProjectSettings/ProjectVersion.txt) file for exact version used.
 * **[SWI-Prolog](https://www.swi-prolog.org/Download.html)**: tested with version 9 and beyond.
 
 ## Setup
