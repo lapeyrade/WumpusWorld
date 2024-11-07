@@ -1516,7 +1516,7 @@ MonoBehaviour:
   nbWumpus: 3
   nbGold: 1
   nbAgent: 1
-  aiType: 1
+  aiType: 0
   personalities: 0100000002000000
   agents: []
   turnDuration: []
