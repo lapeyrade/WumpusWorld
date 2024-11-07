@@ -130,7 +130,7 @@ motivation(E, SubO):-
 % location(dragon0, [1, 1]).
 % location(safecell, [1, 1]).
 location(SubE, L):-
-  location(E, L), subClassOf(SubE, E).
+    location(E, L), subClassOf(SubE, E).
 
 /*** Generate Objectives ***/
 genObjective(Elem1, P, Obj, Elem2):-
@@ -146,7 +146,7 @@ distance(Elem1, Elem2):-
     same_cell(Elem1, Elem2).
 
 distance(Elem1, Elem2):-
-      (
+    (
         subClassOf(Elem2, danger);
         subClassOf(Elem2, cell)
     ),
@@ -184,12 +184,12 @@ satisfy(O, SubA):-
     satisfy(O, A), subClassOf(SubA, A).
 
 /* Link Personality-Action */
-encline(cupid, interact, 5).
-encline(ascetic, interact, 3).
-encline(coward, moveback, 10).
-encline(brave, attack, 9).
-encline(personality, move, 1).
-encline(personality, bumpwall, 2).
+% encline(cupid, interact, 5).
+% encline(ascetic, interact, 3).
+% encline(coward, moveback, 10).
+% encline(brave, attack, 9).
+% encline(personality, move, 1).
+% encline(personality, bumpwall, 2).
 encline(SubP, A, U):-
     encline(P, A, U), subClassOf(SubP, P).
 encline(P, SubA, U):-
@@ -197,5 +197,5 @@ encline(P, SubA, U):-
 
 /*** Generate Actions ***/
 genAction(Elem1, Perso, Obj, Elem2, Act, Utility):-
-  encline(Perso, Act, Utility), satisfy(Obj, Act),
-  genObjective(Elem1, Perso, Obj, Elem2).
+encline(Perso, Act, Utility), satisfy(Obj, Act),
+genObjective(Elem1, Perso, Obj, Elem2).
