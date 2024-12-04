@@ -13,17 +13,17 @@ namespace Agent.AI
 
             // Update the knowledge base
             GameManager.Instance.GetComponent<PrologInterface>().QueryText +=
-                $", assertz(location({GetComponent<Agent>().name}, [{GetComponent<Agent>().coords.x}, {GetComponent<Agent>().coords.y}]))";
+                $", assertz(data_concept([{GetComponent<Agent>().name.ToLower()}, [{GetComponent<Agent>().coords.x}, {GetComponent<Agent>().coords.y}]], {GetComponent<Agent>().tag.ToLower()})), assertz({GetComponent<Agent>().tag.ToLower()}([{GetComponent<Agent>().name.ToLower()}, [{GetComponent<Agent>().coords.x}, {GetComponent<Agent>().coords.y}]]))";
 
             foreach (var perso in GameManager.Instance.personalities.Where(perso => GetComponent<Agent>().GetComponent(Type.GetType("Ontology." + perso))))
                 GameManager.Instance.GetComponent<PrologInterface>().QueryText +=
-                $", assertz(trait({GetComponent<Agent>().name}, {perso.ToString().ToLower()}))";
+                    $", assertz(has_personality_trait([{GetComponent<Agent>().name.ToLower()}, [_, _]], {perso.ToString().ToLower()})), assertz({perso.ToString().ToLower()}([{GetComponent<Agent>().name.ToLower()}, [{GetComponent<Agent>().coords.x}, {GetComponent<Agent>().coords.y}]]))";
         }
 
         public override void PlayTurn()
         {
             // Query the knowledge base for agent actions
-            switch (GameManager.Instance.GetComponent<PrologInterface>().QueryKb(GetComponent<Agent>().name))
+            switch (GameManager.Instance.GetComponent<PrologInterface>().QueryKb(GetComponent<Agent>().name, GetComponent<Agent>().coords))
             {
                 case "attack" or "shoot" or "shootarrow": // Try shooting an arrow
                     GetComponent<AgentAction>().TryShootingArrow();

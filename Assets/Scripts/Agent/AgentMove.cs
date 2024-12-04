@@ -74,7 +74,10 @@ namespace Agent
                 Agent.lastAction = "MoveDown";
 
             GridManager.RemoveFromGrids(Coords, tag);
+            GameManager.Instance.GetComponent<PrologInterface>().QueryText += $", retract(data_concept([{Agent.name}, [{Agent.coords.x}, {Agent.coords.y}]], {Agent.tag.ToLower()})), retract({Agent.tag.ToLower()}([{Agent.name}, [{Agent.coords.x}, {Agent.coords.y}]]))";
+            
             Agent.transform.position = GridManager.GetAgentMapOffset(newCoord);
+            
 
             if (Agent.nbGold > 0)
             {
@@ -85,10 +88,8 @@ namespace Agent
             Agent.PastMovements.Push(newCoord);
             Agent.coords = newCoord;
 
+            GameManager.Instance.GetComponent<PrologInterface>().QueryText += $", assertz(data_concept([{Agent.name}, [{Agent.coords.x}, {Agent.coords.y}]], {Agent.tag.ToLower()})), assertz({Agent.tag.ToLower()}([{Agent.name}, [{Agent.coords.x}, {Agent.coords.y}]]))";
             GridManager.AddToGrids(Coords, "VisitedCell");
-
-            GameManager.Instance.GetComponent<PrologInterface>().QueryText += $", retract(location({Agent.name}, _))";
-            GameManager.Instance.GetComponent<PrologInterface>().QueryText += $", assertz(location({Agent.name}, [{Agent.coords.x}, {Agent.coords.y}]))";
         }
 
         // Moves the agent back to the previous position

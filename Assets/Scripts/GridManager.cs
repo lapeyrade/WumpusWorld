@@ -56,7 +56,7 @@ public class GridManager : MonoBehaviour
 
         if (GameManager.Instance.aiType is GameManager.AIType.Prolog && map == GameManager.Instance.AgentsMap)
             GameManager.Instance.GetComponent<PrologInterface>().QueryText +=
-                $", assertz(location({element.ToLower()}, [{coords.x}, {coords.y}]))";
+                $", assertz(data_concept([{element.ToLower()}, [{coords.x}, {coords.y}]], {element.ToLower()})), assertz({element.ToLower()}([{element.ToLower()}, [{coords.x}, {coords.y}]]))";
 
         cell.GetComponent<SpriteRenderer>().color = CellColor[element];
 
@@ -77,7 +77,7 @@ public class GridManager : MonoBehaviour
 
         if (GameManager.Instance.aiType is GameManager.AIType.Prolog && map == GameManager.Instance.AgentsMap)
             GameManager.Instance.GetComponent<PrologInterface>().QueryText +=
-                $", assertz(location({element.ToLower()}, [{coords.x}, {coords.y}]))";
+                $", assertz(data_concept([{element.ToLower()}, [{coords.x}, {coords.y}]], {element.ToLower()})), assertz({element.ToLower()}([{element.ToLower()}, [{coords.x}, {coords.y}]]))";
 
         cell.name = element;
         cell.transform.position = newPosition;
@@ -103,7 +103,7 @@ public class GridManager : MonoBehaviour
 
         if (GameManager.Instance.aiType is GameManager.AIType.Prolog && map == GameManager.Instance.AgentsMap)
             GameManager.Instance.GetComponent<PrologInterface>().QueryText +=
-                $", retract(location({element.ToLower()}, [{coords.x}, {coords.y}]))";
+                $", retract(data_concept([{element.ToLower()}, [{coords.x}, {coords.y}]], {element.ToLower()})), retract({element.ToLower()}([{element.ToLower()}, [{coords.x}, {coords.y}]]))";
     }
 
     // Check if a cell is within grid limits

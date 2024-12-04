@@ -73,9 +73,9 @@ namespace Prolog
         }
 
         // Query the knowledge base for agent actions
-        public string QueryKb(string agentName)
+        public string QueryKb(string agentName, Vector2Int agentCoords)
         {
-            PrologThread.QueryAsync($"genAction({agentName}, Perso, Obj, Elem2, Act, Uti)", false);
+            PrologThread.QueryAsync($"genAction([{agentName}, [{agentCoords.x}, {agentCoords.y}]], Perso, Obj, Elem2, Act, Uti)", false);
 
             var action = "";
             var maxUtil = 0;

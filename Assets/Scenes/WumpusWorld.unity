@@ -1558,7 +1558,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 638a6ed3871f47929af0a093d8ab118e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debug_query: location(X, Y)
+  debug_query: data_concept(X, Y)
   askQuery: 0
   QueryText: 
 --- !u!1 &2138976747
