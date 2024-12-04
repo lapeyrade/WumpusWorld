@@ -67,12 +67,36 @@ public class GridBuilder : MonoBehaviour
         for (var i = 0; i < count; i++)
         {
             Vector2Int coords;
+            bool isValid;
 
             do
             {
                 coords = new Vector2Int(Random.Range(GameManager.Instance.gridMin.x + 1, GameManager.Instance.gridMax.x - 1),
                     Random.Range(GameManager.Instance.gridMin.y + 1, GameManager.Instance.gridMax.y - 1));
-            } while (GameManager.Instance.Map[coords.x, coords.y].Exists(x => occupiedTags.Contains(x.tag)));
+                
+                isValid = !GameManager.Instance.Map[coords.x, coords.y].Exists(x => occupiedTags.Contains(x.tag));
+
+                // For Pit and Wumpus, check they're not adjacent to any Human start positions
+                if (isValid && (elem == "Pit" || elem == "Wumpus"))
+                {
+                    var adjacentCoords = new[]
+                    {
+                        new Vector2Int(coords.x + 1, coords.y),
+                        new Vector2Int(coords.x - 1, coords.y),
+                        new Vector2Int(coords.x, coords.y + 1),
+                        new Vector2Int(coords.x, coords.y - 1)
+                    };
+
+                    foreach (var adjCoord in adjacentCoords)
+                    {
+                        if (GameManager.Instance.Map[adjCoord.x, adjCoord.y].Exists(x => x.CompareTag("StartCell")))
+                        {
+                            isValid = false;
+                            break;
+                        }
+                    }
+                }
+            } while (!isValid);
 
             // Instantiate and initialize human agents on the grid.
             if (elem == "Human")
