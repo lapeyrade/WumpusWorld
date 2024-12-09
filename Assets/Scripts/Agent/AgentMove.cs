@@ -10,8 +10,16 @@ namespace Agent
     {
         private readonly List<Vector2Int> _moves =
             new() { Vector2Int.right, Vector2Int.left, Vector2Int.up, Vector2Int.down };
-        private Agent Agent => GetComponent<Agent>();
-        private Vector2Int Coords => Agent.coords;
+        private Agent _agent;
+        private PrologInterface _prologInterface;
+
+        private void Awake()
+        {
+            _agent = GetComponent<Agent>();
+            _prologInterface = GameManager.Instance.GetComponent<PrologInterface>();
+        }
+
+        private Vector2Int Coords => _agent.coords;
 
         public void MoveCell()
         {
@@ -32,7 +40,7 @@ namespace Agent
         // Selects the next move based on the agent's state and surroundings
         private Vector2Int SelectNextMove()
         {
-            if (Agent.nbGold > 0)
+            if (_agent.nbGold > 0)
                 return MoveBack();
 
             foreach (var move in _moves.Where(move => SafeCellUnexplored(Coords + move)))
@@ -44,7 +52,7 @@ namespace Agent
         // Selects a random move based on the agent's state and surroundings
         private Vector2Int SelectRandomMove()
         {
-            if (Agent.nbGold > 0)
+            if (_agent.nbGold > 0)
                 return MoveBack();
 
             var randomMoves = _moves.OrderBy(_ => Random.value);
@@ -64,42 +72,42 @@ namespace Agent
         public void MoveAgent(Vector2Int newCoord)
         {
             if (GameManager.Instance.AgentsMap[newCoord.x, newCoord.y].Exists(e => e.tag is "VisitedCell"))
-                Agent.lastAction = "MoveBack";
+                _agent.lastAction = "MoveBack";
             else if (newCoord.x > Coords.x)
-                Agent.lastAction = "MoveRight";
+                _agent.lastAction = "MoveRight";
             else if (newCoord.x < Coords.x)
-                Agent.lastAction = "MoveLeft";
+                _agent.lastAction = "MoveLeft";
             else if (newCoord.y > Coords.y)
-                Agent.lastAction = "MoveUp";
+                _agent.lastAction = "MoveUp";
             else if (newCoord.y < Coords.y)
-                Agent.lastAction = "MoveDown";
+                _agent.lastAction = "MoveDown";
 
             GridManager.RemoveFromGrids(Coords, tag);
-            GameManager.Instance.GetComponent<PrologInterface>().QueryText += $", retract(data_concept([{Agent.name}, [{Agent.coords.x}, {Agent.coords.y}]], {Agent.tag.ToLower()})), retract({Agent.tag.ToLower()}([{Agent.name}, [{Agent.coords.x}, {Agent.coords.y}]]))";
+            _prologInterface.QueryText += $", retract(data_concept([{_agent.name}, [{_agent.coords.x}, {_agent.coords.y}]], {_agent.tag.ToLower()})), retract({_agent.tag.ToLower()}([{_agent.name}, [{_agent.coords.x}, {_agent.coords.y}]]))";
             
-            Agent.transform.position = GridManager.GetAgentMapOffset(newCoord);
+            _agent.transform.position = GridManager.GetAgentMapOffset(newCoord);
             
 
-            if (Agent.nbGold > 0)
+            if (_agent.nbGold > 0)
             {
-                Agent.prefabGoldMap.transform.position = Agent.prefabAgentWorld.transform.position;
-                Agent.prefabGoldAgent.transform.position = Agent.transform.position;
+                _agent.prefabGoldMap.transform.position = _agent.prefabAgentWorld.transform.position;
+                _agent.prefabGoldAgent.transform.position = _agent.transform.position;
             }
 
-            Agent.PastMovements.Push(newCoord);
-            Agent.coords = newCoord;
+            _agent.PastMovements.Push(newCoord);
+            _agent.coords = newCoord;
 
-            GameManager.Instance.GetComponent<PrologInterface>().QueryText += $", assertz(data_concept([{Agent.name}, [{Agent.coords.x}, {Agent.coords.y}]], {Agent.tag.ToLower()})), assertz({Agent.tag.ToLower()}([{Agent.name}, [{Agent.coords.x}, {Agent.coords.y}]]))";
+            _prologInterface.QueryText += $", assertz(data_concept([{_agent.name}, [{_agent.coords.x}, {_agent.coords.y}]], {_agent.tag.ToLower()})), assertz({_agent.tag.ToLower()}([{_agent.name}, [{_agent.coords.x}, {_agent.coords.y}]]))";
             GridManager.AddToGrids(Coords, "VisitedCell");
         }
 
         // Moves the agent back to the previous position
         public Vector2Int MoveBack()
         {
-            if (Agent.PastMovements.Count <= 1) return Coords;
+            if (_agent.PastMovements.Count <= 1) return Coords;
 
-            Agent.PastMovements.Pop();
-            return Agent.PastMovements.Pop();
+            _agent.PastMovements.Pop();
+            return _agent.PastMovements.Pop();
         }
 
         // Moves the agent back when it bumps into a wall

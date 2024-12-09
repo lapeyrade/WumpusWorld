@@ -9,17 +9,27 @@ namespace GameManagement
 {
     public class GridManager : MonoBehaviour
     {
+        private static GameManager _gameManager;
+        private static PrologInterface _prologInterface;
+
         // Define the cell colors
         private static readonly Dictionary<string, Color> CellColor = new()
-    {
-        {"StartCell", Color.gray},
-        {"Wall", Color.black},
-        {"VisitedCell", Color.cyan},
-        {"DangerousCell", Color.red},
-        {"SafeCell", new Color(0.145f, 0.701f, 0.294f, 1)},
-        {"UnknownCell", new Color(1.0f, 0.64f, 0.0f)},
-        {"Cell", Color.white},
-    };
+        {
+            {"StartCell", Color.gray},
+            {"Wall", Color.black},
+            {"VisitedCell", Color.cyan},
+            {"DangerousCell", Color.red},
+            {"SafeCell", new Color(0.145f, 0.701f, 0.294f, 1)},
+            {"UnknownCell", new Color(1.0f, 0.64f, 0.0f)},
+            {"Cell", Color.white},
+        };
+
+        private void Awake()
+        {
+            _gameManager = GameManager.Instance;
+            if (_gameManager.aiType is GameManager.AIType.Prolog)
+                _prologInterface = _gameManager.GetComponent<PrologInterface>();
+        }
 
         // Add an element to the grids
         public static void AddToGrids(Vector2Int coords, string element)
@@ -30,16 +40,16 @@ namespace GameManagement
                 ChangeColorMap(coords, element);
 
             if (element != "Cell" && CellColor.Keys.Contains(element)) return;
-            AddGameObjectMap(GameManager.Instance.AgentsMap, coords, element, GetAgentMapOffset(coords));
-            AddGameObjectMap(GameManager.Instance.Map, coords, element, GetWorldMapOffset(coords));
+            AddGameObjectMap(_gameManager.AgentsMap, coords, element, GetAgentMapOffset(coords));
+            AddGameObjectMap(_gameManager.Map, coords, element, GetWorldMapOffset(coords));
         }
 
         // Change the color of a cell in the map
         private static void ChangeColorMap(Vector2Int coords, string element)
         {
-            ChangeColorCell(GameManager.Instance.AgentsMap, coords, element);
+            ChangeColorCell(_gameManager.AgentsMap, coords, element);
             if (element == "Wall" || element == "StartCell")
-                ChangeColorCell(GameManager.Instance.Map, coords, element);
+                ChangeColorCell(_gameManager.Map, coords, element);
         }
 
         // Change the color of a cell in a specific map
@@ -48,21 +58,23 @@ namespace GameManagement
             var cell = map[coords.x, coords.y].Find(x => x.name == "Cell");
             if (cell == null) return;
             if (map[coords.x, coords.y].Exists(x => x.CompareTag(element))) return;
-            if (element == "Wall" && map == GameManager.Instance.AgentsMap &&
-                !GameManager.Instance.Map[coords.x, coords.y].Exists(x => x.CompareTag(element))) return;
+            if (element == "Wall" && map == _gameManager.AgentsMap &&
+                !_gameManager.Map[coords.x, coords.y].Exists(x => x.CompareTag(element))) return;
             if (element != "Wall" &&
                 map[coords.x, coords.y].Find(x => x.name == "Cell").tag is "StartCell" or "Wall" or "VisitedCell") return;
             if (element != "SafeCell" && map[coords.x, coords.y].Find(x => x.name == "Cell").tag is "DangerousCell") return;
 
             cell.tag = element;
 
-            if (GameManager.Instance.aiType is GameManager.AIType.Prolog && map == GameManager.Instance.AgentsMap)
-                GameManager.Instance.GetComponent<PrologInterface>().QueryText +=
-                    $", assertz(data_concept([{element.ToLower()}, [{coords.x}, {coords.y}]], {element.ToLower()})), assertz({element.ToLower()}([{element.ToLower()}, [{coords.x}, {coords.y}]]))";
+            if (_gameManager.aiType is GameManager.AIType.Prolog && map == _gameManager.AgentsMap)
+                _prologInterface.QueryText +=
+                    $", assertz(data_concept([{element.ToLower()}, [{coords.x}, {coords.y}]], {element.ToLower()})), " +
+                    $"assertz({element.ToLower()}([{element.ToLower()}, [{coords.x}, {coords.y}]]))";
 
             cell.GetComponent<SpriteRenderer>().color = CellColor[element];
 
-            foreach (var component in cell.GetComponents<Component>().Where(x => x is Cell))
+            var cellComponents = cell.GetComponents<Component>().Where(x => x is Cell).ToArray();
+            foreach (var component in cellComponents)
                 Destroy(component);
 
             cell.AddComponent(Type.GetType("Ontology." + element[0].ToString().ToUpper() + element[1..]));
@@ -72,14 +84,15 @@ namespace GameManagement
         private static void AddGameObjectMap(List<GameObject>[,] map, Vector2Int coords, string element, Vector2 newPosition)
         {
             if (map[coords.x, coords.y].Exists(x => x.name == element || x.tag is "Wall")) return;
-            if (element != "Cell" && element != "DeadWumpus" && map == GameManager.Instance.AgentsMap &&
-               !GameManager.Instance.Map[coords.x, coords.y].Exists(x => x.name == element)) return;
+            if (element != "Cell" && element != "DeadWumpus" && map == _gameManager.AgentsMap &&
+               !_gameManager.Map[coords.x, coords.y].Exists(x => x.name == element)) return;
             if (Instantiate(Resources.Load(element)) is not GameObject cell) return;
             cell.tag = element;
 
-            if (GameManager.Instance.aiType is GameManager.AIType.Prolog && map == GameManager.Instance.AgentsMap)
-                GameManager.Instance.GetComponent<PrologInterface>().QueryText +=
-                    $", assertz(data_concept([{element.ToLower()}, [{coords.x}, {coords.y}]], {element.ToLower()})), assertz({element.ToLower()}([{element.ToLower()}, [{coords.x}, {coords.y}]]))";
+            if (_gameManager.aiType is GameManager.AIType.Prolog && map == _gameManager.AgentsMap)
+                _prologInterface.QueryText +=
+                    $", assertz(data_concept([{element.ToLower()}, [{coords.x}, {coords.y}]], {element.ToLower()})), " +
+                    $"assertz({element.ToLower()}([{element.ToLower()}, [{coords.x}, {coords.y}]]))";
 
             cell.name = element;
             cell.transform.position = newPosition;
@@ -90,8 +103,8 @@ namespace GameManagement
         // Remove an element from the grids
         public static void RemoveFromGrids(Vector2Int coords, string element)
         {
-            RemoveGameObjectMap(GameManager.Instance.AgentsMap, coords, element);
-            RemoveGameObjectMap(GameManager.Instance.Map, coords, element);
+            RemoveGameObjectMap(_gameManager.AgentsMap, coords, element);
+            RemoveGameObjectMap(_gameManager.Map, coords, element);
         }
 
         // Remove a game object from a specific map
@@ -103,15 +116,16 @@ namespace GameManagement
             Destroy(cellMap);
             map[coords.x, coords.y].Remove(cellMap);
 
-            if (GameManager.Instance.aiType is GameManager.AIType.Prolog && map == GameManager.Instance.AgentsMap)
-                GameManager.Instance.GetComponent<PrologInterface>().QueryText +=
-                    $", retract(data_concept([{element.ToLower()}, [{coords.x}, {coords.y}]], {element.ToLower()})), retract({element.ToLower()}([{element.ToLower()}, [{coords.x}, {coords.y}]]))";
+            if (_gameManager.aiType is GameManager.AIType.Prolog && map == _gameManager.AgentsMap)
+                _prologInterface.QueryText +=
+                    $", retract(data_concept([{element.ToLower()}, [{coords.x}, {coords.y}]], {element.ToLower()})), " +
+                    $"retract({element.ToLower()}([{element.ToLower()}, [{coords.x}, {coords.y}]]))";
         }
 
         // Check if a cell is within grid limits
         public static bool CellInGridLimits(Vector2Int cell) =>
-            cell.x >= GameManager.Instance.gridMin.x && cell.x < GameManager.Instance.gridMax.x &&
-            cell.y >= GameManager.Instance.gridMin.y && cell.y < GameManager.Instance.gridMax.y;
+            cell.x >= _gameManager.gridMin.x && cell.x < _gameManager.gridMax.x &&
+            cell.y >= _gameManager.gridMin.y && cell.y < _gameManager.gridMax.y;
 
         // Attach gold to an agent
         public static void AttachGoldToAgent(Agent.Agent agent)
@@ -126,12 +140,10 @@ namespace GameManagement
 
         // Get the agent map offset for a given set of coordinates
         public static Vector2 GetAgentMapOffset(Vector2Int coords) =>
-            new((coords.x - GameManager.Instance.gridMax.x / 1.95f)
-             * GameManager.Instance.tileSize, coords.y * GameManager.Instance.tileSize);
+            new((coords.x - _gameManager.gridMax.x / 1.95f) * _gameManager.tileSize, coords.y * _gameManager.tileSize);
 
         // Get the world map offset for a given set of coordinates
         public static Vector2 GetWorldMapOffset(Vector2Int coords) =>
-            new((coords.x + GameManager.Instance.gridMax.x / 1.95f)
-             * GameManager.Instance.tileSize, coords.y * GameManager.Instance.tileSize);
+            new((coords.x + _gameManager.gridMax.x / 1.95f) * _gameManager.tileSize, coords.y * _gameManager.tileSize);
     }
 }

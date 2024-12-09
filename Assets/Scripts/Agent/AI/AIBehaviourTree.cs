@@ -11,18 +11,24 @@ namespace Agent.AI
     {
         [SerializeField]
         private BehaviorTree tree;
+        private AgentObjective _agentObjective;
+        private Agent _agent;
+        private AgentAction _agentAction;
+        private AgentSense _agentSense;
 
-        private void Awake()
+        private void Start()
         {
-            var agentObjective = GetComponent<AgentObjective>();
-            var agent = GetComponent<Agent>();
+            _agentObjective = GetComponent<AgentObjective>();
+            _agent = GetComponent<Agent>();
+            _agentAction = GetComponent<AgentAction>();
+            _agentSense = GetComponent<AgentSense>();
 
             tree = new BehaviorTreeBuilder(gameObject)
                 .Sequence("Execute Action")
                     .Selector("Generate Objective")
                         .Sequence("Generate Wealth")
-                            .Condition("Cupid Personality", () => agentObjective.ExistPersonality<Cupid>())
-                            .Condition("Valuable Item", () => agentObjective.ExistElementCell<ValuableItem>())
+                            .Condition("Cupid Personality", () => _agentObjective.ExistPersonality<Cupid>())
+                            .Condition("Valuable Item", () => _agentObjective.ExistElementCell<ValuableItem>())
                             .Do("Add Wealth", () =>
                             {
                                 gameObject.AddComponent<Wealth>();
@@ -30,8 +36,8 @@ namespace Agent.AI
                             })
                         .End()
                         .Sequence("Objective: Wealth")
-                            .Condition("Brave Personality", () => agentObjective.ExistPersonality<Brave>())
-                            .Condition("Monster", () => agentObjective.ExistElementNearCells<Monster>())
+                            .Condition("Brave Personality", () => _agentObjective.ExistPersonality<Brave>())
+                            .Condition("Monster", () => _agentObjective.ExistElementNearCells<Monster>())
                             .Do("Add Fight", () =>
                             {
                                 gameObject.AddComponent<Fight>();
@@ -39,8 +45,8 @@ namespace Agent.AI
                             })
                         .End()
                         .Sequence("Objective: Safety")
-                            .Condition("Coward Personality", () => agentObjective.ExistPersonality<Coward>())
-                            .Condition("Dangerous Element", () => agentObjective.ExistElementNearCells<IDangerous>())
+                            .Condition("Coward Personality", () => _agentObjective.ExistPersonality<Coward>())
+                            .Condition("Dangerous Element", () => _agentObjective.ExistElementNearCells<IDangerous>())
                             .Do("Add Safety", () =>
                             {
                                 gameObject.AddComponent<Safety>();
@@ -48,8 +54,8 @@ namespace Agent.AI
                             })
                         .End()
                         .Sequence("Objective: Abstinence")
-                            .Condition("Ascetic Personality", () => agentObjective.ExistPersonality<Ascetic>())
-                            .Condition("Item Element", () => agentObjective.ExistElementCell<Item>())
+                            .Condition("Ascetic Personality", () => _agentObjective.ExistPersonality<Ascetic>())
+                            .Condition("Item Element", () => _agentObjective.ExistElementCell<Item>())
                             .Do("Add Abstinence", () =>
                             {
                                 gameObject.AddComponent<Abstinence>();
@@ -57,8 +63,8 @@ namespace Agent.AI
                             })
                         .End()
                         .Sequence("Objective: Unconstrained")
-                            .Condition("Any Personality", () => agentObjective.ExistPersonality<Personality>())
-                            .Condition("Obstacle Element", () => agentObjective.ExistElementCell<Obstacle>())
+                            .Condition("Any Personality", () => _agentObjective.ExistPersonality<Personality>())
+                            .Condition("Obstacle Element", () => _agentObjective.ExistElementCell<Obstacle>())
                             .Do("Add Unconstrained", () =>
                             {
                                 gameObject.AddComponent<Unconstrained>();
@@ -66,10 +72,9 @@ namespace Agent.AI
                             })
                         .End()
                         .Sequence("Objective: Explore")
-                            .Condition("Any Personality", () => agentObjective.ExistPersonality<Personality>())
-                            .Condition("Start, Safe or Visited Cell", () => agentObjective.ExistTypeCell<SafeCell>() ||
-                                  agentObjective.ExistTypeCell<VisitedCell>() ||
-                                  agentObjective.ExistTypeCell<StartCell>())
+                            .Condition("Any Personality", () => _agentObjective.ExistPersonality<Personality>())
+                            .Condition("Start, Safe or Visited Cell", () => _agentObjective.ExistTypeCell<SafeCell>() ||
+                                  _agentObjective.ExistTypeCell<VisitedCell>() || _agentObjective.ExistTypeCell<StartCell>())
                             .Do("Add Explore", () =>
                             {
                                 gameObject.AddComponent<Explore>();
@@ -79,8 +84,8 @@ namespace Agent.AI
                     .End()
                     .Selector("Generate Action")
                         .Sequence("Action: PickUp")
-                            .Condition("Wealth Objective", () => agent.GetComponent<Wealth>())
-                            .Condition("Personality Cupid", () => agent.GetComponent<Cupid>())
+                            .Condition("Wealth Objective", () => _agent.GetComponent<Wealth>())
+                            .Condition("Personality Cupid", () => _agent.GetComponent<Cupid>())
                             .Do("Add PickUp", () =>
                             {
                                 gameObject.AddComponent<PickUp>();
@@ -88,8 +93,8 @@ namespace Agent.AI
                             })
                         .End()
                         .Sequence("Action: Discard")
-                            .Condition("Abstinence Objective", () => agent.GetComponent<Abstinence>())
-                            .Condition("Personality Ascetic", () => agent.GetComponent<Ascetic>())
+                            .Condition("Abstinence Objective", () => _agent.GetComponent<Abstinence>())
+                            .Condition("Personality Ascetic", () => _agent.GetComponent<Ascetic>())
                             .Do("Add Discard", () =>
                             {
                                 gameObject.AddComponent<Discard>();
@@ -97,8 +102,8 @@ namespace Agent.AI
                             })
                         .End()
                         .Sequence("Action: MoveBack")
-                            .Condition("Safety Objective", () => agent.GetComponent<Safety>())
-                            .Condition("Personality Coward", () => agent.GetComponent<Coward>())
+                            .Condition("Safety Objective", () => _agent.GetComponent<Safety>())
+                            .Condition("Personality Coward", () => _agent.GetComponent<Coward>())
                             .Do("Add MoveBack", () =>
                             {
                                 gameObject.AddComponent<MoveBack>();
@@ -106,8 +111,8 @@ namespace Agent.AI
                             })
                         .End()
                         .Sequence("Action: Attack")
-                            .Condition("Safety Objective", () => agent.GetComponent<Safety>())
-                            .Condition("Personality Brave", () => agent.GetComponent<Brave>())
+                            .Condition("Safety Objective", () => _agent.GetComponent<Safety>())
+                            .Condition("Personality Brave", () => _agent.GetComponent<Brave>())
                             .Do("Add Attack", () =>
                             {
                                 gameObject.AddComponent<Attack>();
@@ -115,8 +120,8 @@ namespace Agent.AI
                             })
                         .End()
                         .Sequence("Action: Attack")
-                            .Condition("Fight Objective", () => agent.GetComponent<Fight>())
-                            .Condition("Personality Brave", () => agent.GetComponent<Brave>())
+                            .Condition("Fight Objective", () => _agent.GetComponent<Fight>())
+                            .Condition("Personality Brave", () => _agent.GetComponent<Brave>())
                             .Do("Add Attack", () =>
                             {
                                 gameObject.AddComponent<Attack>();
@@ -124,8 +129,8 @@ namespace Agent.AI
                             })
                         .End()
                         .Sequence("Action: Move")
-                            .Condition("Explore Objective", () => agent.GetComponent<Explore>())
-                            .Condition("Any Personality", () => agent.GetComponent<Personality>())
+                            .Condition("Explore Objective", () => _agent.GetComponent<Explore>())
+                            .Condition("Any Personality", () => _agent.GetComponent<Personality>())
                             .Do("Add Move", () =>
                             {
                                 gameObject.AddComponent<Move>();
@@ -133,8 +138,8 @@ namespace Agent.AI
                             })
                         .End()
                         .Sequence("Action: BumpWall")
-                            .Condition("Unconstrained Objective", () => agent.GetComponent<Unconstrained>())
-                            .Condition("Any Personality", () => agent.GetComponent<Personality>())
+                            .Condition("Unconstrained Objective", () => _agent.GetComponent<Unconstrained>())
+                            .Condition("Any Personality", () => _agent.GetComponent<Personality>())
                             .Do("Add BumpWall", () =>
                             {
                                 gameObject.AddComponent<BumpWall>();
@@ -144,17 +149,17 @@ namespace Agent.AI
                     .End()
                     .Do("Generate Utility", () =>
                     {
-                        GetComponent<AgentAction>().GenerateUtility();
+                        _agentAction.GenerateUtility();
                         return TaskStatus.Success;
                     })
                     .Do("Execute Highest Utility Action", () =>
                         {
-                            GetComponent<AgentAction>().ExecuteHighestUtility();
+                            _agentAction.ExecuteHighestUtility();
                             return TaskStatus.Success;
                         })
                     .Do("Sense Cell", () =>
                     {
-                        GetComponent<AgentSense>().SenseCell();
+                        _agentSense.SenseCell();
                         return TaskStatus.Success;
                     })
                     .Do("Remove Previous Action", () =>

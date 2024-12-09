@@ -7,8 +7,13 @@ namespace Agent
     public class AgentObjective : MonoBehaviour
     {
         private Agent _agent;
+        private GameManager _gameManager;
 
-        private void Start() => _agent = GetComponent<Agent>();
+        private void Awake()
+        {
+            _agent = GetComponent<Agent>();
+            _gameManager = GameManager.Instance;
+        }
 
         // Generates an objective based on the agent's personality and surroundings
         public void GenerateObjective()
@@ -33,11 +38,11 @@ namespace Agent
 
         // Checks if the agent has a specific element in its cell
         public bool ExistElementCell<T>() where T : Element =>
-            GameManager.Instance.AgentsMap[_agent.coords.x, _agent.coords.y].Exists(e => e.GetComponent<T>());
+            _gameManager.AgentsMap[_agent.coords.x, _agent.coords.y].Exists(e => e.GetComponent<T>());
 
         // Checks if there is a specific Cell type in the agent's cell
         public bool ExistTypeCell<T>() where T : Cell =>
-            GameManager.Instance.AgentsMap[_agent.coords.x, _agent.coords.y].Exists(e => e.GetComponent<T>());
+            _gameManager.AgentsMap[_agent.coords.x, _agent.coords.y].Exists(e => e.GetComponent<T>());
 
         // Checks if there is a specific element in the agent's surroundings
         public bool ExistElementNearCells<T>() where T : IDangerous
@@ -52,9 +57,9 @@ namespace Agent
                     var newY = _agent.coords.y + y;
 
                     // Check if the cell is within the grid and if there is a specific element in it
-                    if (newX >= GameManager.Instance.gridMin.x && newX < GameManager.Instance.gridMax.x
-                        && newY >= GameManager.Instance.gridMin.y && newY < GameManager.Instance.gridMax.y
-                        && GameManager.Instance.AgentsMap[newX, newY].Exists(e => e.GetComponent(typeof(T))))
+                    if (newX >= _gameManager.gridMin.x && newX < _gameManager.gridMax.x
+                        && newY >= _gameManager.gridMin.y && newY < _gameManager.gridMax.y
+                        && _gameManager.AgentsMap[newX, newY].Exists(e => e.GetComponent(typeof(T))))
                         return true;
                 }
             }

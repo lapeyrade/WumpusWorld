@@ -11,6 +11,11 @@ namespace GameManagement
         // Singleton instance
         public static GameManager Instance;
 
+        // Cached components
+        private PrologInterface _prologInterface;
+        private GridBuilder _gridBuilder;
+        private CameraController _cameraController;
+
         // Game status and settings
         public bool saveData;
         public bool isGameOver;
@@ -51,6 +56,12 @@ namespace GameManagement
             // Set up singleton instance
             Instance = this;
 
+            // Cache components
+            if (aiType is AIType.Prolog)
+                _prologInterface = GetComponent<PrologInterface>();
+            _gridBuilder = GetComponent<GridBuilder>();
+            _cameraController = GameObject.Find("Main Camera").GetComponent<CameraController>();
+
             // Initialize random seed
             Random.InitState(randomSeed);
 
@@ -61,13 +72,12 @@ namespace GameManagement
             // Initialize agents list
             agents = new List<GameObject>();
 
-            // Initialize Prolog interface if AI type is Prolog
-            if (aiType is AIType.Prolog)
-                GetComponent<PrologInterface>().Init();
-
-            // Build grid and adjust camera
-            GetComponent<GridBuilder>().BuildGrid();
-            GameObject.Find("Main Camera").GetComponent<CameraController>().AdjustCameraPosition();
+            // Add grid manager and grid builder
+            gameObject.AddComponent<GridManager>();
+            gameObject.AddComponent<GridBuilder>();
+            
+            // Adjust camera
+            _cameraController.AdjustCameraPosition();
 
             // Add GameController component
             gameObject.AddComponent<GameController>();

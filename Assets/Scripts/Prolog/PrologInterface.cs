@@ -9,44 +9,42 @@ namespace Prolog
     public class PrologInterface : MonoBehaviour
     {
         private TMP_Dropdown _dropdown;
+        private PrologMqi _mqi;
+        private PrologThread _prologThread;
         public string debug_query = "";
         public bool askQuery;
         private readonly string _prologFilePath = Path.Combine(Application.streamingAssetsPath, "article.pl");
-        private PrologMqi _mqi;
-        private PrologThread PrologThread;
         public string QueryText = "";
 
-
         // Initialize the Prolog interface
-        public void Init()
+        public void Awake()
         {
             _mqi = new PrologMqi(prologPath: "/opt/homebrew/bin/");
-            PrologThread = _mqi.CreateThread();
-            PrologThread.Query($"consult('{_prologFilePath}')");
+            _prologThread = _mqi.CreateThread();
+            _prologThread.Query($"consult('{_prologFilePath}')");
             _dropdown = GameObject.Find("Dropdown").GetComponent<TMP_Dropdown>();
         }
 
-
+        // Ask a query to Prolog
         public void RunQuery()
         {
             // Remove first 2 characters (", ") if not empty
             if (QueryText.Length > 2)
                 QueryText = QueryText.Remove(0, 2);
-            PrologThread.Query(QueryText);
+            _prologThread.Query(QueryText);
             QueryText = "";
         }
 
-        // Ask a query to Prolog
         protected void Update()
         {
             if (!askQuery) return; /* Prolog query inside Unity Inspector */
-            PrologThread.QueryAsync(debug_query, false);
+            _prologThread.QueryAsync(debug_query, false);
 
             while (askQuery)
             {
                 try
                 {
-                    var answer = PrologThread.QueryAsyncResult();
+                    var answer = _prologThread.QueryAsyncResult();
                     if (answer is null)
                         askQuery = false;
                     else
@@ -75,7 +73,7 @@ namespace Prolog
         // Query the knowledge base for agent actions
         public string QueryKb(string agentName, Vector2Int agentCoords)
         {
-            PrologThread.QueryAsync($"genAction([{agentName}, [{agentCoords.x}, {agentCoords.y}]], Perso, Obj, Elem2, Act, Uti)", false);
+            _prologThread.QueryAsync($"genAction([{agentName}, [{agentCoords.x}, {agentCoords.y}]], Perso, Obj, Elem2, Act, Uti)", false);
 
             var action = "";
             var maxUtil = 0;
@@ -85,8 +83,9 @@ namespace Prolog
 
             while (true)
             {
-                var answer = PrologThread.QueryAsyncResult();
-                if (answer is null) break;
+                var answer = _prologThread.QueryAsyncResult();
+                if (answer is null)
+                    break;
 
                 var explanation = $"<b>{agentName}</b>" + " is <b>" + answer.ElementAt(0)[1] +
                                   "</b> and wanted to <b>" + answer.ElementAt(1)[1] + "</b> regarding the <b>" +

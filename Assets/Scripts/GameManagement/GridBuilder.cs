@@ -7,65 +7,70 @@ namespace GameManagement
     // GridBuilder class is responsible for generating the game grid with all elements.
     public class GridBuilder : MonoBehaviour
     {
+        private GameManager _gameManager;
+        private Agent.Agent[] _agentComponents;
+
         // Build the game grid with all elements.
-        public void BuildGrid()
+        public void Awake()
         {
+            _gameManager = GameManager.Instance;
             ValidateGridSize(); // Check if the grid size is valid.
             GenerateCell(); // Generate cells in the grid.
             GenerateWall(); // Generate walls around the grid.
-            GenerateElement("Human", GameManager.Instance.nbAgent, // Generate human agents on the grid.
+            GenerateElement("Human", _gameManager.nbAgent, // Generate human agents on the grid.
              new List<string> { "StartCell", "Wall" }, false);
-            GenerateElement("Gold", GameManager.Instance.nbGold, // Generate gold on the grid.
+            GenerateElement("Gold", _gameManager.nbGold, // Generate gold on the grid.
              new List<string> { "StartCell", "Wall", "Gold" });
-            GenerateElement("Wumpus", GameManager.Instance.nbWumpus, // Generate Wumpus on the grid.
+            GenerateElement("Wumpus", _gameManager.nbWumpus, // Generate Wumpus on the grid.
              new List<string> { "StartCell", "Wall", "Gold", "Wumpus" }, true, "Stench");
-            GenerateElement("Pit", GameManager.Instance.nbPit, // Generate pits on the grid.
+            GenerateElement("Pit", _gameManager.nbPit, // Generate pits on the grid.
              new List<string> { "StartCell", "Wall", "Gold", "Wumpus", "Pit" }, true, "Breeze");
         }
 
         // Validate if the grid size is enough to contain all elements.
-        private static void ValidateGridSize()
+        private void ValidateGridSize()
         {
-            if (GameManager.Instance.nbPit + GameManager.Instance.nbWumpus + GameManager.Instance.nbGold +
-                GameManager.Instance.nbAgent <= GameManager.Instance.gridMax.x * GameManager.Instance.gridMax.y) return;
+            if (_gameManager.nbPit + _gameManager.nbWumpus + _gameManager.nbGold +
+                _gameManager.nbAgent <= _gameManager.gridMax.x * _gameManager.gridMax.y) return;
             Debug.LogError("Map too small, can't contain all the elements.");
             Application.Quit();
             UnityEditor.EditorApplication.isPlaying = false;
         }
 
         // Generate cells in the grid.
-        private static void GenerateCell()
+        private void GenerateCell()
         {
-            for (var i = GameManager.Instance.gridMin.x; i < GameManager.Instance.gridMax.x; i++)
+            for (var i = _gameManager.gridMin.x; i < _gameManager.gridMax.x; i++)
             {
-                for (var j = GameManager.Instance.gridMin.y; j < GameManager.Instance.gridMax.y; j++)
+                for (var j = _gameManager.gridMin.y; j < _gameManager.gridMax.y; j++)
                 {
-                    GameManager.Instance.AgentsMap[i, j] = new List<GameObject>();
-                    GameManager.Instance.Map[i, j] = new List<GameObject>();
+                    _gameManager.AgentsMap[i, j] = new List<GameObject>();
+                    _gameManager.Map[i, j] = new List<GameObject>();
                     GridManager.AddToGrids(new Vector2Int(i, j), "Cell");
                 }
             }
         }
 
         // Generate walls around the grid.
-        private static void GenerateWall()
+        private void GenerateWall()
         {
-            for (var i = GameManager.Instance.gridMin.y; i < GameManager.Instance.gridMax.y; i++) // Right
-                GridManager.AddToGrids(new Vector2Int(GameManager.Instance.gridMax.x - 1, i), "Wall");
+            for (var i = _gameManager.gridMin.y; i < _gameManager.gridMax.y; i++) // Right
+                GridManager.AddToGrids(new Vector2Int(_gameManager.gridMax.x - 1, i), "Wall");
 
-            for (var i = GameManager.Instance.gridMin.y; i < GameManager.Instance.gridMax.y; i++) // Left
-                GridManager.AddToGrids(new Vector2Int(GameManager.Instance.gridMin.x, i), "Wall");
+            for (var i = _gameManager.gridMin.y; i < _gameManager.gridMax.y; i++) // Left
+                GridManager.AddToGrids(new Vector2Int(_gameManager.gridMin.x, i), "Wall");
 
-            for (var i = GameManager.Instance.gridMin.y + 1; i < GameManager.Instance.gridMax.x - 1; i++) // Top
-                GridManager.AddToGrids(new Vector2Int(i, GameManager.Instance.gridMax.y - 1), "Wall");
+            for (var i = _gameManager.gridMin.y + 1; i < _gameManager.gridMax.x - 1; i++) // Top
+                GridManager.AddToGrids(new Vector2Int(i, _gameManager.gridMax.y - 1), "Wall");
 
-            for (var i = GameManager.Instance.gridMin.y + 1; i < GameManager.Instance.gridMax.x - 1; i++) // Bottom
-                GridManager.AddToGrids(new Vector2Int(i, GameManager.Instance.gridMin.y), "Wall");
+            for (var i = _gameManager.gridMin.y + 1; i < _gameManager.gridMax.x - 1; i++) // Bottom
+                GridManager.AddToGrids(new Vector2Int(i, _gameManager.gridMin.y), "Wall");
         }
 
         // Generate the specified element on the grid.
         private void GenerateElement(string elem, int count, ICollection<string> occupiedTags, bool genAround = false, string aroundElem = "")
         {
+            _agentComponents = new Agent.Agent[count];
             for (var i = 0; i < count; i++)
             {
                 Vector2Int coords;
@@ -73,25 +78,25 @@ namespace GameManagement
 
                 do
                 {
-                    coords = new Vector2Int(Random.Range(GameManager.Instance.gridMin.x + 1, GameManager.Instance.gridMax.x - 1),
-                        Random.Range(GameManager.Instance.gridMin.y + 1, GameManager.Instance.gridMax.y - 1));
+                    coords = new Vector2Int(Random.Range(_gameManager.gridMin.x + 1, _gameManager.gridMax.x - 1),
+                        Random.Range(_gameManager.gridMin.y + 1, _gameManager.gridMax.y - 1));
 
-                    isValid = !GameManager.Instance.Map[coords.x, coords.y].Exists(x => occupiedTags.Contains(x.tag));
+                    isValid = !_gameManager.Map[coords.x, coords.y].Exists(x => occupiedTags.Contains(x.tag));
 
                     // For Pit and Wumpus, check they're not adjacent to any Human start positions
                     if (isValid && (elem == "Pit" || elem == "Wumpus"))
                     {
                         var adjacentCoords = new[]
                         {
-                        new Vector2Int(coords.x + 1, coords.y),
-                        new Vector2Int(coords.x - 1, coords.y),
-                        new Vector2Int(coords.x, coords.y + 1),
-                        new Vector2Int(coords.x, coords.y - 1)
-                    };
+                            new Vector2Int(coords.x + 1, coords.y),
+                            new Vector2Int(coords.x - 1, coords.y),
+                            new Vector2Int(coords.x, coords.y + 1),
+                            new Vector2Int(coords.x, coords.y - 1)
+                        };
 
                         foreach (var adjCoord in adjacentCoords)
                         {
-                            if (GameManager.Instance.Map[adjCoord.x, adjCoord.y].Exists(x => x.CompareTag("StartCell")))
+                            if (_gameManager.Map[adjCoord.x, adjCoord.y].Exists(x => x.CompareTag("StartCell")))
                             {
                                 isValid = false;
                                 break;
@@ -104,10 +109,11 @@ namespace GameManagement
                 if (elem == "Human")
                 {
                     if (Instantiate(Resources.Load("Human"), transform) is not GameObject agent) continue;
-                    agent.GetComponent<Agent.Agent>().Init(i, coords, GameManager.Instance.nbWumpus);
+                    _agentComponents[i] = agent.GetComponent<Agent.Agent>();
+                    _agentComponents[i].Init(i, coords, _gameManager.nbWumpus);
 
                     GridManager.AddToGrids(coords, "StartCell");
-                    GameManager.Instance.agents.Add(agent);
+                    _gameManager.agents.Add(agent);
                 }
 
                 // Add the element to the grid.

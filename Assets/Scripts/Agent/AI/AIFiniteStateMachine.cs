@@ -17,12 +17,25 @@ namespace Agent.AI
         }
 
         private State _state = State.GenerateObjective;
+        // Cached components
+        private AgentMove _agentMove;
+        private AgentSense _agentSense;
+        private AgentObjective _agentObjective;
+        private AgentAction _agentAction;
+
+        private void Awake()
+        {
+            _agentMove = GetComponent<AgentMove>();
+            _agentSense = GetComponent<AgentSense>();
+            _agentObjective = GetComponent<AgentObjective>();
+            _agentAction = GetComponent<AgentAction>();
+        }
 
         // The first turn of the agent is different from the rest
         public override void FirstTurn()
         {
-            GetComponent<AgentMove>().MoveCell();
-            GetComponent<AgentSense>().SenseCell();
+            _agentMove.MoveCell();
+            _agentSense.SenseCell();
         }
 
         // The finite state machine
@@ -31,24 +44,24 @@ namespace Agent.AI
             switch (_state)
             {
                 case State.GenerateObjective:
-                    GetComponent<AgentObjective>().GenerateObjective();
+                    _agentObjective.GenerateObjective();
                     _state = State.GenerateAction;
                     break;
                 case State.GenerateAction:
-                    GetComponent<AgentAction>().GenerateAction();
+                    _agentAction.GenerateAction();
                     _state = State.GenerateUtility;
                     break;
                 case State.GenerateUtility:
-                    GetComponent<AgentAction>().GenerateUtility();
+                    _agentAction.GenerateUtility();
                     _state = State.ExecuteHighestUtilityAction;
                     break;
                 case State.ExecuteHighestUtilityAction:
-                    GetComponent<AgentAction>().ExecuteHighestUtility();
+                    _agentAction.ExecuteHighestUtility();
                     _state = State.SenseCell;
                     break;
                 case State.SenseCell:
                 default:
-                    GetComponent<AgentSense>().SenseCell();
+                    _agentSense.SenseCell();
                     // Clean up the components related to Objective, Move, and Action
                     GetComponents<Component>().Where(c => c is Objective or Move or Action)
                         .ToList().ForEach(Destroy);

@@ -21,10 +21,12 @@ namespace Agent
         protected internal readonly Stack<Vector2Int> PastMovements = new();
 
         public string lastAction;
+        private GameManager _gameManager;
 
         // Initialize agent with given parameters
         public void Init(int agentId, Vector2Int newCoords, int nbTotalWumpus)
         {
+            _gameManager = GameManager.Instance;
             SetAgentInfo(agentId, newCoords);
             nbArrow = nbTotalWumpus;
             InitializeAgentPrefab();
@@ -57,7 +59,7 @@ namespace Agent
         // Attach the appropriate AI component based on the game manager's settings
         private void AttachAIComponent()
         {
-            var aiComponentType = GameManager.Instance.aiType switch
+            var aiComponentType = _gameManager.aiType switch
             {
                 GameManager.AIType.Prolog => typeof(AIProlog),
                 GameManager.AIType.BehaviourTree => typeof(AIBehaviourTree),
@@ -71,8 +73,8 @@ namespace Agent
         // Attach the personality components based on the game manager's settings
         private void AttachPersonalityComponents()
         {
-            foreach (var personalityType in GameManager.Instance.personalities.Select(personality =>
-                         Type.GetType("Ontology." + personality)))
+            foreach (var personalityType in _gameManager.personalities.Select(personality =>
+             Type.GetType("Ontology." + personality)))
                 gameObject.AddComponent(personalityType);
         }
     }

@@ -1468,8 +1468,6 @@ GameObject:
   - component: {fileID: 1979442550}
   - component: {fileID: 1979442551}
   - component: {fileID: 1979442556}
-  - component: {fileID: 1979442555}
-  - component: {fileID: 1979442553}
   - component: {fileID: 1979442557}
   m_Layer: 0
   m_Name: Grid
@@ -1507,14 +1505,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   saveData: 0
   isGameOver: 0
-  isModeAuto: 0
-  timerInterval: 0.396
+  isModeAuto: 1
+  timerInterval: 0
   randomSeed: 100
   gridMin: {x: 0, y: 0}
   gridMax: {x: 30, y: 30}
   tileSize: 1.05
-  nbPit: 10
-  nbWumpus: 10
+  nbPit: 20
+  nbWumpus: 20
   nbGold: 1
   nbAgent: 20
   aiType: 3
@@ -1523,30 +1521,6 @@ MonoBehaviour:
   turnDuration: []
   agentAction: []
   agentPosition: []
---- !u!114 &1979442553
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1979442548}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 89b0ce3e586534c3981e843f369ab308, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1979442555
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1979442548}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 607f6d7af72a7472ba3646c541615bcc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1979442556
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -11,17 +11,59 @@ namespace Ontology
 
     public class Interact : Action { }
 
-    public class Attack : Action { public override void Act() => GetComponent<AgentAction>().TryShootingArrow(); }
+    public class Attack : Action 
+    { 
+        private AgentAction _agentAction;
 
-    public class BumpWall : Action { public override void Act() => GetComponent<AgentMove>().BumpWall(); }
+        private void Awake() => _agentAction = GetComponent<AgentAction>();
 
-    public class Move : Action { public override void Act() => GetComponent<AgentMove>().MoveCell(); }
+        public override void Act() => _agentAction.TryShootingArrow(); 
+    }
 
-    public class MoveBack : Action { public override void Act() => GetComponent<AgentMove>().MoveAgent(GetComponent<AgentMove>().MoveBack()); }
+    public class BumpWall : Action 
+    { 
+        private AgentMove _agentMove;
 
-    public class PickUp : Interact { public override void Act() => GetComponent<AgentAction>().PickUpGold(); }
+        private void Awake() => _agentMove = GetComponent<AgentMove>();
 
-    public class Discard : Interact { public override void Act() => GetComponent<AgentAction>().Discard(); }
+        public override void Act() => _agentMove.BumpWall(); 
+    }
+
+    public class Move : Action 
+    { 
+        private AgentMove _agentMove;
+
+        private void Awake() => _agentMove = GetComponent<AgentMove>();
+
+        public override void Act() => _agentMove.MoveCell(); 
+    }
+
+    public class MoveBack : Action 
+    { 
+        private AgentMove _agentMove;
+
+        private void Awake() => _agentMove = GetComponent<AgentMove>();
+
+        public override void Act() => _agentMove.MoveAgent(_agentMove.MoveBack()); 
+    }
+
+    public class PickUp : Interact 
+    { 
+        private AgentAction _agentAction;
+
+        private void Awake() => _agentAction = GetComponent<AgentAction>();
+
+        public override void Act() => _agentAction.PickUpGold(); 
+    }
+
+    public class Discard : Interact 
+    { 
+        private AgentAction _agentAction;
+
+        private void Awake() => _agentAction = GetComponent<AgentAction>();
+
+        public override void Act() => _agentAction.Discard(); 
+    }
 
     public class Shoot : Attack { }
 
