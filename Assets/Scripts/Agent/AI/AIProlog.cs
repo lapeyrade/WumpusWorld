@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
 using Prolog;
+using GameManagement;
+
 
 namespace Agent.AI
 {

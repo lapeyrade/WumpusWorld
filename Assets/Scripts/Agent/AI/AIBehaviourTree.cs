@@ -3,6 +3,7 @@ using CleverCrow.Fluid.BTs.Tasks;
 using CleverCrow.Fluid.BTs.Trees;
 using Ontology;
 using UnityEngine;
+using Agent;
 
 namespace Agent.AI
 {

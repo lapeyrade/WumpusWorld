@@ -1,6 +1,7 @@
 using System.Linq;
 using Ontology;
 using UnityEngine;
+using GameManagement;
 
 namespace Agent.AI
 {
@@ -12,6 +13,7 @@ namespace Agent.AI
             GetComponent<AgentMove>().MoveCell(); // Move to a cell
             GetComponent<AgentSense>().SenseCell(); // Sense the current cell
         }
+
         public virtual void PlayTurn()
         {
             GetComponent<AgentObjective>().GenerateObjective(); // Generate the objective for the agent
