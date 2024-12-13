@@ -1,4 +1,14 @@
-﻿using System;
+﻿// SWI-Prolog Machine Query Interface (MQI) C# Implementation
+// Based on:
+// - SWI-Prolog MQI: https://github.com/SWI-Prolog/packages-mqi
+// - Python swiplserver: Author: Eric Zinda (ericz@inductorsoftware.com)
+//
+// The Machine Query Interface (MQI) allows using SWI-Prolog as an embedded part of an application.
+// This C# implementation enables SWI-Prolog queries to be executed from within C# applications
+// as if C# had a Prolog engine running inside of it. Queries are sent as strings and responses
+// are handled as JSON.
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -8,6 +18,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Prolog
 {
@@ -23,7 +34,7 @@ namespace Prolog
         {
             using JsonDocument doc = JsonDocument.Parse(exceptionJson);
             JsonElement jsonResult = doc.RootElement;
-        
+
             Debug.Assert(jsonResult.GetProperty("functor").GetString() == "exception" &&
                 jsonResult.GetProperty("args").GetArrayLength() == 1);
             _exceptionJson = jsonResult.GetProperty("args")[0].ToString();
@@ -99,191 +110,677 @@ namespace Prolog
     }
 
     /// <summary>
-    /// Manages a SWI Prolog process associated with your application process.
-    /// This class is designed to allow Prolog to be used "like a normal library" using the Machine Query Interface of SWI Prolog.
-    /// All communication is done using protocols that only work on the same machine as your application.
+    /// Helper class to read process output streams asynchronously
     /// </summary>
-    public class PrologMqi
+    internal class NonBlockingStreamReader : IDisposable
     {
-        public int? Port;
-        public string Password;
+        private readonly StreamReader _reader;
+        private readonly Task _readerTask;
+        private readonly CancellationTokenSource _cts;
+        private bool _disposed;
+
+        public NonBlockingStreamReader(StreamReader reader)
+        {
+            _reader = reader;
+            _cts = new CancellationTokenSource();
+            _readerTask = Task.Run(ReadOutput, _cts.Token);
+        }
+
+        private async Task ReadOutput()
+        {
+            try
+            {
+                while (!_cts.Token.IsCancellationRequested)
+                {
+                    var line = await _reader.ReadLineAsync();
+                    if (line == null) break;
+                    Trace.WriteLine($"Prolog: {line}");
+                }
+            }
+            catch (Exception e)
+            {
+                Trace.TraceError($"Error reading Prolog output: {e.Message}");
+            }
+        }
+
+        public void Stop()
+        {
+            if (_disposed) return;
+            _cts.Cancel();
+            try
+            {
+                _readerTask.Wait(1000); // Wait up to 1 second for task to complete
+            }
+            catch (Exception) { /* Ignore cleanup errors */ }
+        }
+
+        public void Dispose()
+        {
+            if (_disposed) return;
+            Stop();
+            _cts.Dispose();
+            _reader.Dispose();
+            _disposed = true;
+        }
+    }
+
+    /// <summary>
+    /// Helper class for handling Prolog protocol functions
+    /// </summary>
+    internal static class PrologProtocol
+    {
+        public static string PrologName(JsonElement json)
+        {
+            return json.GetProperty("functor").GetString();
+        }
+
+        public static JsonElement[] PrologArgs(JsonElement json)
+        {
+            return json.GetProperty("args").EnumerateArray().ToArray();
+        }
+
+        public static bool IsPrologFunctor(JsonElement json)
+        {
+            return json.ValueKind == JsonValueKind.Object &&
+                   json.TryGetProperty("functor", out _) &&
+                   json.TryGetProperty("args", out _);
+        }
+
+        public static bool IsPrologList(JsonElement json)
+        {
+            return json.ValueKind == JsonValueKind.Array;
+        }
+
+        public static bool IsPrologVariable(string term)
+        {
+            return !string.IsNullOrEmpty(term) && 
+                   (char.IsUpper(term[0]) || term[0] == '_');
+        }
+
+        public static bool IsPrologAtom(string term)
+        {
+            return !string.IsNullOrEmpty(term) && !IsPrologVariable(term);
+        }
+
+        public static string QuotePrologIdentifier(string identifier)
+        {
+            if (!IsPrologAtom(identifier)) return identifier;
+
+            var mustQuote = IsPrologAtom(identifier) && (
+                identifier.Length == 0 ||
+                !char.IsLetter(identifier[0]) ||
+                !identifier.Replace("_", "").All(char.IsLetterOrDigit)
+            );
+
+            return mustQuote ? $"'{identifier}'" : identifier;
+        }
+
+        public static string JsonToProlog(JsonElement json)
+        {
+            if (IsPrologFunctor(json))
+            {
+                var args = PrologArgs(json).Select(JsonToProlog);
+                return $"{QuotePrologIdentifier(PrologName(json))}({string.Join(", ", args)})";
+            }
+            if (IsPrologList(json))
+            {
+                var items = json.EnumerateArray().Select(JsonToProlog);
+                return $"[{string.Join(", ", items)}]";
+            }
+            return QuotePrologIdentifier(json.ToString());
+        }
+    }
+
+    /// <summary>
+    /// Manages a SWI Prolog process and provides communication through the Machine Query Interface (MQI).
+    /// This class allows Prolog to be used "like a normal library" in C#, enabling Prolog queries to be 
+    /// executed as if C# had a Prolog engine running inside of it.
+    /// 
+    /// Based on the SWI-Prolog MQI (https://github.com/SWI-Prolog/packages-mqi) and its Python implementation.
+    /// The Machine Query Interface enables embedding SWI-Prolog in applications, with all communication done
+    /// using protocols that only work on the same machine (localhost TCP/IP or Unix Domain Sockets).
+    /// 
+    /// Features:
+    /// - Automatic management of SWI Prolog process lifecycle
+    /// - Secure communication through localhost TCP/IP or Unix Domain Sockets
+    /// - Support for multiple concurrent Prolog threads
+    /// - Comprehensive error handling and debugging support
+    /// 
+    /// Installation Requirements:
+    /// 1. Install SWI Prolog (www.swi-prolog.org) and ensure "swipl" is on the system path
+    /// 2. Verify MQI is available by running "swipl mqi --help"
+    /// 
+    /// For more information about the Machine Query Interface, see:
+    /// - MQI Documentation: https://www.swi-prolog.org/pldoc/man?section=mqi
+    /// - MQI Source: https://github.com/SWI-Prolog/packages-mqi
+    /// </summary>
+    public class PrologMqi : IDisposable
+    {
+        // Protocol version information
+        private const int RequiredServerMajor = 1;
+        private const int RequiredServerMinor = 0;
+        private int _serverProtocolMajor;
+        private int _serverProtocolMinor;
+
+        // Connection fields
+        private int? _port;
+        private string _password;
+        private string _unixDomainSocket;
+        private Socket _socket;
+        private bool _disposed;
+        private bool _connectionFailed;
+
+        // Process management
         private Process _process;
+        private NonBlockingStreamReader _stderrReader;
+        private NonBlockingStreamReader _stdoutReader;
+
+        // Configuration (readonly)
         private readonly float? _queryTimeout;
         private readonly int? _pendingConnections;
         private readonly string _outputFile;
-        public string UnixDomainSocket;
         private readonly string _mqiTraces;
         private readonly bool _launchMqi;
         private readonly string _prologPath;
         private readonly string _prologPathArgs;
-        public bool ConnectionFailed;
+        private readonly object _lock = new object();
 
         /// <summary>
-        /// Initializes a new instance of the PrologMqi class that manages a SWI Prolog process.
+        /// Gets whether the connection to MQI has failed and further communication will likely hang
         /// </summary>
-        /// <param name="launchMqi">If true (default), launches a SWI Prolog process. If false, connects to an existing process.</param>
-        /// <param name="port">The TCP/IP localhost port to use for communication. If null, automatically picks an open port.</param>
-        /// <param name="password">The password for authentication with the Prolog process.</param>
-        /// <param name="unixDomainSocket">Unix domain socket path for communication. Not supported on Windows.</param>
-        /// <param name="queryTimeoutSeconds">Default timeout for queries in seconds.</param>
-        /// <param name="pendingConnectionCount">Number of pending connections to allow.</param>
-        /// <param name="outputFileName">File to write Prolog output to.</param>
-        /// <param name="prologPath">Path to the Prolog executable.</param>
-        /// <param name="prologPathArgs">Additional arguments for the Prolog executable.</param>
-        /// <param name="mqiTraces">Traces to enable for debugging.</param>
-        public PrologMqi(bool launchMqi = true, int? port = null!, string password = null, string unixDomainSocket = null,
-            float? queryTimeoutSeconds = null, int? pendingConnectionCount = null, string outputFileName = null,
-            string prologPath = null, string prologPathArgs = null, string mqiTraces = null)
+        public bool ConnectionFailed
         {
-            Port = port;
-            Password = password;
+            get => _connectionFailed;
+            set => _connectionFailed = value;
+        }
+
+        /// <summary>
+        /// Gets the port used for TCP/IP communication
+        /// </summary>
+        public int? Port => _port;
+
+        /// <summary>
+        /// Gets the password used for MQI authentication
+        /// </summary>
+        public string Password => _password;
+
+        /// <summary>
+        /// Gets the Unix domain socket path if being used
+        /// </summary>
+        public string UnixDomainSocket => _unixDomainSocket;
+
+        /// <summary>
+        /// Gets the process ID of the Prolog process if it's running
+        /// </summary>
+        public int? ProcessId() => _process?.Id;
+
+        /// <summary>
+        /// Initialize a PrologMQI instance that manages a SWI Prolog process.
+        /// </summary>
+        /// <param name="launchMqi">True to launch a new Prolog process, False to connect to existing one</param>
+        /// <param name="port">Port for TCP/IP communication (ignored if unixDomainSocket is set). 
+        /// When launchMqi is True, null automatically picks an open port.
+        /// When launchMqi is False, must match the port in mqi_start/1.</param>
+        /// <param name="password">Password for MQI authentication. 
+        /// When launchMqi is True, null generates a secure password.
+        /// When launchMqi is False, must match the password in mqi_start/1.</param>
+        /// <param name="unixDomainSocket">Unix domain socket path (null for TCP/IP).
+        /// Not supported on Windows. Path must be under 92 bytes for portability.</param>
+        /// <param name="queryTimeoutSeconds">Default timeout for queries in seconds (null for no timeout)</param>
+        /// <param name="pendingConnectionCount">Number of pending connections allowed (default 5)</param>
+        /// <param name="outputFileName">File to redirect Prolog output (null for logging)</param>
+        /// <param name="mqiTraces">MQI trace level ("_" for all, "protocol", "query", or null)</param>
+        /// <param name="prologPath">Path to swipl executable</param>
+        /// <param name="prologPathArgs">Additional arguments for swipl</param>
+        /// <exception cref="ArgumentException">If arguments are invalid</exception>
+        public PrologMqi(
+            bool launchMqi = true,
+            int? port = null,
+            string password = null,
+            string unixDomainSocket = null,
+            float? queryTimeoutSeconds = null,
+            int? pendingConnectionCount = null,
+            string outputFileName = null,
+            string mqiTraces = null,
+            string prologPath = null,
+            string prologPathArgs = null)
+        {
+            _port = port;
+            _password = password;
+            _unixDomainSocket = unixDomainSocket;
             _process = null;
             _queryTimeout = queryTimeoutSeconds;
             _pendingConnections = pendingConnectionCount;
             _outputFile = outputFileName;
-            UnixDomainSocket = unixDomainSocket;
             _mqiTraces = mqiTraces;
             _launchMqi = launchMqi;
             _prologPath = prologPath;
             _prologPathArgs = prologPathArgs;
+            _connectionFailed = false;
 
-            ConnectionFailed = false;
-
-            var os = Environment.OSVersion;
-            var pid = os.Platform;
-
-            // Ensure arguments are valid
-            if (UnixDomainSocket != null)
-            {
-                if (pid is PlatformID.Win32NT or PlatformID.Win32S or PlatformID.Win32Windows or PlatformID.WinCE)
-                    throw new ArgumentException("Unix domain sockets are not supported on Windows");
-                if (Port != null)
-                    throw new ArgumentException("Must only provide one of: port or unix_domain_socket");
-            }
-
-            if (_launchMqi is false && _outputFile != null)
-                throw new ArgumentException("output_file only works when launch_mqi is True");
-
-            Start();
+            ValidateArguments();
         }
 
+        private void ValidateArguments()
+        {
+            if (_unixDomainSocket != null)
+            {
+                if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+                {
+                    throw new ArgumentException("Unix Domain Sockets are not supported on Windows");
+                }
+                if (_port.HasValue)
+                {
+                    throw new ArgumentException("Must only provide one of: port or unixDomainSocket");
+                }
+            }
+
+            if (!_launchMqi && _outputFile != null)
+            {
+                throw new ArgumentException("outputFile only works when launchMqi is True");
+            }
+        }
 
         public void Start()
         {
             if (!_launchMqi) return;
-            // File.WriteAllText("output.txt", string.Empty); // Clear output file
-            // using StreamWriter file = new("output.txt", append: true);
 
-            var swiplPath = "swipl";
-            // var swiplPath = "/opt/homebrew/bin/swipl";
+            var swiplPath = _prologPath != null ? Path.Join(_prologPath, "swipl") : "swipl";
+            var launchArgs = new List<string> { "mqi", "--write_connection_values=true" };
 
-            if (_prologPath != null)
-                swiplPath = Path.Join(_prologPath, "swipl");
-
-            var launchArgs = "";
-
-            if (_prologPathArgs != null)
-                launchArgs += _prologPathArgs;
-
-            launchArgs +=
-            (
-                "--quiet"
-                + " -g"
-                + " mqi_start"
-                + " -t"
-                + " halt"
-                + " --"
-                + " --write_connection_values=true"
-            );
-
-            if (_pendingConnections != null)
-                launchArgs += " --pending_connections=" + _pendingConnections;
-            if (_queryTimeout != null)
-                launchArgs += " --query_timeout=" + _queryTimeout;
-            if (Password != null)
-                launchArgs += " --password=" + Password;
+            if (_pendingConnections.HasValue)
+                launchArgs.Add($"--pending_connections={_pendingConnections}");
+            if (_queryTimeout.HasValue)
+                launchArgs.Add($"--query_timeout={_queryTimeout}");
+            if (_password != null)
+                launchArgs.Add($"--password={_password}");
             if (_outputFile != null)
             {
-                var finalPath = PrologFunctions.CreatePosixPath(_outputFile);
-                launchArgs += " --write_output_to_file =" + _outputFile;
-                Console.WriteLine("Writing all Prolog output to file: " + finalPath);
+                var finalPath = CreatePosixPath(_outputFile);
+                launchArgs.Add($"--write_output_to_file={finalPath}");
+                UnityEngine.Debug.Log($"Writing all Prolog output to file: {finalPath}");
             }
-            if (Port != null)
-                launchArgs += " --port=" + Port;
-
-            if (UnixDomainSocket != null)
+            if (_port.HasValue)
+                launchArgs.Add($"--port={_port}");
+            if (_unixDomainSocket != null)
             {
-                if (UnixDomainSocket.Length > 0)
-                    launchArgs += " --unix_domain_socket=" + UnixDomainSocket;
+                if (!string.IsNullOrEmpty(_unixDomainSocket))
+                    launchArgs.Add($"--unix_domain_socket={_unixDomainSocket}");
                 else
-                    launchArgs += " --unix_domain_socket";
+                    launchArgs.Add("--create_unix_domain_socket=true");
             }
-
-            // file.WriteLine("Prolog MQI launching swipl with args: " + launchArgs);
 
             try
             {
-                _process = new Process();
-                _process.StartInfo.FileName = swiplPath;
-                _process.StartInfo.Arguments = launchArgs;
-                _process.StartInfo.UseShellExecute = false;
-                _process.StartInfo.RedirectStandardOutput = true;
-                _process.Start();
-            }
-            catch (FileNotFoundException)
-            {
-                throw new PrologLaunchError("The SWI Prolog executable 'swipl'" +
-                                            " could not be found on the system path, please add it.");
-            }
-
-
-            if (UnixDomainSocket is null)
-            {
-                var portString = _process.StandardOutput.ReadLine();
-
-                if (portString == "")
-                    throw new PrologLaunchError("no port found in stdout");
-                if (portString != null)
+                _process = new Process
                 {
-                    var serverPortString = portString.Trim('\n');
-                    Port = int.Parse(serverPortString);
-                    // file.WriteLine("Prolog MQI port: " + _port);
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = swiplPath,
+                        Arguments = string.Join(" ", launchArgs),
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        CreateNoWindow = true
+                    }
+                };
+
+                if (!_process.Start())
+                {
+                    throw new PrologLaunchError("Failed to start Prolog process");
+                }
+
+                // Read connection information
+                if (_unixDomainSocket == null)
+                {
+                    var portString = _process.StandardOutput.ReadLine();
+                    if (string.IsNullOrEmpty(portString))
+                        throw new PrologLaunchError("No port found in stdout");
+                    _port = int.Parse(portString.Trim());
+                }
+                else
+                {
+                    var socketPath = _process.StandardOutput.ReadLine();
+                    if (string.IsNullOrEmpty(socketPath))
+                        throw new PrologLaunchError("No Unix Domain Socket found in stdout");
+                    _unixDomainSocket = socketPath.Trim();
+                }
+
+                var passwordString = _process.StandardOutput.ReadLine();
+                if (string.IsNullOrEmpty(passwordString))
+                    throw new PrologLaunchError("No password found in stdout");
+                _password = passwordString.Trim();
+
+                // Set up output readers
+                _stderrReader = new NonBlockingStreamReader(_process.StandardError);
+                _stdoutReader = new NonBlockingStreamReader(_process.StandardOutput);
+
+                if (_mqiTraces != null)
+                {
+                    using var thread = CreateThread();
+                    thread.Query($"debug(mqi({_mqiTraces}))");
                 }
             }
-            else
+            catch (Exception e)
             {
-                var domainSocket = _process.StandardOutput.ReadLine();
-
-                if (domainSocket == "")
-                    throw new PrologLaunchError("no Unix Domain Socket found in stdout");
-                if (domainSocket != null)
-                    UnixDomainSocket = domainSocket.Trim('\n');
+                CleanupProcess();
+                throw new PrologLaunchError($"Failed to launch Prolog: {e.Message}");
             }
-
-            var passwordString = _process.StandardOutput.ReadLine();
-            if (passwordString == "")
-                throw new PrologLaunchError("no password found in stdout");
-
-            if (passwordString != null)
-            {
-                Password = passwordString.Trim('\n');
-                // file.WriteLine("Prolog MQI password: " + _password);
-            }
-
-            if (_mqiTraces is null) return;
-            var prologThread = CreateThread();
-            prologThread.Query("debug(mqi({self._mqi_traces}))");
         }
 
+        /// <summary>
+        /// Stop the Prolog process and clean up resources.
+        /// If the process was launched by this instance (launchMqi=true), it will be shut down.
+        /// Does nothing if launchMqi=false.
+        /// </summary>
+        /// <param name="kill">If true, forcefully terminate the process using Process.Kill().
+        /// If false (default), attempt an orderly shutdown through MQI.
+        /// Note: Kill=true will be used regardless of this parameter if ConnectionFailed is true.</param>
+        public void Stop(bool kill = false)
+        {
+            if (_process == null) return;
 
+            try
+            {
+                if (kill || _connectionFailed)
+                {
+                    Trace.WriteLine("Killing Prolog process...");
+                    _process.Kill();
+                    Trace.WriteLine("Killed Prolog process.");
+                }
+                else
+                {
+                    try
+                    {
+                        using var thread = CreateThread();
+                        thread.HaltServer();
+                    }
+                    catch (Exception e)
+                    {
+                        Trace.TraceWarning($"Orderly shutdown failed, killing process: {e.Message}");
+                        _process.Kill();
+                    }
+                }
+
+                _process.WaitForExit(1000); // Wait up to 1 second for process to exit
+                if (!_process.HasExited)
+                {
+                    Trace.TraceWarning("Process did not exit cleanly, forcing termination");
+                    _process.Kill();
+                }
+
+                CleanupProcess();
+
+                if (_unixDomainSocket != null)
+                {
+                    try
+                    {
+                        if (File.Exists(_unixDomainSocket))
+                        {
+                            File.Delete(_unixDomainSocket);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Trace.TraceWarning($"Failed to delete Unix domain socket: {e.Message}");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Trace.TraceError($"Error stopping Prolog: {e.Message}");
+                throw;
+            }
+            finally
+            {
+                _process = null;
+            }
+        }
+
+        private void CleanupProcess()
+        {
+            try
+            {
+                _stderrReader?.Stop();
+                _stdoutReader?.Stop();
+                _process?.Close();
+                _process?.Dispose();
+            }
+            catch (Exception e)
+            {
+                Trace.TraceError($"Error cleaning up Prolog process: {e.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Create a new thread for running Prolog queries.
+        /// Each thread runs independently and can execute queries concurrently with other threads.
+        /// Queries within a single thread are executed sequentially.
+        /// </summary>
+        /// <returns>A new PrologThread instance</returns>
         public PrologThread CreateThread()
         {
-            return new PrologThread(this);
+            lock (_lock)
+            {
+                return new PrologThread(this);
+            }
         }
 
-        public int? ProcessId()
+        /// <summary>
+        /// Convert a file path to POSIX format for Prolog compatibility
+        /// </summary>
+        private static string CreatePosixPath(string path)
         {
-            return _process?.Id; // null propagation operator
+            return path.Replace("\\", "/");
+        }
+
+        /// <summary>
+        /// Creates a non-predictable filename suitable for use as a Unix domain socket.
+        /// </summary>
+        /// <param name="directory">The directory to create the socket in. Must be:
+        /// - Short enough that total path is under 92 bytes
+        /// - Accessible only to the current user
+        /// - Have proper permissions for file creation/deletion</param>
+        /// <returns>Full path to the socket file</returns>
+        public static string CreateUnixDomainSocketFile(string directory)
+        {
+            var filename = $"sock{Guid.NewGuid():N}";
+            return Path.Combine(directory, filename);
+        }
+
+        /// <summary>
+        /// Check protocol version compatibility.
+        /// Major versions increment for breaking changes.
+        /// Minor versions increment for non-breaking changes.
+        /// Version 0.0 has a protocol bug but is supported for compatibility.
+        /// </summary>
+        private void CheckProtocolVersion()
+        {
+            if (_serverProtocolMajor == 0 && _serverProtocolMinor == 0)
+                return;
+
+            if (_serverProtocolMajor == RequiredServerMajor && _serverProtocolMinor >= RequiredServerMinor)
+                return;
+
+            throw new PrologLaunchError(
+                $"This version requires MQI major version {RequiredServerMajor} and minor version >= {RequiredServerMinor}. " +
+                $"The server is running MQI '{_serverProtocolMajor}.{_serverProtocolMinor}'.");
+        }
+
+        public void Dispose()
+        {
+            if (_disposed) return;
+            Stop();
+            _socket?.Dispose();
+            _disposed = true;
+        }
+
+        /// <summary>
+        /// Send a message to the Prolog process.
+        /// The format of sent messages is: <stringByteLength>.\n<stringBytes>.\n
+        /// For example: 7.\nhello.\n
+        /// - stringByteLength is the number of bytes of the string to follow (including .\n)
+        /// - stringBytes is the actual message string, must end with .\n
+        /// - Character encoding is UTF-8
+        /// </summary>
+        private void Send(string value)
+        {
+            value = value.Trim();
+            value = value.TrimEnd('\n', '.');
+            value += ".\n";
+
+            Trace.WriteLine($"PrologMQI send: {value}");
+
+            var utf8Value = Encoding.UTF8.GetBytes(value);
+            var messageLen = _serverProtocolMajor == 0 ? value.Length : utf8Value.Length;
+            var msgHeader = $"{messageLen}.\n";
+            var headerBytes = Encoding.UTF8.GetBytes(msgHeader);
+
+            _socket.Send(headerBytes);
+            _socket.Send(utf8Value);
+        }
+
+        /// <summary>
+        /// Receive a message from the Prolog process.
+        /// The format is identical to Send: <stringByteLength>.\n<stringBytes>.\n
+        /// Heartbeats (the "." character) can be sent by some commands to ensure the client is still listening.
+        /// These are discarded.
+        /// </summary>
+        private string Receive()
+        {
+            var amountReceived = 0;
+            int? amountExpected = null;
+            var bytesReceived = new List<byte>();
+            var sizeBytes = new List<byte>();
+            var heartbeatCount = 0;
+
+            while (amountExpected == null || amountReceived < amountExpected)
+            {
+                var buffer = new byte[4096];
+                var received = _socket.Receive(buffer);
+                if (received == 0) break;
+
+                if (amountExpected == null)
+                {
+                    // Parse header to get message length
+                    for (var i = 0; i < received; i++)
+                    {
+                        var c = (char)buffer[i];
+                        if (c == '.')
+                        {
+                            if (sizeBytes.Count == 0)
+                            {
+                                heartbeatCount++;
+                                continue;
+                            }
+                        }
+                        else if (c == '\n')
+                        {
+                            var sizeStr = Encoding.UTF8.GetString(sizeBytes.ToArray());
+                            amountExpected = int.Parse(sizeStr);
+                            bytesReceived.AddRange(buffer.Skip(i + 1).Take(received - (i + 1)));
+                            amountReceived = bytesReceived.Count;
+                            break;
+                        }
+                        else
+                        {
+                            sizeBytes.Add(buffer[i]);
+                        }
+                    }
+                    if (amountExpected == null) continue;
+                }
+                else
+                {
+                    bytesReceived.AddRange(buffer.Take(received));
+                    amountReceived += received;
+                }
+            }
+
+            var finalValue = Encoding.UTF8.GetString(bytesReceived.ToArray());
+            Trace.WriteLine($"PrologMQI receive: {finalValue}");
+            return finalValue;
+        }
+
+        /// <summary>
+        /// Handle a Prolog response, converting it to the appropriate format or throwing an exception.
+        /// Returns:
+        /// - false/0: False
+        /// - true[[]]: True
+        /// - true[[], [], ...]: [True, True, ...]
+        /// - true[[...], [...], ...]: [{"var1": json}, {"var1": json}, ...]
+        /// - exception(no_more_results): null
+        /// 
+        /// Throws:
+        /// - PrologConnectionFailedError if the connection failed
+        /// - PrologQueryTimeoutError if the query timed out
+        /// - PrologNoQueryError if attempting to cancel with no query
+        /// - PrologQueryCancelledError if a query was cancelled
+        /// - PrologResultNotAvailableError if async result not available
+        /// - PrologError for other exceptions
+        /// </summary>
+        private object ReturnPrologResponse()
+        {
+            var result = Receive();
+            using var doc = JsonDocument.Parse(result);
+            var jsonResult = doc.RootElement;
+
+            if (PrologProtocol.PrologName(jsonResult) == "exception")
+            {
+                if (jsonResult.GetProperty("args")[0].GetString() == "no_more_results")
+                    return null;
+
+                if (jsonResult.GetProperty("args")[0].GetString() == "connection_failed")
+                    ConnectionFailed = true;
+
+                var exceptionJson = jsonResult.GetProperty("args")[0];
+                if (exceptionJson.ValueKind != JsonValueKind.String)
+                    throw new PrologError(result);
+
+                var exceptionType = exceptionJson.GetString();
+                switch (exceptionType)
+                {
+                    case "connection_failed":
+                        throw new PrologConnectionFailedError(result);
+                    case "time_limit_exceeded":
+                        throw new PrologQueryTimeoutError(result);
+                    case "no_query":
+                        throw new PrologNoQueryError(result);
+                    case "cancel_goal":
+                        throw new PrologQueryCancelledError(result);
+                    case "result_not_available":
+                        throw new PrologResultNotAvailableError(result);
+                    default:
+                        throw new PrologError(result);
+                }
+            }
+
+            if (PrologProtocol.PrologName(jsonResult) == "false")
+                return false;
+
+            if (PrologProtocol.PrologName(jsonResult) == "true")
+            {
+                var answers = new List<object>();
+                foreach (var answer in PrologProtocol.PrologArgs(jsonResult)[0].EnumerateArray())
+                {
+                    if (answer.GetArrayLength() == 0)
+                    {
+                        answers.Add(true);
+                    }
+                    else
+                    {
+                        var dict = new Dictionary<string, JsonElement>();
+                        foreach (var assignment in answer.EnumerateArray())
+                        {
+                            var args = PrologProtocol.PrologArgs(assignment);
+                            dict[args[0].GetString()] = args[1];
+                        }
+                        answers.Add(dict);
+                    }
+                }
+                return answers.Count == 1 && answers[0] is true ? true : answers;
+            }
+
+            return jsonResult;
         }
     }
 
@@ -573,10 +1070,10 @@ namespace Prolog
         private void Send(string value)
         {
             value = value.Trim();
-            value = value.Trim('\n', '.');
+            value = value.TrimEnd('\n', '.');
             value += ".\n";
 
-            Debug.WriteLine($"PrologMQI send: {value}");
+            Trace.WriteLine($"PrologMQI send: {value}");
 
             var utf8Value = Encoding.UTF8.GetBytes(value);
             var messageLen = _serverProtocolMajor == 0 ? value.Length : utf8Value.Length;
@@ -647,7 +1144,7 @@ namespace Prolog
             }
 
             var finalValue = Encoding.UTF8.GetString(bytesReceived.ToArray());
-            Debug.WriteLine($"PrologMQI receive: {finalValue}");
+            Trace.WriteLine($"PrologMQI receive: {finalValue}");
             return finalValue;
         }
     }
