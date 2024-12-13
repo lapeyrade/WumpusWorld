@@ -11,7 +11,11 @@ using System.Threading;
 
 namespace Prolog
 {
-    /*class PrologError
+    /// <summary>
+    /// Base class used for all exceptions raised by PrologMQI except for PrologLaunchError.
+    /// Used directly when an exception is thrown by Prolog code itself, otherwise the subclass exceptions are used.
+    /// </summary>
+    public class PrologError : Exception
     {
         private readonly string _exceptionJson;
 
@@ -21,10 +25,8 @@ namespace Prolog
             JsonElement jsonResult = doc.RootElement;
         
             Debug.Assert(jsonResult.GetProperty("functor").GetString() == "exception" &&
-                jsonResult.GetProperty("args").ToString().Length == 1);
+                jsonResult.GetProperty("args").GetArrayLength() == 1);
             _exceptionJson = jsonResult.GetProperty("args")[0].ToString();
-        
-            Prolog();
         }
 
         public string Json()
@@ -34,36 +36,73 @@ namespace Prolog
 
         private string Prolog()
         {
-            return json_to_prolog(_exception_json);
-            return _exceptionJson;
+            return PrologFunctions.JsonToProlog(_exceptionJson);
         }
-    }*/
 
-    public class PrologConnectionFailedError : Exception
-    {
-        public PrologConnectionFailedError(string jsonResult) : base(jsonResult) { }
+        public override string Message => Prolog();
+
+        public bool IsPrologException(string termName)
+        {
+            using JsonDocument doc = JsonDocument.Parse(_exceptionJson);
+            return PrologFunctions.PrologName(doc.RootElement).GetString() == termName;
+        }
     }
 
+    /// <summary>
+    /// Raised when the SWI Prolog process was unable to be launched for any reason.
+    /// This can include a version mismatch between the library and the server.
+    /// </summary>
+    public class PrologLaunchError : Exception
+    {
+        public PrologLaunchError(string message) : base(message) { }
+    }
+
+    /// <summary>
+    /// Raised when a Prolog query times out when calling PrologThread.Query() or PrologThread.QueryAsync() with a timeout.
+    /// </summary>
     public class PrologQueryTimeoutError : Exception
     {
         public PrologQueryTimeoutError(string jsonResult) : base(jsonResult) { }
     }
 
+    /// <summary>
+    /// Raised when the connection used by a PrologThread fails.
+    /// Indicates that the Machine Query Interface will no longer respond.
+    /// </summary>
+    public class PrologConnectionFailedError : Exception
+    {
+        public PrologConnectionFailedError(string jsonResult) : base(jsonResult) { }
+    }
+
+    /// <summary>
+    /// Raised by PrologThread.CancelQueryAsync() and PrologThread.QueryAsyncResult() if there is no query running and no results to retrieve.
+    /// </summary>
     public class PrologNoQueryError : Exception
     {
         public PrologNoQueryError(string jsonResult) : base(jsonResult) { }
     }
 
+    /// <summary>
+    /// Raised by PrologThread.QueryAsyncResult() when the query has been cancelled.
+    /// </summary>
     public class PrologQueryCancelledError : Exception
     {
         public PrologQueryCancelledError(string jsonResult) : base(jsonResult) { }
     }
 
+    /// <summary>
+    /// Raised by PrologThread.QueryAsyncResult() when the next result to a query is not yet available.
+    /// </summary>
     public class PrologResultNotAvailableError : Exception
     {
         public PrologResultNotAvailableError(string jsonResult) : base(jsonResult) { }
     }
 
+    /// <summary>
+    /// Manages a SWI Prolog process associated with your application process.
+    /// This class is designed to allow Prolog to be used "like a normal library" using the Machine Query Interface of SWI Prolog.
+    /// All communication is done using protocols that only work on the same machine as your application.
+    /// </summary>
     public class PrologMqi
     {
         public int? Port;
@@ -79,6 +118,19 @@ namespace Prolog
         private readonly string _prologPathArgs;
         public bool ConnectionFailed;
 
+        /// <summary>
+        /// Initializes a new instance of the PrologMqi class that manages a SWI Prolog process.
+        /// </summary>
+        /// <param name="launchMqi">If true (default), launches a SWI Prolog process. If false, connects to an existing process.</param>
+        /// <param name="port">The TCP/IP localhost port to use for communication. If null, automatically picks an open port.</param>
+        /// <param name="password">The password for authentication with the Prolog process.</param>
+        /// <param name="unixDomainSocket">Unix domain socket path for communication. Not supported on Windows.</param>
+        /// <param name="queryTimeoutSeconds">Default timeout for queries in seconds.</param>
+        /// <param name="pendingConnectionCount">Number of pending connections to allow.</param>
+        /// <param name="outputFileName">File to write Prolog output to.</param>
+        /// <param name="prologPath">Path to the Prolog executable.</param>
+        /// <param name="prologPathArgs">Additional arguments for the Prolog executable.</param>
+        /// <param name="mqiTraces">Traces to enable for debugging.</param>
         public PrologMqi(bool launchMqi = true, int? port = null!, string password = null, string unixDomainSocket = null,
             float? queryTimeoutSeconds = null, int? pendingConnectionCount = null, string outputFileName = null,
             string prologPath = null, string prologPathArgs = null, string mqiTraces = null)
@@ -235,19 +287,17 @@ namespace Prolog
         }
     }
 
-    public class PrologLaunchError : Exception
-    {
-        public PrologLaunchError(string message) : base(message) { }
-    }
-
-
-    public class PrologThread
+    /// <summary>
+    /// Represents a thread in Prolog (not a C# thread).
+    /// A given PrologThread instance will always run queries on the same Prolog thread.
+    /// </summary>
+    public class PrologThread : IDisposable
     {
         private readonly PrologMqi _prologServer;
         private Socket _socket;
-        // private string _communicationThreadId;
-        // private string _goalThreadId;
-        // private int _heartbeatCount;
+        private string _communicationThreadId;
+        private string _goalThreadId;
+        private int _heartbeatCount;
         private int? _serverProtocolMajor;
         private int? _serverProtocolMinor;
 
@@ -255,56 +305,51 @@ namespace Prolog
         {
             _prologServer = prologMqi;
             _socket = null;
-            // _communicationThreadId = null;
-            // _goalThreadId = null;
-            // _heartbeatCount = 0;
+            _communicationThreadId = null;
+            _goalThreadId = null;
+            _heartbeatCount = 0;
             _serverProtocolMajor = null;
             _serverProtocolMinor = null;
 
             Start();
         }
 
-        private void Start()
+        public void Start()
         {
-            // using StreamWriter file = new("output.txt", append: true);
-
-            // file.WriteLine("Entering PrologThread: " + _prolog_server.process_id());
-
             if (_socket != null)
                 return;
 
             if (_prologServer.ProcessId() is null)
                 _prologServer.Start();
 
-            Dictionary<string, int?> prologAddress = new();
-
             if (_prologServer.UnixDomainSocket != null)
             {
-                prologAddress.Add(_prologServer.UnixDomainSocket, _prologServer.Port);
-                _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                _socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.IP);
             }
             else
             {
-                prologAddress.Add("127.0.0.1", _prologServer.Port);
                 _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             }
-
-            // file.WriteLine("PrologMQI connecting to Prolog at: " +
-            // prologAddress.First().Key + ":" + prologAddress.First().Value);
 
             var connectCount = 0;
             while (connectCount < 3)
             {
                 try
                 {
-                    _socket.Connect(IPAddress.Parse(prologAddress.First().Key), prologAddress.First().Value ?? default);
+                    if (_prologServer.UnixDomainSocket != null)
+                    {
+                        _socket.Connect(new UnixDomainSocketEndPoint(_prologServer.UnixDomainSocket));
+                    }
+                    else
+                    {
+                        _socket.Connect(IPAddress.Parse("127.0.0.1"), _prologServer.Port ?? default);
+                    }
                     break;
                 }
                 catch (SocketException)
                 {
-                    // file.WriteLine("Server not responding %s", prologAddress);
                     connectCount += 1;
-                    Thread.Sleep(1);
+                    Thread.Sleep(1000);
                 }
             }
             if (connectCount == 3)
@@ -317,16 +362,12 @@ namespace Prolog
             using var doc = JsonDocument.Parse(result);
             var jsonResult = doc.RootElement;
 
-
-            // file.WriteLine("\nPrologMQI received: " + jsonResult.GetProperty("functor"));
-
-            if (jsonResult.GetProperty("functor").ToString() != "true")
+            if (jsonResult.GetProperty("functor").GetString() != "true")
                 throw new PrologLaunchError($"Failed to accept password: {jsonResult}");
 
-            // _communicationThreadId = jsonResult.GetProperty("args")[0][0][0].GetProperty("args")[0].ToString();
-            // _goalThreadId = jsonResult.GetProperty("args")[0][0][0].GetProperty("args")[1].ToString();
-
-            // file.WriteLine("PrologMQI server protocol: " + communication_thread_id + " " + goal_thread_id);
+            var threadTerm = jsonResult.GetProperty("args")[0][0][0];
+            _communicationThreadId = threadTerm.GetProperty("args")[0].GetString();
+            _goalThreadId = threadTerm.GetProperty("args")[1].GetString();
 
             if (jsonResult.GetProperty("args")[0][0].GetArrayLength() > 1)
             {
@@ -340,8 +381,6 @@ namespace Prolog
                 _serverProtocolMinor = 0;
             }
 
-            // file.WriteLine("PrologMQI server protocol: " + _server_protocol_major + " " + _server_protocol_minor);
-
             CheckProtocolVersion();
         }
 
@@ -350,92 +389,49 @@ namespace Prolog
             const int requiredServerMajor = 1;
             const int requiredServerMinor = 0;
 
-            switch (_serverProtocolMajor)
-            {
-                case 0 when _serverProtocolMinor == 0:
-                case requiredServerMajor when _serverProtocolMinor == requiredServerMinor:
-                    return;
-                default:
-                    throw new PrologLaunchError($"version of swiplserver requires MQI major version" +
-                                                $" {requiredServerMajor} and minor version >= {requiredServerMinor}." +
-                                                $" The server is running MQI '{_serverProtocolMajor}.{_serverProtocolMinor}");
-            }
+            if (_serverProtocolMajor == 0 && _serverProtocolMinor == 0)
+                return;
+
+            if (_serverProtocolMajor == requiredServerMajor && _serverProtocolMinor >= requiredServerMinor)
+                return;
+
+            throw new PrologLaunchError(
+                $"This version requires MQI major version {requiredServerMajor} and minor version >= {requiredServerMinor}. " +
+                $"The server is running MQI '{_serverProtocolMajor}.{_serverProtocolMinor}'");
         }
 
-        private string Receive()
+        public void Stop()
         {
-            // using StreamWriter file = new("output.txt", append: true);
-
-            var buffer = new byte[4096];
-
-            if (_socket is null)
-                throw new NullReferenceException("Socket is null");
-
-            var iRx = _socket.Receive(buffer);
-
-            var msg = Encoding.ASCII.GetString(buffer, 0, iRx);
-
-            // file.WriteLine("\nReceived: " + msg);
-
-            msg = msg[(msg.IndexOf('.') + 1)..];
-
-            return msg;
-        }
-
-        private void Send(string value)
-        {
-            // using StreamWriter file = new("output.txt", append: true);
-
-            value = value.Trim();
-            value = value.Trim('\n');
-            value = value.Trim('.');
-            value += ".\n";
-
-            // file.WriteLine("PrologMQI send: " + value);
-
-            var valueBytes = Encoding.UTF8.GetBytes(value);
-            var utf8Value = Encoding.UTF8.GetString(valueBytes);
-
-            // file.WriteLine("Utf8 Value: " + utf8value);
-
-            var messageLen = _serverProtocolMajor == 0 ? value.Length : utf8Value.Length;
-
-            var msgHeader = messageLen.ToString() + ".\n";
-            var messageLenBytes = Encoding.UTF8.GetBytes(msgHeader);
-
-            // file.Write("Message Len: ");
-            // for (int i = 0; i < messageLenBytes.Length; i++)
-            // file.Write(messageLenBytes[i]);
-
-
-            // file.Write("\nMessage Content: ");
-            // for (int i = 0; i < valueBytes.Length; i++)
-            // file.Write(valueBytes[i]);
-
             if (_socket == null) return;
-            _socket.Send(messageLenBytes);
-            _socket.Send(valueBytes);
+            if (!_prologServer.ConnectionFailed)
+            {
+                try
+                {
+                    Send("close.\n");
+                    ReturnPrologResponse();
+                }
+                catch
+                {
+                    // Ignore exceptions during shutdown
+                }
+            }
+
+            try
+            {
+                _socket.Close();
+            }
+            catch
+            {
+                // Ignore exceptions during shutdown
+            }
+
+            _socket = null;
         }
 
-        // private void Stop()
-        // {
-        //     if (_socket == null) return;
-        //     if (!_prologServer.ConnectionFailed) return;
-        //
-        //     try
-        //     {
-        //         Send("close.\n");
-        //         ReturnPrologResponse();
-        //         
-        //         _socket.Close();
-        //     }
-        //     catch (Exception)
-        //     { // ignored
-        //     }
-        //
-        //     _socket = null;
-        // }
-
+        public void Dispose()
+        {
+            Stop();
+        }
 
         public IEnumerable<string[]> Query(string value, float? queryTimeoutSeconds = null)
         {
@@ -445,16 +441,14 @@ namespace Prolog
             value = value.Trim();
             value = value.Trim('\n');
 
-            var timeoutString = "_";
-            if (queryTimeoutSeconds is not null)
-                timeoutString = queryTimeoutSeconds.ToString();
+            var timeoutString = queryTimeoutSeconds?.ToString() ?? "_";
 
             Send($"run(({value}), {timeoutString}).\n");
 
             return ReturnPrologResponse();
         }
 
-        public void QueryAsync(string value, bool findAll, float? queryTimeoutSeconds = null)
+        public void QueryAsync(string value, bool findAll = true, float? queryTimeoutSeconds = null)
         {
             if (_socket is null)
                 Start();
@@ -462,11 +456,10 @@ namespace Prolog
             value = value.Trim();
             value = value.Trim('\n');
 
-            var timeoutString = queryTimeoutSeconds.ToString();
-            if (queryTimeoutSeconds is null)
-                timeoutString = "_";
+            var timeoutString = queryTimeoutSeconds?.ToString() ?? "_";
+            var findAllString = findAll.ToString().ToLower();
 
-            Send($"run_async(({value}), {timeoutString}, {findAll.ToString().ToLower()}).\n");
+            Send($"run_async(({value}), {timeoutString}, {findAllString}).\n");
 
             ReturnPrologResponse();
         }
@@ -479,13 +472,7 @@ namespace Prolog
 
         public List<string[]> QueryAsyncResult(float? waitTimeoutSeconds = null)
         {
-            // StreamWriter file = new("output.txt", append: true);
-
-            var timeoutString = waitTimeoutSeconds.ToString();
-            if (waitTimeoutSeconds is null)
-                timeoutString = "-1";
-
-            // file.WriteLine("\nquery_async_result: " + timeoutString);
+            var timeoutString = waitTimeoutSeconds?.ToString() ?? "-1";
 
             Send($"async_result({timeoutString}).\n");
 
@@ -501,68 +488,174 @@ namespace Prolog
 
         private List<string[]> ReturnPrologResponse()
         {
-            // using StreamWriter file = new("output.txt", append: true);
             var result = Receive();
-
-            // file.WriteLine("\nReceive: " + result);
-
             List<string[]> answerList = new();
 
             using var doc = JsonDocument.Parse(result);
             var jsonResult = doc.RootElement;
 
-            // file.WriteLine("Prolog Response:" + jsonResult);
-
-            if (jsonResult.ToString() != "false" && jsonResult.GetProperty("functor").ToString() == "exception")
+            if (jsonResult.GetProperty("functor").GetString() == "exception")
             {
-                if (jsonResult.GetProperty("args")[0].ToString() == "no_more_results")
+                var exceptionType = jsonResult.GetProperty("args")[0].GetString();
+                if (exceptionType == "no_more_results")
                     return null;
-                if (jsonResult.GetProperty("args")[0].ToString() == "connection_failed")
+                if (exceptionType == "connection_failed")
                     _prologServer.ConnectionFailed = true;
-                // else if (!typeof(string).IsInstanceOfType(jsonResult.GetProperty("args")[0]))
-                // throw new PrologLaunchError(jsonResult.ToString());
 
-                if (jsonResult.GetProperty("args")[0].ToString() == "connection_failed")
-                    throw new PrologConnectionFailedError(jsonResult.GetProperty("args")[0].ToString());
-                if (jsonResult.GetProperty("args")[0].ToString() == "time_limit_exceeded")
-                    throw new PrologQueryTimeoutError(jsonResult.GetProperty("args")[0].ToString());
-                if (jsonResult.GetProperty("args")[0].ToString() == "no_query")
-                    throw new PrologNoQueryError(jsonResult.GetProperty("args")[0].ToString());
-                if (jsonResult.GetProperty("args")[0].ToString() == "cancel_goal")
-                    throw new PrologQueryCancelledError(jsonResult.GetProperty("args")[0].ToString());
-                if (jsonResult.GetProperty("args")[0].ToString() == "result_not_available")
-                    throw new PrologResultNotAvailableError(jsonResult.GetProperty("args")[0].ToString());
-            }
-            else
-            {
-                if (jsonResult.ToString() == "false" || jsonResult.GetProperty("functor").ToString() == "false")
-                    return new List<string[]> { new[] { "false", "null" } };
-
-                for (var i = 0; i < jsonResult.GetProperty("args")[0].GetArrayLength(); i++)
+                switch (exceptionType)
                 {
-                    if (jsonResult.GetProperty("args")[0][i].GetArrayLength() == 0)
-                        answerList.Add(new[] { "true", "null" });
-                    else
+                    case "connection_failed":
+                        throw new PrologConnectionFailedError(jsonResult.ToString());
+                    case "time_limit_exceeded":
+                        throw new PrologQueryTimeoutError(jsonResult.ToString());
+                    case "no_query":
+                        throw new PrologNoQueryError(jsonResult.ToString());
+                    case "cancel_goal":
+                        throw new PrologQueryCancelledError(jsonResult.ToString());
+                    case "result_not_available":
+                        throw new PrologResultNotAvailableError(jsonResult.ToString());
+                    default:
+                        throw new PrologError(jsonResult.ToString());
+                }
+            }
+
+            if (jsonResult.GetProperty("functor").GetString() == "false")
+                return new List<string[]> { new[] { "false", "null" } };
+
+            var answers = jsonResult.GetProperty("args")[0];
+            for (var i = 0; i < answers.GetArrayLength(); i++)
+            {
+                var answer = answers[i];
+                if (answer.GetArrayLength() == 0)
+                {
+                    answerList.Add(new[] { "true", "null" });
+                }
+                else
+                {
+                    for (var j = 0; j < answer.GetArrayLength(); j++)
                     {
-                        for (var j = 0; j < jsonResult.GetProperty("args")[0][i].GetArrayLength(); j++)
-                        {
-                            answerList.Add(new[]
-                            {
-                                jsonResult.GetProperty("args")[0][i][j].GetProperty("args")[0].ToString(),
-                                jsonResult.GetProperty("args")[0][i][j].GetProperty("args")[1].ToString()
-                            });
-                        }
+                        var assignment = answer[j];
+                        var args = assignment.GetProperty("args");
+                        var variable = GetJsonValue(args[0]);
+                        var value = GetJsonValue(args[1]);
+                        answerList.Add(new[] { variable, value });
                     }
                 }
-
-                if (answerList.Count > 0 && answerList.ElementAt(0)[0] == "true")
-                    answerList.Add(new[] { "true", "null" });
             }
+
+            if (answerList.Count > 0 && answerList[0][0] == "true")
+                answerList.Add(new[] { "true", "null" });
+
             return answerList;
+        }
+
+        private string GetJsonValue(JsonElement element)
+        {
+            switch (element.ValueKind)
+            {
+                case JsonValueKind.String:
+                    return element.GetString();
+                case JsonValueKind.Array:
+                    return $"[{string.Join(", ", element.EnumerateArray().Select(GetJsonValue))}]";
+                case JsonValueKind.Object:
+                    if (element.TryGetProperty("functor", out var functor) && element.TryGetProperty("args", out var args))
+                    {
+                        var funcName = functor.GetString();
+                        var arguments = string.Join(", ", args.EnumerateArray().Select(GetJsonValue));
+                        return $"{funcName}({arguments})";
+                    }
+                    return element.ToString();
+                default:
+                    return element.ToString();
+            }
+        }
+
+        private void Send(string value)
+        {
+            value = value.Trim();
+            value = value.Trim('\n', '.');
+            value += ".\n";
+
+            Debug.WriteLine($"PrologMQI send: {value}");
+
+            var utf8Value = Encoding.UTF8.GetBytes(value);
+            var messageLen = _serverProtocolMajor == 0 ? value.Length : utf8Value.Length;
+
+            var msgHeader = $"{messageLen}.\n";
+            var headerBytes = Encoding.UTF8.GetBytes(msgHeader);
+
+            _socket.Send(headerBytes);
+            _socket.Send(utf8Value);
+        }
+
+        private string Receive()
+        {
+            var amountReceived = 0;
+            int? amountExpected = null;
+            var bytesReceived = new List<byte>();
+            var sizeBytes = new List<byte>();
+            _heartbeatCount = 0;
+
+            byte[] data = null;
+            while (amountExpected is null || amountReceived < amountExpected)
+            {
+                var buffer = new byte[4096];
+                var headerData = _socket.Receive(buffer);
+
+                if (amountExpected is null)
+                {
+                    // Start / continue reading the string length
+                    // Ignore any leading "." characters because those are heartbeats
+                    for (var i = 0; i < headerData; i++)
+                    {
+                        var item = buffer[i];
+                        // String length ends with '.\n' characters
+                        if ((char)item == '.')
+                        {
+                            // ignore "."
+                            if (sizeBytes.Count == 0)
+                            {
+                                // Count heartbeats for testing only
+                                _heartbeatCount++;
+                            }
+                            continue;
+                        }
+                        if ((char)item == '\n')
+                        {
+                            // convert all the characters we've received so far to a number
+                            var stringLength = Encoding.UTF8.GetString(sizeBytes.ToArray());
+                            amountExpected = int.Parse(stringLength);
+                            // And consume the rest of the stream
+                            data = buffer.Skip(i + 1).Take(headerData - (i + 1)).ToArray();
+                            break;
+                        }
+                        else
+                        {
+                            sizeBytes.Add(item);
+                        }
+                    }
+                    if (data == null)
+                        continue;
+                }
+                else
+                {
+                    data = buffer.Take(headerData).ToArray();
+                }
+
+                amountReceived += data.Length;
+                bytesReceived.AddRange(data);
+            }
+
+            var finalValue = Encoding.UTF8.GetString(bytesReceived.ToArray());
+            Debug.WriteLine($"PrologMQI receive: {finalValue}");
+            return finalValue;
         }
     }
 
 
+    /// <summary>
+    /// Provides utility functions for working with Prolog terms and JSON.
+    /// </summary>
     public static class PrologFunctions
     {
         public static string CreatePosixPath(string osPath)
@@ -570,15 +663,22 @@ namespace Prolog
             return osPath.Replace("\\", "/");
         }
 
-        // public static bool IsPrologFunctor(JsonElement jsonTerm)
-        // {
-        //     return jsonTerm.TryGetProperty("functor", out _) && jsonTerm.TryGetProperty("args", out _);
-        // }
+        public static bool IsPrologFunctor(JsonElement jsonTerm)
+        {
+            return jsonTerm.TryGetProperty("functor", out _) && jsonTerm.TryGetProperty("args", out _);
+        }
 
         private static bool IsPrologVariable(JsonElement jsonTerm)
         {
-            return jsonTerm.GetProperty("args")[0].ToString() == "test" ||
-                   jsonTerm[0].GetProperty("args")[0].ToString() == "_";
+            try
+            {
+                return jsonTerm.GetProperty("args")[0].GetString() == "test" ||
+                       jsonTerm.GetProperty("args")[0].GetString() == "_";
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         private static bool IsPrologAtom(JsonElement jsonTerm)
@@ -599,40 +699,50 @@ namespace Prolog
             return jsonTerm.GetProperty("args");
         }
 
-        // void quote_prolog_identifier(identifier: str):
-        //     """
-        //     Surround a Prolog identifier with '' if Prolog rules require it.
-        //     """
-        //     if not is_prolog_atom(identifier):
-        //         return identifier
-        //     else:
-        //         mustQuote = is_prolog_atom(identifier) and(
-        //             len(identifier) == 0
-        //             or not identifier[0].isalpha()
-        //             or
-        //             # characters like _ are allowed without quoting
-        //             not identifier.translate({ ord(c): "" for c in "_"}).isalnum()
-        //         )
+        private static string QuotePrologIdentifier(string identifier)
+        {
+            if (!IsPrologAtom(JsonDocument.Parse($"{{\"{identifier}\"}}").RootElement))
+                return identifier;
 
-        //         if mustQuote:
-        //             return f"'{identifier}'"
-        //         else:
-        //             return identifier
+            bool mustQuote = identifier.Length == 0 ||
+                            !char.IsLetter(identifier[0]) ||
+                            !identifier.Replace("_", "").All(char.IsLetterOrDigit);
 
+            return mustQuote ? $"'{identifier}'" : identifier;
+        }
 
-        // def json_to_prolog(json_term):
-        //     """
-        //     Convert json_term from the Prolog JSON format to a string that represents
-        //      the term in the Prolog language. See `PrologThread.query` for documentation on the Prolog JSON format.
-        //     """
-        //     if is_prolog_functor(json_term):
-        //         argsString = [json_to_prolog(item) for item in prolog_args(json_term)]
-        //         return f"{quote_prolog_identifier(prolog_name(json_term))}({', '.join(argsString)})"
-        //     elif is_prolog_list(json_term):
-        //         listString = [json_to_prolog(item) for item in json_term]
-        //         return f"[{', '.join(listString)}]"
-        //     else:
-        //         # must be an atom, number or variable
-        //         return str(quote_prolog_identifier(json_term))
+        public static string JsonToProlog(string jsonTerm)
+        {
+            using var doc = JsonDocument.Parse(jsonTerm);
+            return JsonElementToProlog(doc.RootElement);
+        }
+
+        private static string JsonElementToProlog(JsonElement jsonTerm)
+        {
+            if (IsPrologFunctor(jsonTerm))
+            {
+                var args = PrologArgs(jsonTerm);
+                var argStrings = new List<string>();
+                foreach (var arg in args.EnumerateArray())
+                {
+                    argStrings.Add(JsonElementToProlog(arg));
+                }
+                return $"{QuotePrologIdentifier(PrologName(jsonTerm).GetString())}({string.Join(", ", argStrings)})";
+            }
+            else if (jsonTerm.ValueKind == JsonValueKind.Array)
+            {
+                var listStrings = new List<string>();
+                foreach (var item in jsonTerm.EnumerateArray())
+                {
+                    listStrings.Add(JsonElementToProlog(item));
+                }
+                return $"[{string.Join(", ", listStrings)}]";
+            }
+            else
+            {
+                // Must be an atom, number or variable
+                return QuotePrologIdentifier(jsonTerm.ToString());
+            }
+        }
     }
 }
