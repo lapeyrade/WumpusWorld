@@ -6,10 +6,13 @@ namespace GameManagement
 {
     public class GameController : MonoBehaviour
     {
+        // Core game timers and management
         private float _timer;
         private GameManager _gameManager;
         private PrologInterface _prologInterface;
-        private Agent.Agent[] _agentComponents;
+
+        // Agent component arrays
+        private Agent.Agent[] _agent;
         private AIBasic[] _aiComponents;
 
         private void Awake()
@@ -18,28 +21,30 @@ namespace GameManagement
             _prologInterface = _gameManager.GetComponent<PrologInterface>();
         }
 
-        // Called before the first frame update
+        // Initialize game state and agent components
         protected void Start()
         {
-            // Cache agent components
-            _agentComponents = new Agent.Agent[_gameManager.agents.Count];
+            // Cache agent components for efficient access
+            _agent = new Agent.Agent[_gameManager.agents.Count];
             _aiComponents = new AIBasic[_gameManager.agents.Count];
             
+            // Initialize each agent's components and execute their first turn
             for (int i = 0; i < _gameManager.agents.Count; i++)
             {
-                _agentComponents[i] = _gameManager.agents[i].GetComponent<Agent.Agent>();
+                _agent[i] = _gameManager.agents[i].GetComponent<Agent.Agent>();
                 _aiComponents[i] = _gameManager.agents[i].GetComponent<AIBasic>();
                 _aiComponents[i].FirstTurn();
             }
             
+            // Initialize Prolog knowledge base if using Prolog AI
             if (_gameManager.aiType is GameManager.AIType.Prolog)
                 _prologInterface.RunQuery();
         }
 
-        // Called once per frame
+        // Main game loop
         protected void Update()
         {
-            // Increment timer if in auto mode, otherwise reset it and call PlayTurn()
+            // Handle automatic turn execution based on timer
             if (_gameManager.isModeAuto && _timer < _gameManager.timerInterval)
                 _timer += Time.deltaTime;
             else
@@ -49,48 +54,59 @@ namespace GameManagement
             }
         }
 
-        // Execute agents' turns based on input
+        // Execute agents' turns based on input or auto mode
         private void PlayTurn()
         {
             var watch = System.Diagnostics.Stopwatch.StartNew();
 
-            // Return if no relevant input or game is over
+            // Skip turn if no input in manual mode or game is over
             if ((!Input.anyKeyDown && !_gameManager.isModeAuto) || _gameManager.isGameOver) return;
 
-            // Check for specific key inputs and perform corresponding actions
+            // Handle special key inputs
             if (Input.GetKeyDown(KeyCode.Escape))
                 _gameManager.SetGameOver(true);
             else if (Input.GetKeyDown(KeyCode.Backspace))
             {
-                ScreenCapture.CaptureScreenshot("Screenshots/screenshot " +
-                                                System.DateTime.Now.ToString("MM-dd-yy (HH-mm-ss)") + ".png");
+                ScreenCapture.CaptureScreenshot("Screenshots/screenshot " + System.DateTime.Now.ToString("MM-dd-yy (HH-mm-ss)") + ".png");
                 Debug.Log("Screenshot saved!");
             }
-            // Play turn if specific keys are pressed or game is in auto mode
-            else if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.RightArrow) ||
-                     Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow) ||
+            // Execute turn on movement keys, space, return, or in auto mode
+            else if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space) || 
+                     Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.LeftArrow) || 
+                     Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow) ||
                      _gameManager.isModeAuto)
             {
-                // Execute agents' turns and measure the execution time
+                // Process each agent's turn
                 for (int i = 0; i < _aiComponents.Length; i++)
                 {
+                    var agent = _aiComponents[i]._agent;
+
+                    // Skip agent's turn if no safe cells are available from start position
+                    if (_gameManager.AgentsMap[agent.coords.x, agent.coords.y].Exists(e => e.tag is "StartCell")
+                        && !_gameManager.AgentsMap[agent.coords.x + 1, agent.coords.y].Exists(e => e.tag is "SafeCell")
+                        && !_gameManager.AgentsMap[agent.coords.x - 1, agent.coords.y].Exists(e => e.tag is "SafeCell")
+                        && !_gameManager.AgentsMap[agent.coords.x, agent.coords.y + 1].Exists(e => e.tag is "SafeCell")
+                        && !_gameManager.AgentsMap[agent.coords.x, agent.coords.y - 1].Exists(e => e.tag is "SafeCell"))
+                        continue;
+                    
                     _aiComponents[i].PlayTurn();
                 }
 
+                // Update Prolog knowledge base if using Prolog AI
                 if (_gameManager.aiType is GameManager.AIType.Prolog)
                     _prologInterface.RunQuery();
             }
 
-            // Update execution time and agent game data
+            // Record performance metrics and agent state
             watch.Stop();
             Debug.Log($"Execution Time: {watch.ElapsedMilliseconds} ms");
             _gameManager.turnDuration.Add(watch.ElapsedMilliseconds);
 
-            // for each agent update coords and last action
-            for (int i = 0; i < _agentComponents.Length; i++)
+            // Update game state with each agent's position and last action
+            for (int i = 0; i < _agent.Length; i++)
             {
-                _gameManager.agentPosition.Add(_agentComponents[i].coords);
-                _gameManager.agentAction.Add(_agentComponents[i].lastAction);
+                _gameManager.agentPosition.Add(_agent[i].coords);
+                _gameManager.agentAction.Add(_agent[i].lastAction);
             }
         }
     }

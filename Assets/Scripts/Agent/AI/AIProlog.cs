@@ -7,65 +7,63 @@ namespace Agent.AI
 {
     public class AIProlog : AIBasic
     {
-        private AgentMove _agentMove;
-        private AgentSense _agentSense;
-        private AgentAction _agentAction;
-        private Agent _agent;
+        // Core components for Prolog integration
         private PrologInterface _prologInterface;
         private GameManager _gameManager;
 
         private void Start()
         {
-            _agentMove = GetComponent<AgentMove>();
-            _agentSense = GetComponent<AgentSense>();
-            _agentAction = GetComponent<AgentAction>();
-            _agent = GetComponent<Agent>();
             _gameManager = GameManager.Instance;
             _prologInterface = _gameManager.GetComponent<PrologInterface>();
         }
 
         public override void FirstTurn()
         {
-            _agentMove.MoveCell(); // Move to a cell
-            _agentSense.SenseCell(); // Sense the current cell
+            _agentMove.MoveCell();    // Move to initial position
+            _agentSense.SenseCell();  // Gather initial environment data
 
-            // Update the knowledge base
+            // Initialize the knowledge base with agent information
             _prologInterface.QueryText +=
+                // Add agent position fact
                 $", assertz(data_concept([{_agent.name.ToLower()}, [{_agent.coords.x}, {_agent.coords.y}]], {_agent.tag.ToLower()})), " +
+                // Add agent type fact
                 $"assertz({_agent.tag.ToLower()}([{_agent.name.ToLower()}, [{_agent.coords.x}, {_agent.coords.y}]]))";
 
+            // Add personality traits to knowledge base
             foreach (var perso in _gameManager.personalities.Where(perso => _agent.GetComponent(Type.GetType("Ontology." + perso))))
                 _prologInterface.QueryText +=
+                    // Add personality trait fact (with generic position)
                     $", assertz(has_personality_trait([{_agent.name.ToLower()}, [_, _]], {perso.ToString().ToLower()})), " +
+                    // Add personality trait fact (with current position)
                     $"assertz({perso.ToString().ToLower()}([{_agent.name.ToLower()}, [{_agent.coords.x}, {_agent.coords.y}]]))";
         }
 
         public override void PlayTurn()
         {
-            // Query the knowledge base for agent actions
+            // Query the Prolog knowledge base to determine the next action
             switch (_prologInterface.QueryKb(_agent.name, _agent.coords))
             {
-                case "attack" or "shoot" or "shootarrow": // Try shooting an arrow
-                    _agentAction.TryShootingArrow();
+                case "attack" or "shoot" or "shootarrow":
+                    _agentAction.TryShootingArrow();  // Attack nearby monster
                     break;
-                case "pickup": // Pick up gold
-                    _agentAction.PickUpGold();
+                case "pickup":
+                    _agentAction.PickUpGold();        // Collect valuable item
                     break;
-                case "discard": // Discard the gold (destroy the GameObject)
-                    _agentAction.Discard();
+                case "discard":
+                    _agentAction.Discard();           // Remove item from inventory
                     break;
-                case "bumpwall": // Bump into a wall
-                    _agentMove.BumpWall();
+                case "bumpwall":
+                    _agentMove.BumpWall();           // Interact with obstacle
                     break;
-                case "moveback": // Move agent back to a previous cell
-                    _agentMove.MoveAgent(_agentMove.MoveBack());
+                case "moveback":
+                    _agentMove.MoveAgent(_agentMove.MoveBack());  // Return to previous position
                     break;
-                case "move": // Move to a cell
-                    _agentMove.MoveCell();
+                case "move":
+                    _agentMove.MoveCell();           // Move to new position
                     break;
             }
 
-            // Sense the element in the current cell
+            // Update knowledge of environment after action
             _agentSense.SenseCell();
         }
     }

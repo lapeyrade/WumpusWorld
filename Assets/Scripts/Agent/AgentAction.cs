@@ -1,4 +1,3 @@
-using System.Linq;
 using Ontology;
 using TMPro;
 using UnityEngine;
@@ -8,6 +7,7 @@ namespace Agent
 {
     public class AgentAction : MonoBehaviour
     {
+        // Core components
         private Agent _agent;
         private GameManager _gameManager;
         private TMP_Dropdown _dropdown;
@@ -19,75 +19,77 @@ namespace Agent
             _dropdown = GameObject.Find("Dropdown").GetComponent<TMP_Dropdown>();
         }
 
+        // Shorthand property for agent coordinates
         private Vector2Int Coords => _agent.coords;
 
         public void GenerateAction()
         {
-            // Generate specific actions based on the combination of attached components
-            AddComponentIf<Wealth, Cupid, PickUp>();
-            AddComponentIf<Abstinence, Ascetic, Discard>();
-            AddComponentIf<Safety, Coward, MoveBack>();
-            AddComponentIf<Safety, Brave, Attack>();
-            AddComponentIf<Fight, Brave, Attack>();
-            AddComponentIf<Explore, Personality, Move>();
-            AddComponentIf<Unconstrained, Personality, BumpWall>();
-        }
-
-        private void AddComponentIf<T1, T2, TComponent>() where TComponent : Component
-        {
-            // Add TComponent if both T1 and T2 are attached
-            if (GetComponent<T1>() is not null && GetComponent<T2>() is not null)
-                gameObject.AddComponent<TComponent>();
+            // Generate specific actions based on personality and objective combinations
+            if (_agent.GetObjective<Wealth>() && _agent.GetPersonality<Cupid>())
+                _agent.SetAction<PickUp>(true);      // Enable pickup for wealth-seeking Cupids
+            if (_agent.GetObjective<Abstinence>() && _agent.GetPersonality<Ascetic>())
+                _agent.SetAction<Discard>(true);     // Enable discard for abstinent Ascetics
+            if (_agent.GetObjective<Safety>() && _agent.GetPersonality<Coward>())
+                _agent.SetAction<MoveBack>(true);    // Enable retreat for safety-seeking Cowards
+            if (_agent.GetObjective<Safety>() && _agent.GetPersonality<Brave>())
+                _agent.SetAction<Attack>(true);      // Enable attack for safety-seeking Brave agents
+            if (_agent.GetObjective<Fight>() && _agent.GetPersonality<Brave>())
+                _agent.SetAction<Attack>(true);      // Enable attack for fight-seeking Brave agents
+            if (_agent.GetObjective<Explore>() && _agent.GetPersonality<Personality>())
+                _agent.SetAction<Move>(true);        // Enable movement for exploring agents
+            if (_agent.GetObjective<Unconstrained>() && _agent.GetPersonality<Personality>())
+                _agent.SetAction<BumpWall>(true);    // Enable wall interaction for unconstrained agents
         }
 
         public void GenerateUtility()
         {
-            // Set utility values based on the combination of attached components
-            SetUtilityIf<Cupid, Interact>(5);
-            SetUtilityIf<Ascetic, Interact>(3);
-            SetUtilityIf<Coward, MoveBack>(10);
-            SetUtilityIf<Brave, Attack>(9);
-            SetUtilityIf<Personality, Move>(1);
-            SetUtilityIf<Personality, BumpWall>(2);
-        }
-
-        private void SetUtilityIf<T, TAction>(int value) where TAction : Action
-        {
-            // Set utility value of TAction if both T and TAction are attached
-            if (GetComponent<T>() is not null && GetComponent<TAction>() is not null)
-                gameObject.GetComponent<TAction>().Utility = value;
+            // Assign utility values based on personality and action combinations
+            if (_agent.GetPersonality<Cupid>() && _agent.GetAction<Interact>())
+                _agent.GetAction<Interact>().Utility = 5;     // Cupids value interaction highly
+            if (_agent.GetPersonality<Ascetic>() && _agent.GetAction<Interact>())
+                _agent.GetAction<Interact>().Utility = 3;     // Ascetics value interaction moderately
+            if (_agent.GetPersonality<Coward>() && _agent.GetAction<MoveBack>())
+                _agent.GetAction<MoveBack>().Utility = 10;    // Cowards highly value retreating
+            if (_agent.GetPersonality<Brave>() && _agent.GetAction<Attack>())
+                _agent.GetAction<Attack>().Utility = 9;       // Brave agents value attacking highly
+            if (_agent.GetPersonality<Personality>() && _agent.GetAction<Move>())
+                _agent.GetAction<Move>().Utility = 1;         // Basic movement has low utility
+            if (_agent.GetPersonality<Personality>() && _agent.GetAction<BumpWall>())
+                _agent.GetAction<BumpWall>().Utility = 2;     // Wall interaction has low utility
         }
 
         public void ExecuteHighestUtility()
         {
             // Execute the action with the highest utility value
-            var highestUtility = gameObject.GetComponents<Action>().OrderByDescending(c => c.Utility).First();
+            var highestUtility = _agent.GetHighestUtilityAction();
             highestUtility.Act();
 
-            _dropdown.captionText.text = $"{_agent.name} chose the action {_agent.lastAction} with a utility of {highestUtility.Utility}.";
+            // Update UI to show the chosen action and its utility
+            _dropdown.captionText.text =
+            $"{_agent.name} chose the action {_agent.lastAction} with a utility of {highestUtility.Utility}.";
         }
 
         public void PickUpGold()
         {
-            // Increase the agent's gold count and update the grid accordingly
-            _agent.nbGold++;
-            GridManager.RemoveFromGrids(Coords, "Gold");
-            GridManager.AttachGoldToAgent(_agent);
-            _agent.lastAction = "PickUp";
+            // Handle gold collection logic
+            _agent.nbGold++;                         // Increment agent's gold count
+            GridManager.RemoveFromGrids(Coords, "Gold");  // Remove gold from the grid
+            GridManager.AttachGoldToAgent(_agent);        // Visually attach gold to agent
+            _agent.lastAction = "PickUp";                 // Record the action
         }
 
-        // remove the gold from the cavern
+        // Remove gold from the current cell
         internal void Discard() { GridManager.RemoveFromGrids(Coords, "Gold"); }
 
         public void TryShootingArrow()
         {
-            // Check if the agent has arrows available
+            // Verify arrow availability
             if (_agent.nbArrow < 1) return;
 
-            // Shoot arrows in each direction to eliminate Wumpus if present
-            ShootIfWumpusExistsInDirection(new Vector2Int(1, 0)); // Right
+            // Try shooting in all four directions
+            ShootIfWumpusExistsInDirection(new Vector2Int(1, 0));  // Right
             ShootIfWumpusExistsInDirection(new Vector2Int(-1, 0)); // Left
-            ShootIfWumpusExistsInDirection(new Vector2Int(0, 1)); // Up
+            ShootIfWumpusExistsInDirection(new Vector2Int(0, 1));  // Up
             ShootIfWumpusExistsInDirection(new Vector2Int(0, -1)); // Down
         }
 
@@ -95,28 +97,23 @@ namespace Agent
         {
             var coordWumpus = Coords;
 
+            // Check each cell in the given direction until grid boundaries
             while (coordWumpus.x >= _gameManager.gridMin.x && coordWumpus.x < _gameManager.gridMax.x &&
                    coordWumpus.y >= _gameManager.gridMin.y && coordWumpus.y < _gameManager.gridMax.y)
             {
-                // Check if a Wumpus is present in the current position
+                // If Wumpus found, handle the shooting logic
                 if (_gameManager.AgentsMap[coordWumpus.x, coordWumpus.y].Exists(e => e.tag is "Wumpus"))
                 {
-                    // Shoot the Wumpus and update the grid
-                    _agent.nbArrow--;
-                    GridManager.RemoveFromGrids(coordWumpus, "Wumpus");
-                    GridManager.RemoveFromGrids(coordWumpus, "DangerousCell");
-                    GridManager.AddToGrids(coordWumpus, "DeadWumpus");
-                    GridManager.AddToGrids(coordWumpus, "SafeCell");
-                    _agent.lastAction = "ShootArrow";
+                    _agent.nbArrow--;                                     // Use an arrow
+                    GridManager.RemoveFromGrids(coordWumpus, "Wumpus");         // Remove Wumpus
+                    GridManager.RemoveFromGrids(coordWumpus, "DangerousCell"); // Update cell danger status
+                    GridManager.AddToGrids(coordWumpus, "DeadWumpus");         // Add dead Wumpus marker
+                    GridManager.AddToGrids(coordWumpus, "SafeCell");           // Mark cell as safe
 
-                    if (coordWumpus.x > Coords.x)
-                        _agent.lastAction = "ShootRight";
-                    else if (coordWumpus.x < Coords.x)
-                        _agent.lastAction = "ShootLeft";
-                    else if (coordWumpus.y > Coords.y)
-                        _agent.lastAction = "ShootUp";
-                    else if (coordWumpus.y < Coords.y)
-                        _agent.lastAction = "ShootDown";
+                    // Record shooting direction
+                    _agent.lastAction = coordWumpus.x > Coords.x ? "ShootRight" :
+                                      coordWumpus.x < Coords.x ? "ShootLeft" :
+                                      coordWumpus.y > Coords.y ? "ShootUp" : "ShootDown";
                     break;
                 }
                 coordWumpus += direction;

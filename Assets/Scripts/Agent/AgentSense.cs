@@ -6,6 +6,7 @@ namespace Agent
 {
     public class AgentSense : MonoBehaviour
     {
+        // Core components
         private Agent _agent;
         private GameManager _gameManager;
 
@@ -15,28 +16,32 @@ namespace Agent
             _gameManager = GameManager.Instance;
         }
 
+        // Shorthand property for agent coordinates
         private Vector2Int Coords => _agent.coords;
 
-        // Sense the current cell and make inferences
+        // Update agent's knowledge of the current cell and make logical inferences
         public void SenseCell()
         {
-            // Iterate over the elements in the current cell's map and add them to the grid
+            // Add all elements from the current cell to the agent's knowledge grid
+            // (excluding other agents)
             foreach (var element in _gameManager.Map[Coords.x, Coords.y]
                          .Except(_gameManager.AgentsMap[Coords.x, Coords.y]).Select(x => x.tag))
                 GridManager.AddToGrids(Coords, element);
 
-            // Check if the current cell contains a pit or wumpus
+            // Check if the current cell is safe (no pit or wumpus)
             if (!_gameManager.Map[Coords.x, Coords.y].Exists(e => e.tag is "Pit" or "Wumpus"))
                 MakeInferences();
             else
-                _gameManager.SetGameOver(false);
+                _gameManager.SetGameOver(false);  // Game over if agent enters dangerous cell
 
-            // Check if the agent is at the starting coordinate with one gold
+            // Check win/lose conditions at starting position
             if (_agent.startCoord == Coords)
             {
+                // Win condition: Agent returns to start with gold
                 if (_agent.nbGold == 1)
                     _gameManager.SetGameOver(true);
-                // Set game over if Agent has no safe cell to visit
+                
+                // Lose condition: No safe cells to visit from starting position
                 if (_gameManager.nbAgent is 1
                     && !_gameManager.AgentsMap[Coords.x + 1, Coords.y].Exists(e => e.tag is "SafeCell")
                     && !_gameManager.AgentsMap[Coords.x - 1, Coords.y].Exists(e => e.tag is "SafeCell")
@@ -46,29 +51,30 @@ namespace Agent
             }
         }
 
-        // Make inferences about nearby cells
+        // Make logical inferences about nearby cells based on current cell's contents
         private void MakeInferences()
         {
-            // Check if the current cell contains breeze, stench, wumpus, or pit
+            // If current cell has danger indicators, mark adjacent cells as unknown
             if (_gameManager.AgentsMap[Coords.x, Coords.y].Exists(x
                     => x.tag is "Breeze" or "Stench" or "Wumpus" or "Pit"))
-                MarkSideCells("UnknownCell", true); // Mark side cells as unknown cells
+                MarkSideCells("UnknownCell", true);
             else
-                MarkSideCells("SafeCell", false); // Mark side cells as safe cells
+                MarkSideCells("SafeCell", false);  // Otherwise mark them as safe
 
-            // Check for dangers (wumpus and pit) in nearby cells]
-            CheckCellsDanger("Wumpus", "Stench");
-            CheckCellsDanger("Pit", "Breeze");
+            // Check for specific dangers in nearby cells
+            CheckCellsDanger("Wumpus", "Stench");  // Check for Wumpus based on stench
+            CheckCellsDanger("Pit", "Breeze");     // Check for Pits based on breeze
         }
 
-        // Mark side cells as a specified element (unknown or safe)
+        // Mark cells around the agent with specified element type
         private void MarkSideCells(string element, bool checkDanger)
         {
+            // Mark cells in increasing radius (1-2)
             for (var i = 1; i <= 2; i++)
             {
-                if (i > 1) element = "UnknownCell";
+                if (i > 1) element = "UnknownCell";  // Outer radius always marked as unknown
 
-                // Mark cells in the four cardinal directions
+                // Mark orthogonal cells
                 MarkCell(new Vector2Int(Coords.x + i, Coords.y), element, checkDanger);
                 MarkCell(new Vector2Int(Coords.x - i, Coords.y), element, checkDanger);
                 MarkCell(new Vector2Int(Coords.x, Coords.y + i), element, checkDanger);
@@ -76,7 +82,7 @@ namespace Agent
 
                 if (i <= 1) continue;
 
-                // Mark diagonal cells
+                // Mark diagonal cells in outer radius
                 MarkCell(new Vector2Int(Coords.x + (i - 1), Coords.y + (i - 1)), element, checkDanger);
                 MarkCell(new Vector2Int(Coords.x + (i - 1), Coords.y - (i - 1)), element, checkDanger);
                 MarkCell(new Vector2Int(Coords.x - (i - 1), Coords.y + (i - 1)), element, checkDanger);
@@ -84,24 +90,26 @@ namespace Agent
             }
         }
 
-        // Mark a specific cell as the specified element
+        // Mark a specific cell with the given element if conditions are met
         private void MarkCell(Vector2Int cell, string element, bool checkDanger)
         {
-            if (!GridManager.CellInGridLimits(cell)) return; // Check if the cell is within the grid limits
+            if (!GridManager.CellInGridLimits(cell)) return;  // Skip if cell is outside grid
 
-            // Check if the cell satisfies the specified conditions for marking
+            // Skip if cell contains danger when checking for dangers
             if (checkDanger && _gameManager.AgentsMap[cell.x, cell.y].Exists(e =>
                     e.tag is "Wumpus" or "DeadWumpus" or "Pit")) return;
 
+            // Skip if trying to mark as unknown but cell is already known
             if (element is "UnknownCell" && _gameManager.AgentsMap[cell.x, cell.y].Exists(e =>
                 e.tag is "SafeCell" or "Wall" or "VisitedCell")) return;
 
             GridManager.AddToGrids(cell, element);
         }
 
-        // Check nearby cells for a specific danger and its corresponding hint
+        // Check cells for specific dangers based on their indicators
         private void CheckCellsDanger(string danger, string hint)
         {
+            // Check current and surrounding cells for danger patterns
             CheckDanger(Coords, danger, hint);
             CheckDanger(new Vector2Int(Coords.x + 1, Coords.y), danger, hint);
             CheckDanger(new Vector2Int(Coords.x - 1, Coords.y), danger, hint);
@@ -113,14 +121,14 @@ namespace Agent
             CheckDanger(new Vector2Int(Coords.x - 1, Coords.y - 1), danger, hint);
         }
 
-        // Check a specific cell for a danger and its corresponding hint
+        // Check a specific cell for danger indicators and mark adjacent cells accordingly
         private void CheckDanger(Vector2Int cell, string danger, string hint)
         {
-            // Check if the cell is within the grid limits and if it contains the specified hint
+            // Skip if cell is outside grid or doesn't contain the hint
             if (!GridManager.CellInGridLimits(cell) ||
                 !_gameManager.AgentsMap[cell.x, cell.y].Exists(e => e.CompareTag(hint))) return;
 
-            // Check adjacent cells for the specified danger and mark them accordingly
+            // Check each direction for potential danger location
             if (DangerInRightCell(cell, danger))
                 AddDanger(new Vector2Int(cell.x + 1, cell.y), danger, hint);
 
@@ -134,66 +142,58 @@ namespace Agent
                 AddDanger(new Vector2Int(cell.x, cell.y - 1), danger, hint);
         }
 
-        // Mark a cell as a danger and add the corresponding hint
+        // Add danger markers and hints to a cell and its surroundings
         private void AddDanger(Vector2Int cell, string danger, string hint)
         {
-            // Check if the danger is a wumpus and the cell contains a dead wumpus
+            // Skip if trying to mark Wumpus in cell with dead Wumpus
             if (danger is "Wumpus" &&
                 _gameManager.AgentsMap[cell.x, cell.y].Exists(e => e.tag is "DeadWumpus")) return;
 
-            // Add the danger element and mark the cell as a dangerous cell
+            // Mark cell as dangerous
             GridManager.AddToGrids(cell, danger);
             GridManager.AddToGrids(cell, "DangerousCell");
 
-            // Add the hint to adjacent cells
-            AddHint(new Vector2Int(cell.x + 1, cell.y), hint); // Right
-            AddHint(new Vector2Int(cell.x - 1, cell.y), hint); // Left
-            AddHint(new Vector2Int(cell.x, cell.y + 1), hint); // Up
-            AddHint(new Vector2Int(cell.x, cell.y - 1), hint); // Down
+            // Add danger hints to adjacent cells
+            AddHint(new Vector2Int(cell.x + 1, cell.y), hint);
+            AddHint(new Vector2Int(cell.x - 1, cell.y), hint);
+            AddHint(new Vector2Int(cell.x, cell.y + 1), hint);
+            AddHint(new Vector2Int(cell.x, cell.y - 1), hint);
         }
 
-        // Add a hint to a specific cell
+        // Add a hint to a cell if it's not a wall
         private void AddHint(Vector2Int cell, string hint)
         {
-            // Skip marking if the cell contains a wall
             if (_gameManager.AgentsMap[cell.x, cell.y].Exists(e => e.tag is "Wall")) return;
             GridManager.AddToGrids(cell, hint);
         }
 
-        private bool DangerInRightCell(Vector2Int cell, string danger)
-        {
-            return NoDangerInCell(new Vector2Int(cell.x - 1, cell.y), danger) &&
-                   NoDangerInCell(new Vector2Int(cell.x, cell.y + 1), danger) &&
-                   NoDangerInCell(new Vector2Int(cell.x, cell.y - 1), danger);
-        }
+        // Helper methods to check for danger in different directions
+        private bool DangerInRightCell(Vector2Int cell, string danger) =>
+            NoDangerInCell(new Vector2Int(cell.x - 1, cell.y), danger) &&
+            NoDangerInCell(new Vector2Int(cell.x, cell.y + 1), danger) &&
+            NoDangerInCell(new Vector2Int(cell.x, cell.y - 1), danger);
 
-        private bool DangerInLeftCell(Vector2Int cell, string danger)
-        {
-            return NoDangerInCell(new Vector2Int(cell.x + 1, cell.y), danger) &&
-                   NoDangerInCell(new Vector2Int(cell.x, cell.y + 1), danger) &&
-                   NoDangerInCell(new Vector2Int(cell.x, cell.y - 1), danger);
-        }
+        private bool DangerInLeftCell(Vector2Int cell, string danger) =>
+            NoDangerInCell(new Vector2Int(cell.x + 1, cell.y), danger) &&
+            NoDangerInCell(new Vector2Int(cell.x, cell.y + 1), danger) &&
+            NoDangerInCell(new Vector2Int(cell.x, cell.y - 1), danger);
 
-        private bool DangerInUpCell(Vector2Int cell, string danger)
-        {
-            return NoDangerInCell(new Vector2Int(cell.x + 1, cell.y), danger) &&
-                   NoDangerInCell(new Vector2Int(cell.x - 1, cell.y), danger) &&
-                   NoDangerInCell(new Vector2Int(cell.x, cell.y - 1), danger);
-        }
+        private bool DangerInUpCell(Vector2Int cell, string danger) =>
+            NoDangerInCell(new Vector2Int(cell.x + 1, cell.y), danger) &&
+            NoDangerInCell(new Vector2Int(cell.x - 1, cell.y), danger) &&
+            NoDangerInCell(new Vector2Int(cell.x, cell.y - 1), danger);
 
-        private bool DangerInDownCell(Vector2Int cell, string danger)
-        {
-            return NoDangerInCell(new Vector2Int(cell.x + 1, cell.y), danger) &&
-                   NoDangerInCell(new Vector2Int(cell.x - 1, cell.y), danger) &&
-                   NoDangerInCell(new Vector2Int(cell.x, cell.y + 1), danger);
-        }
+        private bool DangerInDownCell(Vector2Int cell, string danger) =>
+            NoDangerInCell(new Vector2Int(cell.x + 1, cell.y), danger) &&
+            NoDangerInCell(new Vector2Int(cell.x - 1, cell.y), danger) &&
+            NoDangerInCell(new Vector2Int(cell.x, cell.y + 1), danger);
 
-        // Check if there is no danger in a specific cell
+        // Check if a cell is safe from a specific danger
         private bool NoDangerInCell(Vector2Int cell, string danger)
         {
             if (!GridManager.CellInGridLimits(cell)) return false;
 
-            // Check if the danger is a wumpus and the cell contains a dead wumpus
+            // Consider dead Wumpus when checking for Wumpus danger
             if (danger is "Wumpus" &&
                 _gameManager.AgentsMap[cell.x, cell.y].Exists(e => e.tag is "DeadWumpus"))
                 return false;

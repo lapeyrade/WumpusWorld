@@ -5,7 +5,7 @@ namespace Ontology
 {
     public class Action : MonoBehaviour
     {
-        public int Utility { get; set; } = 1;
+        public int Utility { get; set; } = 0;
         public virtual void Act() { }
     }
 

@@ -1,41 +1,48 @@
-using System.Linq;
-using Ontology;
 using UnityEngine;
 
 namespace Agent.AI
 {
     public class AIBasic : MonoBehaviour
     {
-        private AgentMove _agentMove;
-        private AgentSense _agentSense;
-        private AgentObjective _agentObjective;
-        private AgentAction _agentAction;
+        // Core agent components
+        public Agent _agent;
+        protected AgentMove _agentMove;
+        protected AgentSense _agentSense;
+        protected AgentObjective _agentObjective;
+        protected AgentAction _agentAction;
 
-        private void Awake()
+        // Initialize agent components
+        protected void Awake()
         {
+            _agent = GetComponent<Agent>();
             _agentMove = GetComponent<AgentMove>();
             _agentSense = GetComponent<AgentSense>();
             _agentObjective = GetComponent<AgentObjective>();
             _agentAction = GetComponent<AgentAction>();
         }
 
-        // Perform actions on the first turn
+        // Initialize basic agent behavior on first turn
         public virtual void FirstTurn()
         {
-            _agentMove.MoveCell(); // Move to a cell
-            _agentSense.SenseCell(); // Sense the current cell
+            _agentMove.MoveCell();    // Move to initial cell position
+            _agentSense.SenseCell();  // Gather initial environment information
         }
 
+        // Execute the agent's decision-making cycle each turn
         public virtual void PlayTurn()
         {
-            _agentObjective.GenerateObjective(); // Generate the objective for the agent
-            _agentAction.GenerateAction(); // Generate the action for the agent
-            _agentAction.GenerateUtility(); // Generate the utility for the agent's actions
-            _agentAction.ExecuteHighestUtility(); // Execute the action with the highest utility
-            _agentSense.SenseCell(); // Sense the current cell
+            // 1. Decision Making Phase
+            _agentObjective.GenerateObjective();  // Determine what the agent wants to achieve
+            _agentAction.GenerateAction();        // Generate possible actions
+            _agentAction.GenerateUtility();       // Evaluate action utilities
 
-            // Clean up the components related to Objective, Move, and Action
-            GetComponents<Component>().Where(c => c is Objective or Move or Action).ToList().ForEach(Destroy);
+            // 2. Execution Phase
+            _agentAction.ExecuteHighestUtility(); // Perform the most beneficial action
+            _agentSense.SenseCell();             // Update environment knowledge
+
+            // 3. Cleanup Phase
+            _agent.ResetObjectives();  // Clear objectives for next turn
+            _agent.ResetActions();     // Reset actions and utilities for next turn
         }
     }
 }
