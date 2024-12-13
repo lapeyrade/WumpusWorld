@@ -24,12 +24,12 @@ In the video, the screen is split into two parts:
 
 The cells in the world are color-coded as follows:
 
-- Gray: Start location
-- Light Blue: Visited cells
-- Green: Safe cells (surrounded by at least one cell without breeze or stench)
-- Red: Dangerous cells (containing a Wumpus or pit)
-- Orange: Uncertain cells
-- Black: Walls (inaccessible to the agent)
+- **Gray**: Start location
+- **Light Blue**: Visited cells
+- **Green**: Safe cells (surrounded by at least one cell without breeze or stench)
+- **Red**: Dangerous cells (containing a Wumpus or pit)
+- **Orange**: Uncertain cells
+- **Black**: Walls (inaccessible to the agent)
 
 ## Rules of the game
 * The game takes place in a cave-like grid world containing pits, gold, and monsters called Wumpus.
