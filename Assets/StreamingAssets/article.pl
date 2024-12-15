@@ -6,22 +6,25 @@
 
 :- dynamic([has_personality_trait/2, data_concept/2], [incremental(true)]).
 
-
 /* Decision making predicates and rules */
 subsumes_or_equals(X, Y) :-
     X = Y;
     strictSubsumedBy(X, Y); 
     data_concept(X, Y). 
 
+% Helper predicate for generalization pattern
+generalize_pair(X1, X2, SupX1, SupX2) :-
+    subsumes_or_equals(X1, SupX1),
+    subsumes_or_equals(X2, SupX2),
+    (X1 \= SupX1; X2 \= SupX2).
+
 % Facts
 % Coming from Unity C#
 
-% Optimized generalization rules
-has_personality_trait(Entity,SupPerso):-
-    has_personality_trait(SupEntity,Perso),
-    subsumes_or_equals(Entity,SupEntity),
-    subsumes_or_equals(Perso,SupPerso),
-    (Entity\=SupEntity;Perso\=SupPerso).
+% Optimized generalization rules using helper
+has_personality_trait(Entity, SupPerso):-
+    has_personality_trait(SupEntity, Perso),
+    generalize_pair(Entity, Perso, SupEntity, SupPerso).
 
 % Facts
 desirable(cupid, wealth).
@@ -31,11 +34,9 @@ desirable(brave, fight).
 desirable(personality, explore).
 desirable(personality, unconstrained).
 
-desirable(Perso,Obj):-
-    desirable(SupPerso,SupObj),
-    subsumes_or_equals(Perso,SupPerso),
-    subsumes_or_equals(Obj,SupObj),
-    (Perso\=SupPerso;Obj\=SupObj).
+desirable(Perso, Obj):-
+    desirable(SupPerso, SupObj),
+    generalize_pair(Perso, Obj, SupPerso, SupObj).
 
 % Facts
 motivation(valuableitem, wealth).
@@ -46,11 +47,9 @@ motivation(safecell, explore).
 motivation(visitedcell, explore).
 motivation(obstacle, unconstrained).
 
-motivation(Elem,Obj):-
-    motivation(SupElem,SupObj),
-    subsumes_or_equals(Elem,SupElem),
-    subsumes_or_equals(Obj,SupObj),
-    (Elem\=SupElem;Obj\=SupObj).
+motivation(Elem, Obj):-
+    motivation(SupElem, SupObj),
+    generalize_pair(Elem, Obj, SupElem, SupObj).
 
 % Definition rule - Step 1
 genObjective(Elem1, Perso, Obj, Elem2):-
@@ -69,10 +68,8 @@ satisfy(explore, move).
 satisfy(unconstrained, bumpwall).
 
 satisfy(Obj, Act):-
-    satisfy(SupObj,SupAct),
-    subsumes_or_equals(Obj,SupObj),
-    subsumes_or_equals(Act,SupAct),
-    (Obj\=SupObj;Act\=SupAct).
+    satisfy(SupObj, SupAct),
+    generalize_pair(Obj, Act, SupObj, SupAct).
 
 % Facts
 encline(cupid, interact, 5).
@@ -84,9 +81,7 @@ encline(personality, bumpwall, 2).
 
 encline(Perso, Act, Util):-
     encline(SupPerso, SupAct, Util),
-    subsumes_or_equals(Perso,SupPerso),
-    subsumes_or_equals(Act,SupAct),
-    (Perso\=SupPerso;Act\=SupAct).
+    generalize_pair(Perso, Act, SupPerso, SupAct).
 
 % Definition rule - Step 2
 genAction(Elem1, Perso, Obj, Elem2, Act, Util):-
