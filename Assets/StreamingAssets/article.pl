@@ -12,11 +12,17 @@
 % Facts
 % Coming from Unity C#
 
-% Generalization rule
+% Helper predicate for subsumption checks
+subsumes_or_equals(X, Y) :-
+    X = Y;
+    data_concept(X, Y);
+    strictSubsumedBy(X, Y).
+
+% Optimized generalization rules
 has_personality_trait(Entity,SupPerso):-
     has_personality_trait(SupEntity,Perso),
-    (Entity=SupEntity;data_concept(Entity,SupEntity);strictSubsumedBy(Entity,SupEntity)),
-    (Perso=SupPerso;data_concept(Perso,SupPerso);strictSubsumedBy(Perso,SupPerso)),
+    subsumes_or_equals(Entity,SupEntity),
+    subsumes_or_equals(Perso,SupPerso),
     (Entity\=SupEntity;Perso\=SupPerso).
 
 % Facts
@@ -27,12 +33,11 @@ desirable(brave, fight).
 desirable(personality, explore).
 desirable(personality, unconstrained).
 
-% Generalization rule
 desirable(Perso,Obj):-
-	desirable(SupPerso,SupObj),
-    (Perso=SupPerso;data_concept(Perso,SupPerso);strictSubsumedBy(Perso,SupPerso)),
-    (Obj=SupObj;data_concept(Obj,SupObj);strictSubsumedBy(Obj,SupObj)),
-	(Perso\=SupPerso;Obj\=SupObj).
+    desirable(SupPerso,SupObj),
+    subsumes_or_equals(Perso,SupPerso),
+    subsumes_or_equals(Obj,SupObj),
+    (Perso\=SupPerso;Obj\=SupObj).
 
 % Facts
 motivation(valuableitem, wealth).
@@ -43,12 +48,11 @@ motivation(safecell, explore).
 motivation(visitedcell, explore).
 motivation(obstacle, unconstrained).
 
-% Generalization rule
 motivation(Elem,Obj):-
-	motivation(SupElem,SupObj),
-    (Elem=SupElem;data_concept(Elem,SupElem);strictSubsumedBy(Elem,SupElem)),
-    (Obj=SupObj;data_concept(Obj,SupObj);strictSubsumedBy(Obj,SupObj)),
-	(Elem\=SupElem;Obj\=SupObj).
+    motivation(SupElem,SupObj),
+    subsumes_or_equals(Elem,SupElem),
+    subsumes_or_equals(Obj,SupObj),
+    (Elem\=SupElem;Obj\=SupObj).
 
 % Definition rule - Step 1
 genObjective(Elem1, Perso, Obj, Elem2):-
@@ -66,12 +70,11 @@ satisfy(fight, attack).
 satisfy(explore, move).
 satisfy(unconstrained, bumpwall).
 
-% Generalization rule
 satisfy(Obj, Act):-
-	satisfy(SupObj,SupAct),
-    (Obj=SupObj;data_concept(Obj,SupObj);strictSubsumedBy(Obj,SupObj)),
-    (Act=SupAct;data_concept(Act,SupAct);strictSubsumedBy(Act,SupAct)),
-	(Obj\=SupObj;Act\=SupAct).
+    satisfy(SupObj,SupAct),
+    subsumes_or_equals(Obj,SupObj),
+    subsumes_or_equals(Act,SupAct),
+    (Obj\=SupObj;Act\=SupAct).
 
 % Facts
 encline(cupid, interact, 5).
@@ -81,12 +84,11 @@ encline(brave, attack, 9).
 encline(personality, move, 1).
 encline(personality, bumpwall, 2).
 
-% Generalization rule
 encline(Perso, Act, Util):-
-	encline(SupPerso, SupAct, Util),
-    (Perso=SupPerso;data_concept(Perso,SupPerso);strictSubsumedBy(Perso,SupPerso)),
-    (Act=SupAct;data_concept(Act,SupAct);strictSubsumedBy(Act,SupAct)),
-	(Perso\=SupPerso;Act\=SupAct).
+    encline(SupPerso, SupAct, Util),
+    subsumes_or_equals(Perso,SupPerso),
+    subsumes_or_equals(Act,SupAct),
+    (Perso\=SupPerso;Act\=SupAct).
 
 % Definition rule - Step 2
 genAction(Elem1, Perso, Obj, Elem2, Act, Util):-

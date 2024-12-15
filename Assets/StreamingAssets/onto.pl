@@ -60,44 +60,41 @@ subsume([AtomHead],SubsumedAtom):-
 			SubsumedAtom = AtomHead
 		)
 	).
- 
- subsume_intersection([AtomHead],SubsumedAtom):-
-	 subsume([AtomHead],SubsumedAtom).
- 
- subsume_intersection(AtomHeadList,SubsumedAtom):-
-	 length(AtomHeadList,N),
-	 ground(N),
-	 N>1,
-	 AtomHeadList = [AtomHead|AtomHeadListRest],
-	 subsume([AtomHead],SubsumedAtom),
-	 subsume_intersection(AtomHeadListRest,SubsumedAtom).
- 
-strictSubsumedBy(X,Y) :- 
-	subsumedBy(X,Y), 
+
+subsume_intersection([AtomHead], SubsumedAtom) :-
+	subsume([AtomHead], SubsumedAtom).
+subsume_intersection([AtomHead|Rest], SubsumedAtom) :-
+	Rest \= [],
+	subsume([AtomHead], SubsumedAtom),
+	subsume_intersection(Rest, SubsumedAtom).
+
+strictSubsumedBy(X,Y) :-
+	subsumedBy(X,Y),
 	X\=Y.
 
  
 % Prédicats utilitaires pour subsume/2
-no_list_as_argument(Atom):-
+no_list_as_argument(Atom) :-
 	\+ is_list(Atom),
 	Atom =.. [_|ArgList],
 	no_list_as_argument(ArgList).
 
 no_list_as_argument([]).
-no_list_as_argument([Arg|ArgList]):-
+no_list_as_argument([Arg|ArgList]) :-
 	\+ is_list(Arg),
 	no_list_as_argument(ArgList).
 
-listp_to_list(Listp,List):-
-    Listp =.. [Op|_],
-    (Op \= ','
-    ->
-        List=[Listp]
-    ;
-        Listp =.. [',',X|[TListp]],
-        listp_to_list(TListp,SubList),
-        append([X],SubList,List)
-    ).
+listp_to_list(Listp, List) :-
+	listp_to_list_acc(Listp, [], List).
+
+listp_to_list_acc(Listp, Acc, List) :-
+	Listp =.. [Op|Args],
+	(Op \= ',' ->
+		reverse([Listp|Acc], List)
+	;
+		Args = [X,TListp],
+		listp_to_list_acc(TListp, [X|Acc], List)
+	).
 
 %***************************************************************************************************************************
 %******* Interface entre un code prolog principal et des ontologies
@@ -127,7 +124,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$*/
 % dans le assertz : je n'ai pas trouver comment récupérer le module du code
 % qui exécute l'appel à is_instance_of() pour que l'approche marche dans tout code.
 % AUTREMENT DIT : ce prédicat marche si appelé dans le module user.
-is_instance_of(Instance,Concept):-
+is_instance_of(Instance,Concept) :-
 	Atom =.. [Concept,Instance],
 	assertz(user:Atom),
 	assertz(data_concept(Instance,Concept)).
@@ -140,13 +137,13 @@ is_instance_of(Instance,Concept):-
 % dans le assertz : je n'ai pas trouver comment récupérer le module du code
 % qui exécute l'appel à is_instance_of() pour que l'approche marche dans tout code.
 % AUTREMENT DIT : ce prédicat marche si appelé dans le module user.
-triple(Instance1,Predicat,Instance2):-
+triple(Instance1,Predicat,Instance2) :-
 	Atom =.. [Predicat,Instance1,Instance2],
 	assertz(user:Atom).
 
 % Récupère ou teste les couples (Instance,Concept) tels
 % que Concept(Instance) est vrai.
 % Instance et Concept peuvent ne pas être instanciés à l'appel.
-data_concept(Instance,Concept):-
+data_concept(Instance,Concept) :-
 	data_concept(Instance,SubConcept),
 	strictSubsumedBy(SubConcept,Concept).
