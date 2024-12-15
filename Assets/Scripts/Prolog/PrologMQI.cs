@@ -169,21 +169,31 @@ namespace Prolog
     /// </summary>
     internal static class PrologProtocol
     {
+        // Protocol version information
+        public const int RequiredServerMajor = 1;
+        public const int RequiredServerMinor = 0;
+
         public static string PrologName(JsonElement json)
         {
+            if (!IsPrologFunctor(json))
+                return json.ToString();
             return json.GetProperty("functor").GetString();
         }
 
         public static JsonElement[] PrologArgs(JsonElement json)
         {
+            if (!IsPrologFunctor(json))
+                return Array.Empty<JsonElement>();
             return json.GetProperty("args").EnumerateArray().ToArray();
         }
 
         public static bool IsPrologFunctor(JsonElement json)
         {
             return json.ValueKind == JsonValueKind.Object &&
-                   json.TryGetProperty("functor", out _) &&
-                   json.TryGetProperty("args", out _);
+                   json.TryGetProperty("functor", out var functor) &&
+                   functor.ValueKind == JsonValueKind.String &&
+                   json.TryGetProperty("args", out var args) &&
+                   args.ValueKind == JsonValueKind.Array;
         }
 
         public static bool IsPrologList(JsonElement json)
@@ -193,7 +203,7 @@ namespace Prolog
 
         public static bool IsPrologVariable(string term)
         {
-            return !string.IsNullOrEmpty(term) && 
+            return !string.IsNullOrEmpty(term) &&
                    (char.IsUpper(term[0]) || term[0] == '_');
         }
 
@@ -254,11 +264,9 @@ namespace Prolog
     /// - MQI Documentation: https://www.swi-prolog.org/pldoc/man?section=mqi
     /// - MQI Source: https://github.com/SWI-Prolog/packages-mqi
     /// </summary>
-    public class PrologMqi : IDisposable
+    public class PrologMQI : IDisposable
     {
         // Protocol version information
-        private const int RequiredServerMajor = 1;
-        private const int RequiredServerMinor = 0;
         private int _serverProtocolMajor;
         private int _serverProtocolMinor;
 
@@ -333,7 +341,7 @@ namespace Prolog
         /// <param name="prologPath">Path to swipl executable</param>
         /// <param name="prologPathArgs">Additional arguments for swipl</param>
         /// <exception cref="ArgumentException">If arguments are invalid</exception>
-        public PrologMqi(
+        public PrologMQI(
             bool launchMqi = true,
             int? port = null,
             string password = null,
@@ -599,11 +607,11 @@ namespace Prolog
             if (_serverProtocolMajor == 0 && _serverProtocolMinor == 0)
                 return;
 
-            if (_serverProtocolMajor == RequiredServerMajor && _serverProtocolMinor >= RequiredServerMinor)
+            if (_serverProtocolMajor == PrologProtocol.RequiredServerMajor && _serverProtocolMinor >= PrologProtocol.RequiredServerMinor)
                 return;
 
             throw new PrologLaunchError(
-                $"This version requires MQI major version {RequiredServerMajor} and minor version >= {RequiredServerMinor}. " +
+                $"This version requires MQI major version {PrologProtocol.RequiredServerMajor} and minor version >= {PrologProtocol.RequiredServerMinor}. " +
                 $"The server is running MQI '{_serverProtocolMajor}.{_serverProtocolMinor}'.");
         }
 
@@ -652,48 +660,45 @@ namespace Prolog
             int? amountExpected = null;
             var bytesReceived = new List<byte>();
             var sizeBytes = new List<byte>();
-            var heartbeatCount = 0;
 
-            while (amountExpected == null || amountReceived < amountExpected)
+            byte[] data = null;
+            while (amountExpected is null || amountReceived < amountExpected)
             {
                 var buffer = new byte[4096];
-                var received = _socket.Receive(buffer);
-                if (received == 0) break;
+                var headerData = _socket.Receive(buffer);
 
-                if (amountExpected == null)
+                if (amountExpected is null)
                 {
-                    // Parse header to get message length
-                    for (var i = 0; i < received; i++)
+                    // Start / continue reading the string length
+                    // Ignore any leading "." characters because those are heartbeats
+                    for (var i = 0; i < headerData; i++)
                     {
-                        var c = (char)buffer[i];
-                        if (c == '.')
+                        var item = buffer[i];
+                        // String length ends with '.\n' characters
+                        if ((char)item == '\n')
                         {
-                            if (sizeBytes.Count == 0)
-                            {
-                                heartbeatCount++;
-                                continue;
-                            }
-                        }
-                        else if (c == '\n')
-                        {
-                            var sizeStr = Encoding.UTF8.GetString(sizeBytes.ToArray());
-                            amountExpected = int.Parse(sizeStr);
-                            bytesReceived.AddRange(buffer.Skip(i + 1).Take(received - (i + 1)));
-                            amountReceived = bytesReceived.Count;
+                            // convert all the characters we've received so far to a number
+                            var stringLength = Encoding.UTF8.GetString(sizeBytes.ToArray());
+                            amountExpected = int.Parse(stringLength);
+                            // And consume the rest of the stream
+                            data = buffer.Skip(i + 1).Take(headerData - (i + 1)).ToArray();
                             break;
                         }
                         else
                         {
-                            sizeBytes.Add(buffer[i]);
+                            sizeBytes.Add(item);
                         }
                     }
-                    if (amountExpected == null) continue;
+                    if (data == null)
+                        continue;
                 }
                 else
                 {
-                    bytesReceived.AddRange(buffer.Take(received));
-                    amountReceived += received;
+                    data = buffer.Take(headerData).ToArray();
                 }
+
+                amountReceived += data.Length;
+                bytesReceived.AddRange(data);
             }
 
             var finalValue = Encoding.UTF8.GetString(bytesReceived.ToArray());
@@ -721,8 +726,21 @@ namespace Prolog
         private object ReturnPrologResponse()
         {
             var result = Receive();
-            using var doc = JsonDocument.Parse(result);
-            var jsonResult = doc.RootElement;
+            var doc = JsonDocument.Parse(result);
+            var jsonResult = doc.RootElement.Clone();
+            doc.Dispose();
+
+            // If the root element is a string, return it directly
+            if (jsonResult.ValueKind == JsonValueKind.String)
+            {
+                return jsonResult.GetString();
+            }
+
+            // If the root element is not an object with functor/args, return it as is
+            if (!PrologProtocol.IsPrologFunctor(jsonResult))
+            {
+                return jsonResult;
+            }
 
             if (PrologProtocol.PrologName(jsonResult) == "exception")
             {
@@ -772,7 +790,7 @@ namespace Prolog
                         foreach (var assignment in answer.EnumerateArray())
                         {
                             var args = PrologProtocol.PrologArgs(assignment);
-                            dict[args[0].GetString()] = args[1];
+                            dict[args[0].GetString()] = args[1].Clone();
                         }
                         answers.Add(dict);
                     }
@@ -780,7 +798,7 @@ namespace Prolog
                 return answers.Count == 1 && answers[0] is true ? true : answers;
             }
 
-            return jsonResult;
+            return jsonResult.Clone();
         }
     }
 
@@ -790,15 +808,16 @@ namespace Prolog
     /// </summary>
     public class PrologThread : IDisposable
     {
-        private readonly PrologMqi _prologServer;
+        private readonly PrologMQI _prologServer;
         private Socket _socket;
         private string _communicationThreadId;
         private string _goalThreadId;
         private int _heartbeatCount;
         private int? _serverProtocolMajor;
         private int? _serverProtocolMinor;
+        private bool _disposed;
 
-        public PrologThread(PrologMqi prologMqi)
+        public PrologThread(PrologMQI prologMqi)
         {
             _prologServer = prologMqi;
             _socket = null;
@@ -807,6 +826,7 @@ namespace Prolog
             _heartbeatCount = 0;
             _serverProtocolMajor = null;
             _serverProtocolMinor = null;
+            _disposed = false;
 
             Start();
         }
@@ -883,17 +903,14 @@ namespace Prolog
 
         private void CheckProtocolVersion()
         {
-            const int requiredServerMajor = 1;
-            const int requiredServerMinor = 0;
-
             if (_serverProtocolMajor == 0 && _serverProtocolMinor == 0)
                 return;
 
-            if (_serverProtocolMajor == requiredServerMajor && _serverProtocolMinor >= requiredServerMinor)
+            if (_serverProtocolMajor == PrologProtocol.RequiredServerMajor && _serverProtocolMinor >= PrologProtocol.RequiredServerMinor)
                 return;
 
             throw new PrologLaunchError(
-                $"This version requires MQI major version {requiredServerMajor} and minor version >= {requiredServerMinor}. " +
+                $"This version requires MQI major version {PrologProtocol.RequiredServerMajor} and minor version >= {PrologProtocol.RequiredServerMinor}. " +
                 $"The server is running MQI '{_serverProtocolMajor}.{_serverProtocolMinor}'");
         }
 
@@ -927,7 +944,9 @@ namespace Prolog
 
         public void Dispose()
         {
+            if (_disposed) return;
             Stop();
+            _disposed = true;
         }
 
         public IEnumerable<string[]> Query(string value, float? queryTimeoutSeconds = null)
@@ -942,7 +961,23 @@ namespace Prolog
 
             Send($"run(({value}), {timeoutString}).\n");
 
-            return ReturnPrologResponse();
+            var result = ReturnPrologResponse();
+
+            if (result == null) return Enumerable.Empty<string[]>();
+            if (result is bool b) return new[] { new[] { b.ToString().ToLower(), "null" } };
+            if (result is List<object> list)
+            {
+                return list.Select(item =>
+                {
+                    if (item is bool) return new[] { "true", "null" };
+                    if (item is Dictionary<string, JsonElement> dict)
+                    {
+                        return dict.Select(kvp => new[] { kvp.Key, kvp.Value.ToString() }).First();
+                    }
+                    return new[] { item.ToString(), "null" };
+                });
+            }
+            return Enumerable.Empty<string[]>();
         }
 
         public void QueryAsync(string value, bool findAll = true, float? queryTimeoutSeconds = null)
@@ -967,7 +1002,7 @@ namespace Prolog
             ReturnPrologResponse();
         }
 
-        public List<string[]> QueryAsyncResult(float? waitTimeoutSeconds = null)
+        public object QueryAsyncResult(float? waitTimeoutSeconds = null)
         {
             var timeoutString = waitTimeoutSeconds?.ToString() ?? "-1";
 
@@ -983,88 +1018,82 @@ namespace Prolog
             _prologServer.ConnectionFailed = true;
         }
 
-        private List<string[]> ReturnPrologResponse()
+        private object ReturnPrologResponse()
         {
             var result = Receive();
-            List<string[]> answerList = new();
+            var doc = JsonDocument.Parse(result);
+            var jsonResult = doc.RootElement.Clone();
+            doc.Dispose();
 
-            using var doc = JsonDocument.Parse(result);
-            var jsonResult = doc.RootElement;
-
-            if (jsonResult.GetProperty("functor").GetString() == "exception")
+            // If the root element is a string, return it directly
+            if (jsonResult.ValueKind == JsonValueKind.String)
             {
-                var exceptionType = jsonResult.GetProperty("args")[0].GetString();
-                if (exceptionType == "no_more_results")
+                return jsonResult.GetString();
+            }
+
+            // If the root element is not an object with functor/args, return it as is
+            if (!PrologProtocol.IsPrologFunctor(jsonResult))
+            {
+                return jsonResult;
+            }
+
+            if (PrologProtocol.PrologName(jsonResult) == "exception")
+            {
+                if (jsonResult.GetProperty("args")[0].GetString() == "no_more_results")
                     return null;
-                if (exceptionType == "connection_failed")
+
+                if (jsonResult.GetProperty("args")[0].GetString() == "connection_failed")
                     _prologServer.ConnectionFailed = true;
 
+                var exceptionJson = jsonResult.GetProperty("args")[0];
+                if (exceptionJson.ValueKind != JsonValueKind.String)
+                    throw new PrologError(result);
+
+                var exceptionType = exceptionJson.GetString();
                 switch (exceptionType)
                 {
                     case "connection_failed":
-                        throw new PrologConnectionFailedError(jsonResult.ToString());
+                        throw new PrologConnectionFailedError(result);
                     case "time_limit_exceeded":
-                        throw new PrologQueryTimeoutError(jsonResult.ToString());
+                        throw new PrologQueryTimeoutError(result);
                     case "no_query":
-                        throw new PrologNoQueryError(jsonResult.ToString());
+                        throw new PrologNoQueryError(result);
                     case "cancel_goal":
-                        throw new PrologQueryCancelledError(jsonResult.ToString());
+                        throw new PrologQueryCancelledError(result);
                     case "result_not_available":
-                        throw new PrologResultNotAvailableError(jsonResult.ToString());
+                        throw new PrologResultNotAvailableError(result);
                     default:
-                        throw new PrologError(jsonResult.ToString());
+                        throw new PrologError(result);
                 }
             }
 
-            if (jsonResult.GetProperty("functor").GetString() == "false")
-                return new List<string[]> { new[] { "false", "null" } };
+            if (PrologProtocol.PrologName(jsonResult) == "false")
+                return false;
 
-            var answers = jsonResult.GetProperty("args")[0];
-            for (var i = 0; i < answers.GetArrayLength(); i++)
+            if (PrologProtocol.PrologName(jsonResult) == "true")
             {
-                var answer = answers[i];
-                if (answer.GetArrayLength() == 0)
+                var answers = new List<object>();
+                foreach (var answer in PrologProtocol.PrologArgs(jsonResult)[0].EnumerateArray())
                 {
-                    answerList.Add(new[] { "true", "null" });
-                }
-                else
-                {
-                    for (var j = 0; j < answer.GetArrayLength(); j++)
+                    if (answer.GetArrayLength() == 0)
                     {
-                        var assignment = answer[j];
-                        var args = assignment.GetProperty("args");
-                        var variable = GetJsonValue(args[0]);
-                        var value = GetJsonValue(args[1]);
-                        answerList.Add(new[] { variable, value });
+                        answers.Add(true);
+                    }
+                    else
+                    {
+                        var dict = new Dictionary<string, JsonElement>();
+                        foreach (var assignment in answer.EnumerateArray())
+                        {
+                            var args = PrologProtocol.PrologArgs(assignment);
+                            dict[args[0].GetString()] = args[1].Clone();
+                        }
+                        answers.Add(dict);
                     }
                 }
+                return answers.Count == 1 && answers[0] is true ? true : answers;
             }
 
-            if (answerList.Count > 0 && answerList[0][0] == "true")
-                answerList.Add(new[] { "true", "null" });
-
-            return answerList;
-        }
-
-        private string GetJsonValue(JsonElement element)
-        {
-            switch (element.ValueKind)
-            {
-                case JsonValueKind.String:
-                    return element.GetString();
-                case JsonValueKind.Array:
-                    return $"[{string.Join(", ", element.EnumerateArray().Select(GetJsonValue))}]";
-                case JsonValueKind.Object:
-                    if (element.TryGetProperty("functor", out var functor) && element.TryGetProperty("args", out var args))
-                    {
-                        var funcName = functor.GetString();
-                        var arguments = string.Join(", ", args.EnumerateArray().Select(GetJsonValue));
-                        return $"{funcName}({arguments})";
-                    }
-                    return element.ToString();
-                default:
-                    return element.ToString();
-            }
+            return jsonResult.Clone();
         }
 
         private void Send(string value)
@@ -1085,6 +1114,12 @@ namespace Prolog
             _socket.Send(utf8Value);
         }
 
+        /// <summary>
+        /// Receive a message from the Prolog process.
+        /// The format is identical to Send: <stringByteLength>.\n<stringBytes>.\n
+        /// Heartbeats (the "." character) can be sent by some commands to ensure the client is still listening.
+        /// These are discarded.
+        /// </summary>
         private string Receive()
         {
             var amountReceived = 0;

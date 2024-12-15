@@ -1,9 +1,9 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using System.Text.Json;
 
 namespace Prolog
 {
@@ -24,7 +24,7 @@ namespace Prolog
     public class PrologInterface : MonoBehaviour, IDisposable
     {
         private TMP_Dropdown _dropdown;
-        private PrologMqi _mqi;
+        private PrologMQI _mqi;
         private PrologThread _prologThread;
         private readonly List<PrologThread> _additionalThreads = new List<PrologThread>();
         private bool _isDisposed;
@@ -55,7 +55,7 @@ namespace Prolog
                     options["launch_mqi"] = false; // Connect to existing Prolog process
                 }
 
-                _mqi = new PrologMqi(prologPath: "/opt/homebrew/bin/");
+                _mqi = new PrologMQI(prologPath: "/opt/homebrew/bin/");
                 _prologThread = _mqi.CreateThread();
 
                 if (!File.Exists(_prologFilePath))
@@ -186,30 +186,69 @@ namespace Prolog
         protected void Update()
         {
             if (!askQuery) return; /* Prolog query inside Unity Inspector */
-            _prologThread.QueryAsync(debug_query, false);
+            _prologThread.QueryAsync(debug_query, true);
 
             while (askQuery)
             {
                 try
                 {
-                    var answer = _prologThread.QueryAsyncResult();
+                    var answer = _prologThread.QueryAsyncResult(0.1f);
                     if (answer is null)
-                        askQuery = false;
-                    else
                     {
-                        var result = "";
-                        for (var i = 0; i < answer.Count; i++)
+                        askQuery = false;
+                        break;
+                    }
+                    
+                    if (answer is List<object> list)
+                    {
+                        foreach (var item in list)
                         {
-                            if (answer.ElementAt(i)[0] == "false")
-                                Debug.LogError($"No answer found.");
-                            else result += answer.ElementAt(i)[0] + " = " + answer.ElementAt(i)[1] + "; ";
+                            if (item is Dictionary<string, JsonElement> dict)
+                            {
+                                // Build a complete answer string from all key-value pairs
+                                var pairs = new List<string>();
+                                foreach (var kvp in dict)
+                                {
+                                    pairs.Add($"{kvp.Key} = {kvp.Value}");
+                                }
+                                var result = string.Join(", ", pairs);
+                                if (!string.IsNullOrEmpty(result))
+                                {
+                                    Debug.Log($"Answer: {result}");
+                                }
+                            }
+                            else if (item is bool b)
+                            {
+                                Debug.Log($"Answer: {(b ? "true" : "false")}");
+                            }
+                            else
+                            {
+                                Debug.Log($"Answer: {item}");
+                            }
                         }
-                        Debug.Log(result);
+                    }
+                    else if (answer is string str)
+                    {
+                        Debug.Log($"Answer: {str}");
+                    }
+                    else if (answer is JsonElement jsonElement)
+                    {
+                        Debug.Log($"Answer: {jsonElement}");
                     }
                 }
-                catch (PrologNoQueryError e)
+                catch (PrologNoQueryError)
                 {
-                    Debug.LogError(e);
+                    askQuery = false;
+                    break;
+                }
+                catch (PrologResultNotAvailableError)
+                {
+                    // Result not ready yet, continue waiting
+                    continue;
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"Error in query: {e}");
                     askQuery = false;
                     break;
                 }
@@ -248,38 +287,41 @@ namespace Prolog
 
             while (true)
             {
-                var answer = _prologThread.QueryAsyncResult();
-                if (answer is null)
-                    break;
-
-                answerCount++;
+                object answer;
                 try
                 {
-                    // Extract values safely from the answer
-                    string GetValue(string[] pair) => pair[1].Trim('\'', '"');
+                    answer = _prologThread.QueryAsyncResult();
+                    if (answer is null)
+                        break;
 
-                    var personality = GetValue(answer[0]);
-                    var objective = GetValue(answer[1]);
-                    var element = GetValue(answer[2]);
-                    var act = GetValue(answer[3]);
-                    var utility = GetValue(answer[4]);
-
-                    var explanation = $"<b>{agentName}</b> is <b>{personality}</b> and wanted to <b>{objective}</b> " +
-                                    $"regarding the <b>{element}</b> so one possible action was to <b>{act}</b> " +
-                                    $"with a utility of <b>{utility}</b>";
-
-                    var utilityValue = Convert.ToInt32(utility);
-                    if (utilityValue > maxUtil)
+                    answerCount++;
+                    if (answer is List<object> list && list.Count > 0 && list[0] is Dictionary<string, JsonElement> dict)
                     {
-                        action = act;
-                        maxUtil = utilityValue;
-                        chosenExplanation = explanation;
+                        string GetValue(string key) => dict[key].ToString().Trim('\'', '"');
+
+                        var personality = GetValue("Perso");
+                        var objective = GetValue("Obj");
+                        var element = GetValue("Elem2");
+                        var act = GetValue("Act");
+                        var utility = GetValue("Uti");
+
+                        var explanation = $"<b>{agentName}</b> is <b>{personality}</b> and wanted to <b>{objective}</b> " +
+                                        $"regarding the <b>{element}</b> so one possible action was to <b>{act}</b> " +
+                                        $"with a utility of <b>{utility}</b>";
+
+                        var utilityValue = Convert.ToInt32(utility);
+                        if (utilityValue > maxUtil)
+                        {
+                            action = act;
+                            maxUtil = utilityValue;
+                            chosenExplanation = explanation;
+                        }
+                        _dropdown.options.Add(new TMP_Dropdown.OptionData(explanation));
                     }
-                    _dropdown.options.Add(new TMP_Dropdown.OptionData(explanation));
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError($"Error parsing answer: {e.Message}\nAnswer: {string.Join(", ", answer.Select(a => $"[{string.Join(", ", a)}]"))}");
+                    Debug.LogError($"Error parsing answer: {e.Message}");
                     continue;
                 }
             }
