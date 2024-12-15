@@ -86,7 +86,7 @@ namespace Agent
             // Verify arrow availability
             if (_agent.nbArrow < 1) return;
 
-            // Try shooting in all four directions
+            // Try shooting in adjacent cells in all four directions
             ShootIfWumpusExistsInDirection(new Vector2Int(1, 0));  // Right
             ShootIfWumpusExistsInDirection(new Vector2Int(-1, 0)); // Left
             ShootIfWumpusExistsInDirection(new Vector2Int(0, 1));  // Up
@@ -95,13 +95,13 @@ namespace Agent
 
         private void ShootIfWumpusExistsInDirection(Vector2Int direction)
         {
-            var coordWumpus = Coords;
+            var coordWumpus = Coords + direction;
 
-            // Check each cell in the given direction until grid boundaries
-            while (coordWumpus.x >= _gameManager.gridMin.x && coordWumpus.x < _gameManager.gridMax.x &&
-                   coordWumpus.y >= _gameManager.gridMin.y && coordWumpus.y < _gameManager.gridMax.y)
+            // Check if adjacent cell is within grid boundaries
+            if (coordWumpus.x >= _gameManager.gridMin.x && coordWumpus.x < _gameManager.gridMax.x &&
+                coordWumpus.y >= _gameManager.gridMin.y && coordWumpus.y < _gameManager.gridMax.y)
             {
-                // If Wumpus found, handle the shooting logic
+                // If Wumpus found in adjacent cell, handle the shooting logic
                 if (_gameManager.AgentsMap[coordWumpus.x, coordWumpus.y].Exists(e => e.tag is "Wumpus"))
                 {
                     _agent.nbArrow--;                                     // Use an arrow
@@ -114,9 +114,7 @@ namespace Agent
                     _agent.lastAction = coordWumpus.x > Coords.x ? "ShootRight" :
                                       coordWumpus.x < Coords.x ? "ShootLeft" :
                                       coordWumpus.y > Coords.y ? "ShootUp" : "ShootDown";
-                    break;
                 }
-                coordWumpus += direction;
             }
         }
     }
