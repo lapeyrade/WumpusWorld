@@ -8,15 +8,13 @@
 
 
 /* Decision making predicates and rules */
+subsumes_or_equals(X, Y) :-
+    X = Y;
+    strictSubsumedBy(X, Y); 
+    data_concept(X, Y). 
 
 % Facts
 % Coming from Unity C#
-
-% Helper predicate for subsumption checks
-subsumes_or_equals(X, Y) :-
-    X = Y;
-    data_concept(X, Y);
-    strictSubsumedBy(X, Y).
 
 % Optimized generalization rules
 has_personality_trait(Entity,SupPerso):-
