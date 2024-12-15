@@ -26,7 +26,6 @@ namespace Ontology
     public class Human : Animal { }
     public class Dog : Animal { }
     public class Dragon : Monster { }
-    public class Bat : Monster { }
     public class Wumpus : Monster { }
     public class Pit : Trap { }
 
