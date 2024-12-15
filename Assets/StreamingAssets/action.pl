@@ -1,4 +1,5 @@
-:- table (action/1, interact/1, attack/1, shoot/1, move/1, moveback/1, bumpwall/1, pickup/1, discard/1, shootarrow/1) as (incremental, dynamic).
+:- table (action/1, interact/1, attack/1, shoot/1, move/1, moveback/1,
+     bumpwall/1, pickup/1, discard/1, shootarrow/1) as (incremental, dynamic).
 
 /*** Actions Hierachy ***/
 action(X) :- interact(X).

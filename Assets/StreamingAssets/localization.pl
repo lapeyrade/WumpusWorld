@@ -1,8 +1,6 @@
-/*** Localization ***/
-
 :- discontiguous data_concept/2.
 
-/* Definition rules */
+/*** Localization rules***/
 distance([Elem1, [X1, Y1]], [Elem2, [X2, Y2]]):-
     (
         data_concept([Elem2, [X2, Y2]], object);
@@ -19,8 +17,7 @@ distance([Elem1, [X1, Y1]], [Elem2, [X2, Y2]]):-
 
 
 same_cell([Elem1, [X1, Y1]], [Elem2, [X2, Y2]]):-
-    Elem1 \= Elem2,
-    X1 is X2, Y1 is Y2.
+    Elem1 \= Elem2, X1 is X2, Y1 is Y2.
 
 
 adjacent_cell([Elem1, [X1, Y1]], [Elem2, [X2, Y2]]):-
