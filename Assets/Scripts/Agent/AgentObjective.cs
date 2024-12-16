@@ -81,14 +81,17 @@ namespace Agent
                     var newY = _agent.coords.y + y;
 
                     // Check if cell is within grid bounds and contains the dangerous element
-                    return newX >= _gameManager.gridMin.x && newX < _gameManager.gridMax.x
+                    if (newX >= _gameManager.gridMin.x && newX < _gameManager.gridMax.x
                         && newY >= _gameManager.gridMin.y && newY < _gameManager.gridMax.y
                         && _gameManager.AgentsMap[newX, newY].Exists(e =>
                         {
                             var elementType = typeof(T);
                             var tagType = System.Type.GetType($"Ontology.{e.tag}");
                             return tagType != null && elementType.IsAssignableFrom(tagType);
-                        });
+                        }))
+                    {
+                        return true;
+                    }
                 }
             }
             return false;
