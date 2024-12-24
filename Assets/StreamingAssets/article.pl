@@ -1,8 +1,7 @@
 :-consult([onto, element, action, personality, objective, localization]).
 :- classification(element,1), classification(objective,1), classification(personality,1), classification(action,1).
 
-:- table (has_personality_trait/2, desirable/2, motivation/2,
-    satisfy/2, encline/3, genObjective/4, genAction/6) as incremental.
+:- table (subsumes_or_equals/2, generalize_pair/4, has_personality_trait/2, desirable/2, motivation/2, satisfy/2, encline/3, genObjective/4, genAction/6) as (incremental, dynamic).
 
 :- dynamic([has_personality_trait/2, data_concept/2], [incremental(true)]).
 

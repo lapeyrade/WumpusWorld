@@ -1,5 +1,7 @@
 :- discontiguous data_concept/2.
 
+:- table (distance/2, same_cell/2, adjacent_cell/2) as (incremental, dynamic).
+
 /*** Localization rules***/
 % Combined object/cell check for efficiency
 distance([Elem1, [X1, Y1]], [Elem2, [X2, Y2]]):-

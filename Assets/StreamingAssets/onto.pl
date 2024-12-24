@@ -1,7 +1,5 @@
-:- table (subsume/2, classification/2, classification2/2, is_instance_of/2, 
-    triple/3, data_concept/2) as (incremental,dynamic).
+:- table (subsume/2, classification/2, classification2/2, subsumes/3, is_instance_of/2, subsume_intersection/2, triple/3, data_concept/2, no_list_as_argument/1, listp_to_list/2, listp_to_list_acc/3) as (incremental,dynamic).
 :- dynamic subsumedBy/2, strictSubsumedBy/2.
-
 
 % Aims at generating all possible assertz(subsumedBy(C1,C2)) such that the top concept
 % of all these subsumption relations is TopConcept having arity Arity.
