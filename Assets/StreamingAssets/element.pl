@@ -1,7 +1,4 @@
-:- table (element/1, object/1, being/1, animal/1, trap/1, item/1, obstacle/1, wall/1, valuableitem/1,
-    commonitem/1, unvaluableitem/1, plant/1, gold/1, rock/1, weapon/1, bow/1, sword/1, monster/1,
-    human/1, dragon/1, wumpus/1, pit/1, danger/1, cell/1, startcell/1, visitedcell/1,
-    safecell/1, dangerouscell/1, unknowncell/1) as (incremental, dynamic).
+:- table (element/1, object/1, being/1, animal/1, trap/1, item/1, obstacle/1, wall/1, valuableitem/1, commonitem/1, unvaluableitem/1, plant/1, gold/1, rock/1, weapon/1, bow/1, sword/1, monster/1, human/1, dragon/1, wumpus/1, pit/1, danger/1, cell/1, startcell/1, visitedcell/1, safecell/1, dangerouscell/1, unknowncell/1) as (incremental, dynamic).
 
 /*** Elements Hierachy ***/
 element(X) :- cell(X).
@@ -13,8 +10,6 @@ object(X) :- item(X).
 object(X) :- obstacle(X).
 being(X) :- animal(X).
 being(X) :- plant(X).
-danger(X) :- monster(X).
-danger(X) :- trap(X).
 trap(X) :- pit(X).
 item(X) :- valuableitem(X).
 item(X) :- commonitem(X).
@@ -28,13 +23,17 @@ unvaluableitem(X) :- rock(X).
 weapon(X) :- bow(X).
 weapon(X) :- sword(X).
 
-
 % Skolemization examples translated from French
 % Translation of "danger ≡ ∃hasAspect.dangerous"
 % i.e., "danger(X) ↔ hasAspect(X,Y),dangerous(Y)"
 hasaspect(X,f1(X)) :- danger(X).
 dangerous(f1(X)) :- danger(X).
 danger(X) :- hasaspect(X,Y), dangerous(Y).
+
+% Role hierarchy for the new predicates
+hasaspect(X,Y) :- hascharacter(X,Y).
+hasaspect(X,Y) :- hasphysicaltrait(X,Y).
+
 
 % Translation of "monster ⊑ ∃hasCharacter.aggressive"
 % i.e., "hasCharacter(X,Y), aggressive(Y) ← monster(X)"
@@ -56,9 +55,13 @@ hasphysicaltrait(X,f4(X)) :- dragon(X).
 oneeyed(f4(X)) :- wumpus(X).
 throwflame(f4(X)) :- dragon(X).
 
-% Role hierarchy for the new predicates
-hasaspect(X,Y) :- hascharacter(X,Y).
-hasaspect(X,Y) :- hasphysicaltrait(X,Y).
+hasphysicaltrait(X,f5(X)) :- pit(X).
+bottomless(f5(X)) :- pit(X).
+
+dangerous(X) :- bottomless(X).
+hasaspect(X,f6(X)) :- trap(X).
+bottomless(f6(X)) :- trap(X).
+trap(X) :- hasaspect(X,Y), bottomless(Y).
 
 /*** Cell Hierachy ***/
 cell(X) :- startcell(X).
