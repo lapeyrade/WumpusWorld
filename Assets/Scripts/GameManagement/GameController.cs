@@ -99,7 +99,7 @@ namespace GameManagement
 
             // Record performance metrics and agent state
             watch.Stop();
-            Debug.Log($"Execution Time: {watch.ElapsedMilliseconds} ms");
+            Debug.Log($"Execution Time: {watch.ElapsedTicks / 10000.0:F3} ms");
             _gameManager.turnDuration.Add(watch.ElapsedMilliseconds);
 
             // Update game state with each agent's position and last action

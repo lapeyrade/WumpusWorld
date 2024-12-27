@@ -290,9 +290,14 @@ namespace Prolog
                 object answer;
                 try
                 {
+                    // Calcul du temps de réponse
+                    var watch = System.Diagnostics.Stopwatch.StartNew();
+
                     answer = _prologThread.QueryAsyncResult();
                     if (answer is null)
                         break;
+
+                    Debug.Log($"Waiting time: {watch.ElapsedTicks / 10000.0:F3} ms");
 
                     answerCount++;
                     if (answer is List<object> list && list.Count > 0 && list[0] is Dictionary<string, JsonElement> dict)
