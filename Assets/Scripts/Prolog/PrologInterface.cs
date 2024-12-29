@@ -79,37 +79,6 @@ namespace Prolog
             }
         }
 
-        /// <summary>
-        /// Creates a new Prolog thread for concurrent query execution.
-        /// Each thread runs queries independently.
-        /// </summary>
-        /// <returns>The created PrologThread instance</returns>
-        public PrologThread CreateAdditionalThread()
-        {
-            var thread = _mqi.CreateThread();
-            _additionalThreads.Add(thread);
-            return thread;
-        }
-
-        /// <summary>
-        /// Cancels any running async query on the main Prolog thread.
-        /// </summary>
-        public void CancelCurrentQuery()
-        {
-            try
-            {
-                _prologThread?.CancelQueryAsync();
-                askQuery = false;
-            }
-            catch (PrologNoQueryError)
-            {
-                // No query running, ignore
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"Error cancelling query: {e.Message}");
-            }
-        }
 
         /// <summary>
         /// Execute a Prolog query. If QueryText starts with ", ", these characters are removed.
@@ -123,6 +92,8 @@ namespace Prolog
                 if (QueryText.Length > 2)
                     QueryText = QueryText.Remove(0, 2);
                 _prologThread.Query(QueryText);
+                // Append query text into result.txt
+                File.AppendAllText("result.txt", QueryText + ",");
                 QueryText = "";
             }
             catch (Exception e)
@@ -273,7 +244,7 @@ namespace Prolog
         /// </summary>
         public string QueryKb(string agentName, Vector2Int agentCoords)
         {
-            var startTime = Time.realtimeSinceStartup;
+            var socketStartTime = Time.realtimeSinceStartup;
             var query = $"genAction([{agentName}, [{agentCoords.x}, {agentCoords.y}]], Perso, Obj, Elem2, Act, Uti)";
 
             _prologThread.QueryAsync(query, false);
@@ -282,6 +253,7 @@ namespace Prolog
             var maxUtil = 0;
             var chosenExplanation = "";
             var answerCount = 0;
+            var prologStartTime = Time.realtimeSinceStartup;
 
             _dropdown.ClearOptions();
 
@@ -290,14 +262,9 @@ namespace Prolog
                 object answer;
                 try
                 {
-                    // Calcul du temps de réponse
-                    var watch = System.Diagnostics.Stopwatch.StartNew();
-
                     answer = _prologThread.QueryAsyncResult();
                     if (answer is null)
                         break;
-
-                    Debug.Log($"Waiting time: {watch.ElapsedTicks / 10000.0:F3} ms");
 
                     answerCount++;
                     if (answer is List<object> list && list.Count > 0 && list[0] is Dictionary<string, JsonElement> dict)
@@ -331,8 +298,9 @@ namespace Prolog
                 }
             }
 
-            var timeTaken = (Time.realtimeSinceStartup - startTime) * 1000f;
-            Debug.Log($"Query size: {query.Length} chars, Found {answerCount} possible actions, Query time: {timeTaken:F2}ms");
+            var socketTime = (prologStartTime - socketStartTime) * 1000f;
+            var prologTime = (Time.realtimeSinceStartup - prologStartTime) * 1000f;
+            Debug.Log($"Found {answerCount} possible actions, Socket time: {socketTime:F2}ms, Prolog inference time: {prologTime:F2}ms");
             _dropdown.captionText.text = chosenExplanation;
 
             return action;
