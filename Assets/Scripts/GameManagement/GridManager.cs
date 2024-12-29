@@ -79,7 +79,7 @@ namespace GameManagement
             cell.tag = element;
 
             // Update Prolog knowledge base if using Prolog AI
-            if (_gameManager.aiType is GameManager.AIType.Prolog && map == _gameManager.AgentsMap)
+            if (_gameManager.aiType is GameManager.AIType.Prolog && map == _gameManager.AgentsMap && element != "Cell")
                 _prologInterface.QueryText +=
                     $", assertz(data_concept([{element.ToLower()}, [{coords.x}, {coords.y}]], {element.ToLower()})), " +
                     $"assertz({element.ToLower()}([{element.ToLower()}, [{coords.x}, {coords.y}]]))";
@@ -102,7 +102,7 @@ namespace GameManagement
             cell.tag = element;
 
             // Update Prolog knowledge base if using Prolog AI
-            if (_gameManager.aiType is GameManager.AIType.Prolog && map == _gameManager.AgentsMap)
+            if (_gameManager.aiType is GameManager.AIType.Prolog && map == _gameManager.AgentsMap && element != "Cell")
                 _prologInterface.QueryText +=
                     $", assertz(data_concept([{element.ToLower()}, [{coords.x}, {coords.y}]], {element.ToLower()})), " +
                     $"assertz({element.ToLower()}([{element.ToLower()}, [{coords.x}, {coords.y}]]))";
