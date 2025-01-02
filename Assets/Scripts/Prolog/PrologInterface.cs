@@ -92,8 +92,8 @@ namespace Prolog
                 if (QueryText.Length > 2)
                     QueryText = QueryText.Remove(0, 2);
                 _prologThread.Query(QueryText);
-                // Append query text into result.txt
-                File.AppendAllText("result.txt", QueryText + ",");
+                // For Debugging: Append query text into result.txt
+                // File.AppendAllText("result.txt", QueryText + ",");
                 QueryText = "";
             }
             catch (Exception e)
