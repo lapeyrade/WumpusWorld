@@ -46,7 +46,7 @@ namespace GameManagement
         public List<GameObject>[,] AgentsMap;         // Agent knowledge grid
 
         // Game metrics and history
-        public List<float> turnDuration = new();      // Performance tracking
+        public List<decimal> turnDuration = new();      // Performance tracking
         public List<string> agentAction = new();      // Action history
         public List<Vector2Int> agentPosition = new();// Position history
 
