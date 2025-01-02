@@ -58,7 +58,7 @@ namespace GameManagement
 
             // Cache required components
             if (aiType is AIType.Prolog)
-                _prologInterface = GetComponent<PrologInterface>();
+                _prologInterface = gameObject.AddComponent<PrologInterface>();
             _gridBuilder = GetComponent<GridBuilder>();
             _cameraController = GameObject.Find("Main Camera").GetComponent<CameraController>();
 

@@ -22,20 +22,14 @@ namespace Agent.AI
             _agentMove.MoveCell();    // Move to initial position
             _agentSense.SenseCell();  // Gather initial environment data
 
-            // Initialize the knowledge base with agent information
-            _prologInterface.QueryText +=
-                // Add agent position fact
-                $", assertz(data_concept([{_agent.name.ToLower()}, [{_agent.coords.x}, {_agent.coords.y}]], {_agent.tag.ToLower()})), " +
-                // Add agent type fact
-                $"assertz({_agent.tag.ToLower()}([{_agent.name.ToLower()}, [{_agent.coords.x}, {_agent.coords.y}]]))";
+            // Initialize the knowledge base with agent information - Add agent position fact
+            _prologInterface.QueryText += 
+                $", assertz({_agent.tag.ToLower()}([{_agent.name.ToLower()}, [{_agent.coords.x}, {_agent.coords.y}]]))";
 
             // Add personality traits to knowledge base
             foreach (var perso in _gameManager.personalities.Where(perso => _agent.GetComponent(Type.GetType("Ontology." + perso))))
-                _prologInterface.QueryText +=
-                    // Add personality trait fact (with generic position)
-                    $", assertz(has_personality_trait([{_agent.name.ToLower()}, [_, _]], {perso.ToString().ToLower()})), " +
-                    // Add personality trait fact (with current position)
-                    $"assertz({perso.ToString().ToLower()}([{_agent.name.ToLower()}, [{_agent.coords.x}, {_agent.coords.y}]]))";
+                    // Add personality fact
+                _prologInterface.QueryText += $", assertz({perso.ToString().ToLower()}([{_agent.name.ToLower()}, [_, _]]))";
         }
 
         public override void PlayTurn()

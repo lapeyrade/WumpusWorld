@@ -18,7 +18,8 @@ namespace GameManagement
         private void Awake()
         {
             _gameManager = GameManager.Instance;
-            _prologInterface = _gameManager.GetComponent<PrologInterface>();
+            if (GameManager.Instance.aiType is GameManager.AIType.Prolog)
+                _prologInterface = _gameManager.GetComponent<PrologInterface>();
         }
 
         // Initialize game state and agent components

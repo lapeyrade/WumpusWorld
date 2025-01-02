@@ -1,5 +1,4 @@
 %% Objective Ontology - Defines the goals and motivations that drive agent behavior
-%% This file implements the objective hierarchy using Prolog rules
 
 %% Dynamic and incremental tabling declarations for objective predicates
 %% Ensures efficient querying and updates of the objective knowledge base
@@ -18,11 +17,13 @@ objective(X) :- unconstrained(X).
 objective(X) :- explore(X).
 
 %% Success Objectives
-%% Goals related to achieving specific outcomes
-success(X) :- wealth(X).      % Accumulating valuable items
-success(X) :- fight(X).       % Engaging in combat
+%% - wealth: accumulating valuable items
+%% - fight: engaging in combat
+success(X) :- wealth(X).
+success(X) :- fight(X).
 
 %% Healthiness Objectives
-%% Goals related to maintaining agent well-being
-healthiness(X) :- abstinence(X).  % Avoiding unnecessary items/actions
-healthiness(X) :- safety(X).      % Avoiding dangerous situations
+%% - abstinence: avoiding unnecessary items/actions
+%% - safety: avoiding dangerous situations
+healthiness(X) :- abstinence(X).
+healthiness(X) :- safety(X).

@@ -81,8 +81,7 @@ namespace GameManagement
             // Update Prolog knowledge base if using Prolog AI
             if (_gameManager.aiType is GameManager.AIType.Prolog && map == _gameManager.AgentsMap && element != "Cell")
                 _prologInterface.QueryText +=
-                    $", assertz(data_concept([{element.ToLower()}, [{coords.x}, {coords.y}]], {element.ToLower()})), " +
-                    $"assertz({element.ToLower()}([{element.ToLower()}, [{coords.x}, {coords.y}]]))";
+                    $", assertz({element.ToLower()}([{element.ToLower()}, [{coords.x}, {coords.y}]]))";
 
             cell.GetComponent<SpriteRenderer>().color = CellColor[element];
         }
@@ -103,9 +102,8 @@ namespace GameManagement
 
             // Update Prolog knowledge base if using Prolog AI
             if (_gameManager.aiType is GameManager.AIType.Prolog && map == _gameManager.AgentsMap && element != "Cell")
-                _prologInterface.QueryText +=
-                    $", assertz(data_concept([{element.ToLower()}, [{coords.x}, {coords.y}]], {element.ToLower()})), " +
-                    $"assertz({element.ToLower()}([{element.ToLower()}, [{coords.x}, {coords.y}]]))";
+                _prologInterface.QueryText += 
+                    $", assertz({element.ToLower()}([{element.ToLower()}, [{coords.x}, {coords.y}]]))";
 
             cell.name = element;
             cell.transform.position = newPosition;
@@ -134,8 +132,7 @@ namespace GameManagement
             // Update Prolog knowledge base if using Prolog AI
             if (_gameManager.aiType is GameManager.AIType.Prolog && map == _gameManager.AgentsMap)
                 _prologInterface.QueryText +=
-                    $", retract(data_concept([{element.ToLower()}, [{coords.x}, {coords.y}]], {element.ToLower()})), " +
-                    $"retract({element.ToLower()}([{element.ToLower()}, [{coords.x}, {coords.y}]]))";
+                    $", retract({element.ToLower()}([{element.ToLower()}, [{coords.x}, {coords.y}]]))";
         }
 
         // Check if coordinates are within grid boundaries
