@@ -93,7 +93,7 @@ namespace Prolog
                     QueryText = QueryText.Remove(0, 2);
                 _prologThread.Query(QueryText);
                 // Append query text into result.txt
-                File.AppendAllText("result.txt", QueryText + ",");
+                // File.AppendAllText("result.txt", QueryText + ",");
                 QueryText = "";
             }
             catch (Exception e)
