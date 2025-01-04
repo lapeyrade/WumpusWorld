@@ -1504,7 +1504,7 @@ MonoBehaviour:
   saveData: 0
   isGameOver: 0
   isModeAuto: 0
-  timerInterval: 0.007
+  timerInterval: 0
   randomSeed: 2
   gridMin: {x: 0, y: 0}
   gridMax: {x: 20, y: 20}
