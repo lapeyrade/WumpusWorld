@@ -31,7 +31,8 @@ namespace Prolog
 
         public string debug_query = "";
         public bool askQuery;
-        private readonly string _prologFilePath = Path.Combine(Application.streamingAssetsPath, "main.pl");
+        private readonly string _prologFilePath = Path.Combine(Application.streamingAssetsPath, "prolog_default/main.pl");
+        // private readonly string _prologFilePath = Path.Combine(Application.streamingAssetsPath, "prolog_subsumedby/article.pl");
         public string QueryText = "";
 
         // Debug settings

@@ -1501,10 +1501,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1d0afbb961de3c4bb9d7e1e4d8d8eda, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  saveData: 1
+  saveData: 0
   isGameOver: 0
   isModeAuto: 0
-  timerInterval: 0
+  timerInterval: 0.007
   randomSeed: 2
   gridMin: {x: 0, y: 0}
   gridMax: {x: 20, y: 20}
@@ -1516,7 +1516,6 @@ MonoBehaviour:
   aiType: 0
   personalities: 0000000002000000
   agents: []
-  turnDuration: []
   agentAction: []
   agentPosition: []
 --- !u!1 &2138976747

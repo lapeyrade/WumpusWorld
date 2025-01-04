@@ -39,6 +39,11 @@ data_concept(Instance, Concept) :-
     Predicate =.. [Concept, Instance],
     call(Predicate).
 
+data_concept([wumpus, [2, 2]], monster),
+    wumpus([wumpus, [2, 2]]),
+    danger([wumpus, [2, 2]]).
+
+
 %% Desire System
 %% Base desires for different personality types:
 %% - cupid: wealth-seeking behavior
