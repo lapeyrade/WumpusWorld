@@ -69,7 +69,8 @@ namespace GameManagement
                 _gameManager.SetGameOver(true);
             else if (Input.GetKeyDown(KeyCode.Backspace))
             {
-                ScreenCapture.CaptureScreenshot("Screenshots/screenshot " + System.DateTime.Now.ToString("MM-dd-yy (HH-mm-ss)") + ".png");
+                ScreenCapture.CaptureScreenshot("Screenshots/screenshot " +
+                    System.DateTime.Now.ToString("MM-dd-yy (HH-mm-ss)") + ".png");
                 Debug.Log("Screenshot saved!");
             }
             // Execute turn on movement keys, space, return, or in auto mode
@@ -78,6 +79,8 @@ namespace GameManagement
                      Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow) ||
                      _gameManager.isModeAuto)
             {
+                bool allAgentsSkipped = true;
+
                 // Process each agent's turn
                 for (int i = 0; i < _aiComponents.Length; i++)
                 {
@@ -91,7 +94,15 @@ namespace GameManagement
                         && !_gameManager.AgentsMap[agent.coords.x, agent.coords.y - 1].Exists(e => e.tag is "SafeCell"))
                         continue;
 
+                    allAgentsSkipped = false;
                     _aiComponents[i].PlayTurn();
+                }
+
+                // End game if all agents were skipped (no valid moves)
+                if (allAgentsSkipped)
+                {
+                    _gameManager.SetGameOver(false);
+                    return;
                 }
 
                 // Update Prolog knowledge base if using Prolog AI

@@ -43,6 +43,7 @@ namespace Agent
                 
                 // Lose condition: No safe cells to visit from starting position
                 if (_gameManager.nbAgent is 1
+                    && _gameManager.AgentsMap[Coords.x, Coords.y].Exists(e => e.tag is "StartCell")
                     && !_gameManager.AgentsMap[Coords.x + 1, Coords.y].Exists(e => e.tag is "SafeCell")
                     && !_gameManager.AgentsMap[Coords.x - 1, Coords.y].Exists(e => e.tag is "SafeCell")
                     && !_gameManager.AgentsMap[Coords.x, Coords.y + 1].Exists(e => e.tag is "SafeCell")
