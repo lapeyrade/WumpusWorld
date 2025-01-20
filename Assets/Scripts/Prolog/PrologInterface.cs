@@ -301,7 +301,7 @@ namespace Prolog
 
             var socketTime = (prologStartTime - socketStartTime) * 1000f;
             var prologTime = (Time.realtimeSinceStartup - prologStartTime) * 1000f;
-            Debug.Log($"Found {answerCount} possible actions, Socket time: {socketTime:F2}ms, Prolog inference time: {prologTime:F2}ms");
+            // Debug.Log($"Found {answerCount} possible actions, Socket time: {socketTime:F2}ms, Prolog inference time: {prologTime:F2}ms");
             _dropdown.captionText.text = chosenExplanation;
 
             return action;
