@@ -21,7 +21,7 @@ namespace GameManagement
         public bool saveData;
         public bool isGameOver;
         public bool isModeAuto;
-        [Range(0.0f, 1.0f)] public float timerInterval = 0.016f;
+        [Range(0.0f, 1.0f)] public float timerInterval = 0.0f;
 
         // Grid configuration
         public int randomSeed = 1;           // Seed for reproducible randomization
