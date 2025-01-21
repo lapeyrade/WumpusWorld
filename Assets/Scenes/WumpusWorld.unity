@@ -1505,15 +1505,15 @@ MonoBehaviour:
   isGameOver: 0
   isModeAuto: 0
   timerInterval: 0
-  randomSeed: 2
+  randomSeed: 1
   gridMin: {x: 0, y: 0}
   gridMax: {x: 20, y: 20}
   tileSize: 1.05
-  nbPit: 10
-  nbWumpus: 10
+  nbPit: 12
+  nbWumpus: 12
   nbGold: 1
   nbAgent: 1
-  aiType: 0
+  aiType: 3
   personalities: 0000000002000000
   agents: []
   agentAction: []
