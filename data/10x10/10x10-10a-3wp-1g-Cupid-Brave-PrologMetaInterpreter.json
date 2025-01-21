@@ -1,0 +1,506 @@
+[
+  {
+    "randomSeed": 1,
+    "gridMin": {
+      "x": 0,
+      "y": 0
+    },
+    "gridMax": {
+      "x": 10,
+      "y": 10
+    },
+    "tileSize": 1.05,
+    "nbPit": 3,
+    "nbWumpus": 3,
+    "nbGold": 1,
+    "nbAgent": 10,
+    "aiType": "Prolog",
+    "personalities": [
+      0,
+      2
+    ],
+    "agents": 10,
+    "isGameOver": true,
+    "isModeAuto": true,
+    "turnDuration": [
+      59.17,
+      70.84,
+      71.06,
+      77.73,
+      63.59,
+      71.01,
+      77.56,
+      77.99
+    ]
+  },
+  {
+    "agent": "human0",
+    "actions": [
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight"
+    ],
+    "positions": [
+      {
+        "x": 4,
+        "y": 3
+      },
+      {
+        "x": 8,
+        "y": 3
+      },
+      {
+        "x": 6,
+        "y": 2
+      },
+      {
+        "x": 7,
+        "y": 8
+      },
+      {
+        "x": 9,
+        "y": 8
+      },
+      {
+        "x": 3,
+        "y": 8
+      },
+      {
+        "x": 9,
+        "y": 5
+      },
+      {
+        "x": 7,
+        "y": 4
+      }
+    ]
+  },
+  {
+    "agent": "human1",
+    "actions": [
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveUp",
+      "MoveLeft",
+      "MoveLeft"
+    ],
+    "positions": [
+      {
+        "x": 9,
+        "y": 7
+      },
+      {
+        "x": 9,
+        "y": 4
+      },
+      {
+        "x": 5,
+        "y": 3
+      },
+      {
+        "x": 9,
+        "y": 3
+      },
+      {
+        "x": 7,
+        "y": 2
+      },
+      {
+        "x": 7,
+        "y": 9
+      },
+      {
+        "x": 8,
+        "y": 8
+      },
+      {
+        "x": 2,
+        "y": 8
+      }
+    ]
+  },
+  {
+    "agent": "human2",
+    "actions": [
+      "MoveLeft",
+      "MoveUp",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveRight",
+      "MoveBack",
+      "MoveRight",
+      "MoveBack"
+    ],
+    "positions": [
+      {
+        "x": 8,
+        "y": 5
+      },
+      {
+        "x": 7,
+        "y": 5
+      },
+      {
+        "x": 8,
+        "y": 7
+      },
+      {
+        "x": 8,
+        "y": 4
+      },
+      {
+        "x": 6,
+        "y": 3
+      },
+      {
+        "x": 8,
+        "y": 3
+      },
+      {
+        "x": 8,
+        "y": 2
+      },
+      {
+        "x": 7,
+        "y": 8
+      }
+    ]
+  },
+  {
+    "agent": "human3",
+    "actions": [
+      "MoveUp",
+      "MoveLeft",
+      "MoveUp",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveBack",
+      "MoveLeft"
+    ],
+    "positions": [
+      {
+        "x": 8,
+        "y": 9
+      },
+      {
+        "x": 1,
+        "y": 8
+      },
+      {
+        "x": 8,
+        "y": 6
+      },
+      {
+        "x": 6,
+        "y": 5
+      },
+      {
+        "x": 7,
+        "y": 7
+      },
+      {
+        "x": 8,
+        "y": 4
+      },
+      {
+        "x": 5,
+        "y": 3
+      },
+      {
+        "x": 7,
+        "y": 3
+      }
+    ]
+  },
+  {
+    "agent": "human4",
+    "actions": [
+      "ShootDown",
+      "MoveLeft",
+      "MoveDown",
+      "MoveLeft",
+      "MoveRight",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveLeft"
+    ],
+    "positions": [
+      {
+        "x": 8,
+        "y": 2
+      },
+      {
+        "x": 6,
+        "y": 8
+      },
+      {
+        "x": 8,
+        "y": 8
+      },
+      {
+        "x": 0,
+        "y": 8
+      },
+      {
+        "x": 9,
+        "y": 6
+      },
+      {
+        "x": 5,
+        "y": 5
+      },
+      {
+        "x": 6,
+        "y": 7
+      },
+      {
+        "x": 8,
+        "y": 4
+      }
+    ]
+  },
+  {
+    "agent": "human5",
+    "actions": [
+      "MoveUp",
+      "MoveLeft",
+      "MoveRight",
+      "MoveLeft",
+      "MoveDown",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack"
+    ],
+    "positions": [
+      {
+        "x": 5,
+        "y": 4
+      },
+      {
+        "x": 7,
+        "y": 3
+      },
+      {
+        "x": 9,
+        "y": 2
+      },
+      {
+        "x": 5,
+        "y": 8
+      },
+      {
+        "x": 8,
+        "y": 8
+      },
+      {
+        "x": 1,
+        "y": 8
+      },
+      {
+        "x": 8,
+        "y": 6
+      },
+      {
+        "x": 6,
+        "y": 5
+      }
+    ]
+  },
+  {
+    "agent": "human6",
+    "actions": [
+      "MoveLeft",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveBack",
+      "MoveLeft",
+      "MoveDown",
+      "MoveUp"
+    ],
+    "positions": [
+      {
+        "x": 5,
+        "y": 7
+      },
+      {
+        "x": 8,
+        "y": 4
+      },
+      {
+        "x": 4,
+        "y": 4
+      },
+      {
+        "x": 7,
+        "y": 3
+      },
+      {
+        "x": 8,
+        "y": 2
+      },
+      {
+        "x": 4,
+        "y": 8
+      },
+      {
+        "x": 8,
+        "y": 8
+      },
+      {
+        "x": 1,
+        "y": 9
+      }
+    ]
+  },
+  {
+    "agent": "human7",
+    "actions": [
+      "MoveLeft",
+      "MoveUp",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveDown",
+      "PickUp"
+    ],
+    "positions": [
+      {
+        "x": 7,
+        "y": 6
+      },
+      {
+        "x": 6,
+        "y": 6
+      },
+      {
+        "x": 4,
+        "y": 7
+      },
+      {
+        "x": 8,
+        "y": 4
+      },
+      {
+        "x": 3,
+        "y": 4
+      },
+      {
+        "x": 7,
+        "y": 3
+      },
+      {
+        "x": 8,
+        "y": 1
+      },
+      {
+        "x": 4,
+        "y": 8
+      }
+    ]
+  },
+  {
+    "agent": "human8",
+    "actions": [
+      "MoveDown",
+      "MoveBack",
+      "MoveBack",
+      "MoveLeft",
+      "MoveBack",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveLeft"
+    ],
+    "positions": [
+      {
+        "x": 8,
+        "y": 8
+      },
+      {
+        "x": 1,
+        "y": 8
+      },
+      {
+        "x": 8,
+        "y": 6
+      },
+      {
+        "x": 5,
+        "y": 6
+      },
+      {
+        "x": 5,
+        "y": 7
+      },
+      {
+        "x": 8,
+        "y": 4
+      },
+      {
+        "x": 2,
+        "y": 4
+      },
+      {
+        "x": 7,
+        "y": 3
+      }
+    ]
+  },
+  {
+    "agent": "human9",
+    "actions": [
+      "MoveRight",
+      "MoveBack",
+      "MoveDown",
+      "MoveDown",
+      "MoveDown",
+      "ShootLeft",
+      "MoveBack",
+      "MoveLeft"
+    ],
+    "positions": [
+      {
+        "x": 9,
+        "y": 1
+      },
+      {
+        "x": 5,
+        "y": 8
+      },
+      {
+        "x": 8,
+        "y": 8
+      },
+      {
+        "x": 1,
+        "y": 7
+      },
+      {
+        "x": 8,
+        "y": 5
+      },
+      {
+        "x": 5,
+        "y": 6
+      },
+      {
+        "x": 6,
+        "y": 7
+      },
+      {
+        "x": 8,
+        "y": 4
+      }
+    ]
+  }
+]
