@@ -1,0 +1,2516 @@
+[
+  {
+    "randomSeed": 2,
+    "gridMin": {
+      "x": 0,
+      "y": 0,
+      "magnitude": 0,
+      "sqrMagnitude": 0
+    },
+    "gridMax": {
+      "x": 20,
+      "y": 20,
+      "magnitude": 28.2842712,
+      "sqrMagnitude": 800
+    },
+    "tileSize": 1.04999995,
+    "nbPit": 10,
+    "nbWumpus": 10,
+    "nbGold": 1,
+    "nbAgent": 10,
+    "aiType": "Prolog",
+    "personalities": [
+      0,
+      2
+    ],
+    "agents": 10,
+    "isGameOver": true,
+    "isModeAuto": true,
+    "turnDuration": [
+      16.128,
+      14.659,
+      18.938,
+      17.178,
+      20.504,
+      20.037,
+      22.059,
+      21.586,
+      23.580,
+      21.417,
+      22.425,
+      22.090,
+      22.899,
+      20.887,
+      20.113,
+      21.709,
+      22.620,
+      23.488,
+      23.394,
+      24.841,
+      25.104,
+      23.676,
+      26.008,
+      26.419,
+      28.101,
+      29.248,
+      29.357,
+      30.520,
+      26.329,
+      25.417,
+      28.277,
+      30.814,
+      29.690,
+      31.890
+    ]
+  },
+  {
+    "agent": "human0",
+    "actions": [
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveLeft",
+      "MoveRight",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveLeft",
+      "MoveRight",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveRight",
+      "MoveRight",
+      "MoveBack",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveLeft"
+    ],
+    "positions": [
+      {
+        "x": 3,
+        "y": 3,
+        "magnitude": 4.2426405,
+        "sqrMagnitude": 18
+      },
+      {
+        "x": 8,
+        "y": 1,
+        "magnitude": 8.06225777,
+        "sqrMagnitude": 65
+      },
+      {
+        "x": 9,
+        "y": 12,
+        "magnitude": 15,
+        "sqrMagnitude": 225
+      },
+      {
+        "x": 14,
+        "y": 9,
+        "magnitude": 16.6433163,
+        "sqrMagnitude": 277
+      },
+      {
+        "x": 9,
+        "y": 3,
+        "magnitude": 9.48683262,
+        "sqrMagnitude": 90
+      },
+      {
+        "x": 12,
+        "y": 14,
+        "magnitude": 18.4390888,
+        "sqrMagnitude": 340
+      },
+      {
+        "x": 14,
+        "y": 16,
+        "magnitude": 21.2602921,
+        "sqrMagnitude": 452
+      },
+      {
+        "x": 12,
+        "y": 6,
+        "magnitude": 13.4164076,
+        "sqrMagnitude": 180
+      },
+      {
+        "x": 10,
+        "y": 2,
+        "magnitude": 10.1980391,
+        "sqrMagnitude": 104
+      },
+      {
+        "x": 9,
+        "y": 18,
+        "magnitude": 20.1246109,
+        "sqrMagnitude": 405
+      },
+      {
+        "x": 4,
+        "y": 3,
+        "magnitude": 5,
+        "sqrMagnitude": 25
+      },
+      {
+        "x": 9,
+        "y": 1,
+        "magnitude": 9.05538559,
+        "sqrMagnitude": 82
+      },
+      {
+        "x": 10,
+        "y": 12,
+        "magnitude": 15.6204996,
+        "sqrMagnitude": 244
+      },
+      {
+        "x": 13,
+        "y": 9,
+        "magnitude": 15.811388,
+        "sqrMagnitude": 250
+      },
+      {
+        "x": 10,
+        "y": 3,
+        "magnitude": 10.4403067,
+        "sqrMagnitude": 109
+      },
+      {
+        "x": 11,
+        "y": 14,
+        "magnitude": 17.804493,
+        "sqrMagnitude": 317
+      },
+      {
+        "x": 13,
+        "y": 16,
+        "magnitude": 20.6155281,
+        "sqrMagnitude": 425
+      },
+      {
+        "x": 13,
+        "y": 6,
+        "magnitude": 14.3178215,
+        "sqrMagnitude": 205
+      },
+      {
+        "x": 11,
+        "y": 2,
+        "magnitude": 11.1803398,
+        "sqrMagnitude": 125
+      },
+      {
+        "x": 10,
+        "y": 18,
+        "magnitude": 20.5912609,
+        "sqrMagnitude": 424
+      },
+      {
+        "x": 5,
+        "y": 3,
+        "magnitude": 5.83095169,
+        "sqrMagnitude": 34
+      },
+      {
+        "x": 10,
+        "y": 1,
+        "magnitude": 10.0498753,
+        "sqrMagnitude": 101
+      },
+      {
+        "x": 11,
+        "y": 12,
+        "magnitude": 16.27882,
+        "sqrMagnitude": 265
+      },
+      {
+        "x": 12,
+        "y": 9,
+        "magnitude": 15,
+        "sqrMagnitude": 225
+      },
+      {
+        "x": 11,
+        "y": 3,
+        "magnitude": 11.4017544,
+        "sqrMagnitude": 130
+      },
+      {
+        "x": 10,
+        "y": 14,
+        "magnitude": 17.2046509,
+        "sqrMagnitude": 296
+      },
+      {
+        "x": 12,
+        "y": 16,
+        "magnitude": 20,
+        "sqrMagnitude": 400
+      },
+      {
+        "x": 14,
+        "y": 6,
+        "magnitude": 15.2315464,
+        "sqrMagnitude": 232
+      },
+      {
+        "x": 12,
+        "y": 2,
+        "magnitude": 12.1655254,
+        "sqrMagnitude": 148
+      },
+      {
+        "x": 9,
+        "y": 18,
+        "magnitude": 20.1246109,
+        "sqrMagnitude": 405
+      },
+      {
+        "x": 6,
+        "y": 3,
+        "magnitude": 6.70820379,
+        "sqrMagnitude": 45
+      },
+      {
+        "x": 11,
+        "y": 1,
+        "magnitude": 11.0453606,
+        "sqrMagnitude": 122
+      },
+      {
+        "x": 12,
+        "y": 12,
+        "magnitude": 16.970562,
+        "sqrMagnitude": 288
+      },
+      {
+        "x": 11,
+        "y": 9,
+        "magnitude": 14.2126703,
+        "sqrMagnitude": 202
+      }
+    ]
+  },
+  {
+    "agent": "human1",
+    "actions": [
+      "MoveRight",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveRight",
+      "MoveRight",
+      "MoveUp",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveLeft",
+      "MoveRight",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveRight",
+      "MoveRight",
+      "MoveBack",
+      "MoveUp",
+      "MoveRight",
+      "MoveRight",
+      "MoveLeft",
+      "MoveRight",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveBack",
+      "MoveRight",
+      "MoveLeft",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveLeft",
+      "MoveRight",
+      "MoveBack",
+      "ShootLeft",
+      "MoveUp"
+    ],
+    "positions": [
+      {
+        "x": 12,
+        "y": 3,
+        "magnitude": 12.3693171,
+        "sqrMagnitude": 153
+      },
+      {
+        "x": 9,
+        "y": 14,
+        "magnitude": 16.6433163,
+        "sqrMagnitude": 277
+      },
+      {
+        "x": 11,
+        "y": 16,
+        "magnitude": 19.4164886,
+        "sqrMagnitude": 377
+      },
+      {
+        "x": 15,
+        "y": 6,
+        "magnitude": 16.1554947,
+        "sqrMagnitude": 261
+      },
+      {
+        "x": 13,
+        "y": 2,
+        "magnitude": 13.1529465,
+        "sqrMagnitude": 173
+      },
+      {
+        "x": 9,
+        "y": 19,
+        "magnitude": 21.0237961,
+        "sqrMagnitude": 442
+      },
+      {
+        "x": 7,
+        "y": 3,
+        "magnitude": 7.6157732,
+        "sqrMagnitude": 58
+      },
+      {
+        "x": 12,
+        "y": 1,
+        "magnitude": 12.0415945,
+        "sqrMagnitude": 145
+      },
+      {
+        "x": 13,
+        "y": 12,
+        "magnitude": 17.6918068,
+        "sqrMagnitude": 313
+      },
+      {
+        "x": 10,
+        "y": 9,
+        "magnitude": 13.4536238,
+        "sqrMagnitude": 181
+      },
+      {
+        "x": 13,
+        "y": 3,
+        "magnitude": 13.3416643,
+        "sqrMagnitude": 178
+      },
+      {
+        "x": 8,
+        "y": 14,
+        "magnitude": 16.1245155,
+        "sqrMagnitude": 260
+      },
+      {
+        "x": 10,
+        "y": 16,
+        "magnitude": 18.8679619,
+        "sqrMagnitude": 356
+      },
+      {
+        "x": 16,
+        "y": 6,
+        "magnitude": 17.088007,
+        "sqrMagnitude": 292
+      },
+      {
+        "x": 14,
+        "y": 2,
+        "magnitude": 14.1421356,
+        "sqrMagnitude": 200
+      },
+      {
+        "x": 9,
+        "y": 18,
+        "magnitude": 20.1246109,
+        "sqrMagnitude": 405
+      },
+      {
+        "x": 7,
+        "y": 4,
+        "magnitude": 8.06225777,
+        "sqrMagnitude": 65
+      },
+      {
+        "x": 13,
+        "y": 1,
+        "magnitude": 13.0384045,
+        "sqrMagnitude": 170
+      },
+      {
+        "x": 14,
+        "y": 12,
+        "magnitude": 18.4390888,
+        "sqrMagnitude": 340
+      },
+      {
+        "x": 9,
+        "y": 9,
+        "magnitude": 12.7279224,
+        "sqrMagnitude": 162
+      },
+      {
+        "x": 14,
+        "y": 3,
+        "magnitude": 14.3178215,
+        "sqrMagnitude": 205
+      },
+      {
+        "x": 7,
+        "y": 14,
+        "magnitude": 15.6524763,
+        "sqrMagnitude": 245
+      },
+      {
+        "x": 9,
+        "y": 16,
+        "magnitude": 18.3575592,
+        "sqrMagnitude": 337
+      },
+      {
+        "x": 15,
+        "y": 6,
+        "magnitude": 16.1554947,
+        "sqrMagnitude": 261
+      },
+      {
+        "x": 15,
+        "y": 2,
+        "magnitude": 15.1327457,
+        "sqrMagnitude": 229
+      },
+      {
+        "x": 8,
+        "y": 18,
+        "magnitude": 19.6977158,
+        "sqrMagnitude": 388
+      },
+      {
+        "x": 8,
+        "y": 4,
+        "magnitude": 8.94427204,
+        "sqrMagnitude": 80
+      },
+      {
+        "x": 14,
+        "y": 1,
+        "magnitude": 14.0356684,
+        "sqrMagnitude": 197
+      },
+      {
+        "x": 15,
+        "y": 12,
+        "magnitude": 19.2093735,
+        "sqrMagnitude": 369
+      },
+      {
+        "x": 8,
+        "y": 9,
+        "magnitude": 12.0415945,
+        "sqrMagnitude": 145
+      },
+      {
+        "x": 15,
+        "y": 3,
+        "magnitude": 15.2970581,
+        "sqrMagnitude": 234
+      },
+      {
+        "x": 8,
+        "y": 14,
+        "magnitude": 16.1245155,
+        "sqrMagnitude": 260
+      },
+      {
+        "x": 9,
+        "y": 16,
+        "magnitude": 18.3575592,
+        "sqrMagnitude": 337
+      },
+      {
+        "x": 15,
+        "y": 7,
+        "magnitude": 16.5529461,
+        "sqrMagnitude": 274
+      }
+    ]
+  },
+  {
+    "agent": "human2",
+    "actions": [
+      "MoveRight",
+      "MoveLeft",
+      "ShootUp",
+      "MoveRight",
+      "MoveRight",
+      "MoveLeft",
+      "MoveRight",
+      "MoveUp",
+      "MoveLeft",
+      "MoveRight",
+      "MoveRight",
+      "MoveLeft",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveLeft",
+      "MoveRight",
+      "MoveRight",
+      "MoveLeft",
+      "MoveRight",
+      "MoveRight",
+      "MoveLeft",
+      "MoveRight",
+      "MoveRight",
+      "MoveBack",
+      "MoveLeft",
+      "MoveRight",
+      "MoveRight",
+      "MoveUp",
+      "MoveRight",
+      "MoveRight",
+      "MoveLeft",
+      "ShootUp",
+      "MoveRight"
+    ],
+    "positions": [
+      {
+        "x": 16,
+        "y": 2,
+        "magnitude": 16.1245155,
+        "sqrMagnitude": 260
+      },
+      {
+        "x": 7,
+        "y": 18,
+        "magnitude": 19.3132076,
+        "sqrMagnitude": 373
+      },
+      {
+        "x": 8,
+        "y": 4,
+        "magnitude": 8.94427204,
+        "sqrMagnitude": 80
+      },
+      {
+        "x": 15,
+        "y": 1,
+        "magnitude": 15.0332966,
+        "sqrMagnitude": 226
+      },
+      {
+        "x": 16,
+        "y": 12,
+        "magnitude": 20,
+        "sqrMagnitude": 400
+      },
+      {
+        "x": 7,
+        "y": 9,
+        "magnitude": 11.4017544,
+        "sqrMagnitude": 130
+      },
+      {
+        "x": 16,
+        "y": 3,
+        "magnitude": 16.27882,
+        "sqrMagnitude": 265
+      },
+      {
+        "x": 8,
+        "y": 15,
+        "magnitude": 17,
+        "sqrMagnitude": 289
+      },
+      {
+        "x": 8,
+        "y": 16,
+        "magnitude": 17.8885441,
+        "sqrMagnitude": 320
+      },
+      {
+        "x": 16,
+        "y": 7,
+        "magnitude": 17.4642487,
+        "sqrMagnitude": 305
+      },
+      {
+        "x": 17,
+        "y": 2,
+        "magnitude": 17.1172428,
+        "sqrMagnitude": 293
+      },
+      {
+        "x": 6,
+        "y": 18,
+        "magnitude": 18.9736652,
+        "sqrMagnitude": 360
+      },
+      {
+        "x": 9,
+        "y": 4,
+        "magnitude": 9.84885788,
+        "sqrMagnitude": 97
+      },
+      {
+        "x": 16,
+        "y": 1,
+        "magnitude": 16.0312195,
+        "sqrMagnitude": 257
+      },
+      {
+        "x": 17,
+        "y": 12,
+        "magnitude": 20.8086529,
+        "sqrMagnitude": 433
+      },
+      {
+        "x": 6,
+        "y": 9,
+        "magnitude": 10.8166542,
+        "sqrMagnitude": 117
+      },
+      {
+        "x": 17,
+        "y": 3,
+        "magnitude": 17.2626762,
+        "sqrMagnitude": 298
+      },
+      {
+        "x": 9,
+        "y": 15,
+        "magnitude": 17.4928551,
+        "sqrMagnitude": 306
+      },
+      {
+        "x": 7,
+        "y": 16,
+        "magnitude": 17.4642487,
+        "sqrMagnitude": 305
+      },
+      {
+        "x": 17,
+        "y": 7,
+        "magnitude": 18.3847771,
+        "sqrMagnitude": 338
+      },
+      {
+        "x": 18,
+        "y": 2,
+        "magnitude": 18.1107712,
+        "sqrMagnitude": 328
+      },
+      {
+        "x": 5,
+        "y": 18,
+        "magnitude": 18.6815414,
+        "sqrMagnitude": 349
+      },
+      {
+        "x": 10,
+        "y": 4,
+        "magnitude": 10.7703295,
+        "sqrMagnitude": 116
+      },
+      {
+        "x": 17,
+        "y": 1,
+        "magnitude": 17.0293865,
+        "sqrMagnitude": 290
+      },
+      {
+        "x": 16,
+        "y": 12,
+        "magnitude": 20,
+        "sqrMagnitude": 400
+      },
+      {
+        "x": 5,
+        "y": 9,
+        "magnitude": 10.2956305,
+        "sqrMagnitude": 106
+      },
+      {
+        "x": 18,
+        "y": 3,
+        "magnitude": 18.2482872,
+        "sqrMagnitude": 333
+      },
+      {
+        "x": 10,
+        "y": 15,
+        "magnitude": 18.0277557,
+        "sqrMagnitude": 325
+      },
+      {
+        "x": 7,
+        "y": 17,
+        "magnitude": 18.3847771,
+        "sqrMagnitude": 338
+      },
+      {
+        "x": 18,
+        "y": 7,
+        "magnitude": 19.3132076,
+        "sqrMagnitude": 373
+      },
+      {
+        "x": 19,
+        "y": 2,
+        "magnitude": 19.1049728,
+        "sqrMagnitude": 365
+      },
+      {
+        "x": 4,
+        "y": 18,
+        "magnitude": 18.4390888,
+        "sqrMagnitude": 340
+      },
+      {
+        "x": 10,
+        "y": 4,
+        "magnitude": 10.7703295,
+        "sqrMagnitude": 116
+      },
+      {
+        "x": 18,
+        "y": 1,
+        "magnitude": 18.0277557,
+        "sqrMagnitude": 325
+      }
+    ]
+  },
+  {
+    "agent": "human3",
+    "actions": [
+      "MoveUp",
+      "MoveLeft",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveBack",
+      "MoveLeft",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveLeft",
+      "MoveBack",
+      "MoveRight",
+      "MoveRight",
+      "MoveBack",
+      "MoveBack",
+      "MoveLeft",
+      "MoveRight",
+      "MoveBack",
+      "MoveRight",
+      "MoveLeft",
+      "MoveBack",
+      "MoveRight",
+      "MoveRight",
+      "MoveBack",
+      "MoveBack",
+      "MoveLeft",
+      "MoveRight",
+      "MoveBack",
+      "MoveBack",
+      "MoveLeft",
+      "MoveUp",
+      "ShootDown"
+    ],
+    "positions": [
+      {
+        "x": 16,
+        "y": 13,
+        "magnitude": 20.6155281,
+        "sqrMagnitude": 425
+      },
+      {
+        "x": 4,
+        "y": 9,
+        "magnitude": 9.84885788,
+        "sqrMagnitude": 97
+      },
+      {
+        "x": 19,
+        "y": 3,
+        "magnitude": 19.235384,
+        "sqrMagnitude": 370
+      },
+      {
+        "x": 11,
+        "y": 15,
+        "magnitude": 18.6010761,
+        "sqrMagnitude": 346
+      },
+      {
+        "x": 8,
+        "y": 17,
+        "magnitude": 18.7882938,
+        "sqrMagnitude": 353
+      },
+      {
+        "x": 19,
+        "y": 7,
+        "magnitude": 20.248457,
+        "sqrMagnitude": 410
+      },
+      {
+        "x": 18,
+        "y": 2,
+        "magnitude": 18.1107712,
+        "sqrMagnitude": 328
+      },
+      {
+        "x": 3,
+        "y": 18,
+        "magnitude": 18.2482872,
+        "sqrMagnitude": 333
+      },
+      {
+        "x": 11,
+        "y": 4,
+        "magnitude": 11.7046995,
+        "sqrMagnitude": 137
+      },
+      {
+        "x": 19,
+        "y": 1,
+        "magnitude": 19.0262985,
+        "sqrMagnitude": 362
+      },
+      {
+        "x": 17,
+        "y": 13,
+        "magnitude": 21.4009342,
+        "sqrMagnitude": 458
+      },
+      {
+        "x": 3,
+        "y": 9,
+        "magnitude": 9.48683262,
+        "sqrMagnitude": 90
+      },
+      {
+        "x": 18,
+        "y": 3,
+        "magnitude": 18.2482872,
+        "sqrMagnitude": 333
+      },
+      {
+        "x": 12,
+        "y": 15,
+        "magnitude": 19.2093735,
+        "sqrMagnitude": 369
+      },
+      {
+        "x": 9,
+        "y": 17,
+        "magnitude": 19.235384,
+        "sqrMagnitude": 370
+      },
+      {
+        "x": 18,
+        "y": 7,
+        "magnitude": 19.3132076,
+        "sqrMagnitude": 373
+      },
+      {
+        "x": 17,
+        "y": 2,
+        "magnitude": 17.1172428,
+        "sqrMagnitude": 293
+      },
+      {
+        "x": 2,
+        "y": 18,
+        "magnitude": 18.1107712,
+        "sqrMagnitude": 328
+      },
+      {
+        "x": 12,
+        "y": 4,
+        "magnitude": 12.6491108,
+        "sqrMagnitude": 160
+      },
+      {
+        "x": 18,
+        "y": 1,
+        "magnitude": 18.0277557,
+        "sqrMagnitude": 325
+      },
+      {
+        "x": 18,
+        "y": 13,
+        "magnitude": 22.2036037,
+        "sqrMagnitude": 493
+      },
+      {
+        "x": 2,
+        "y": 9,
+        "magnitude": 9.21954441,
+        "sqrMagnitude": 85
+      },
+      {
+        "x": 17,
+        "y": 3,
+        "magnitude": 17.2626762,
+        "sqrMagnitude": 298
+      },
+      {
+        "x": 13,
+        "y": 15,
+        "magnitude": 19.8494339,
+        "sqrMagnitude": 394
+      },
+      {
+        "x": 10,
+        "y": 17,
+        "magnitude": 19.7230835,
+        "sqrMagnitude": 389
+      },
+      {
+        "x": 17,
+        "y": 7,
+        "magnitude": 18.3847771,
+        "sqrMagnitude": 338
+      },
+      {
+        "x": 16,
+        "y": 2,
+        "magnitude": 16.1245155,
+        "sqrMagnitude": 260
+      },
+      {
+        "x": 1,
+        "y": 18,
+        "magnitude": 18.0277557,
+        "sqrMagnitude": 325
+      },
+      {
+        "x": 13,
+        "y": 4,
+        "magnitude": 13.6014709,
+        "sqrMagnitude": 185
+      },
+      {
+        "x": 17,
+        "y": 1,
+        "magnitude": 17.0293865,
+        "sqrMagnitude": 290
+      },
+      {
+        "x": 17,
+        "y": 13,
+        "magnitude": 21.4009342,
+        "sqrMagnitude": 458
+      },
+      {
+        "x": 1,
+        "y": 9,
+        "magnitude": 9.05538559,
+        "sqrMagnitude": 82
+      },
+      {
+        "x": 17,
+        "y": 4,
+        "magnitude": 17.4642487,
+        "sqrMagnitude": 305
+      },
+      {
+        "x": 13,
+        "y": 15,
+        "magnitude": 19.8494339,
+        "sqrMagnitude": 394
+      }
+    ]
+  },
+  {
+    "agent": "human4",
+    "actions": [
+      "MoveRight",
+      "MoveUp",
+      "MoveBack",
+      "MoveLeft",
+      "MoveRight",
+      "MoveDown",
+      "MoveUp",
+      "MoveLeft",
+      "MoveRight",
+      "MoveDown",
+      "MoveRight",
+      "MoveRight",
+      "MoveBack",
+      "MoveBack",
+      "MoveRight",
+      "MoveBack",
+      "MoveRight",
+      "MoveBack",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveBack",
+      "MoveBack",
+      "MoveRight",
+      "MoveBack",
+      "MoveRight",
+      "MoveBack",
+      "MoveBack",
+      "MoveDown",
+      "MoveRight",
+      "MoveBack",
+      "MoveBack",
+      "MoveUp"
+    ],
+    "positions": [
+      {
+        "x": 11,
+        "y": 17,
+        "magnitude": 20.248457,
+        "sqrMagnitude": 410
+      },
+      {
+        "x": 17,
+        "y": 8,
+        "magnitude": 18.7882938,
+        "sqrMagnitude": 353
+      },
+      {
+        "x": 15,
+        "y": 2,
+        "magnitude": 15.1327457,
+        "sqrMagnitude": 229
+      },
+      {
+        "x": 0,
+        "y": 18,
+        "magnitude": 18,
+        "sqrMagnitude": 324
+      },
+      {
+        "x": 14,
+        "y": 4,
+        "magnitude": 14.5602198,
+        "sqrMagnitude": 212
+      },
+      {
+        "x": 17,
+        "y": 0,
+        "magnitude": 17,
+        "sqrMagnitude": 289
+      },
+      {
+        "x": 17,
+        "y": 14,
+        "magnitude": 22.0227146,
+        "sqrMagnitude": 485
+      },
+      {
+        "x": 0,
+        "y": 9,
+        "magnitude": 9,
+        "sqrMagnitude": 81
+      },
+      {
+        "x": 18,
+        "y": 4,
+        "magnitude": 18.4390888,
+        "sqrMagnitude": 340
+      },
+      {
+        "x": 13,
+        "y": 14,
+        "magnitude": 19.1049728,
+        "sqrMagnitude": 365
+      },
+      {
+        "x": 12,
+        "y": 17,
+        "magnitude": 20.8086529,
+        "sqrMagnitude": 433
+      },
+      {
+        "x": 18,
+        "y": 8,
+        "magnitude": 19.6977158,
+        "sqrMagnitude": 388
+      },
+      {
+        "x": 14,
+        "y": 2,
+        "magnitude": 14.1421356,
+        "sqrMagnitude": 200
+      },
+      {
+        "x": 1,
+        "y": 18,
+        "magnitude": 18.0277557,
+        "sqrMagnitude": 325
+      },
+      {
+        "x": 15,
+        "y": 4,
+        "magnitude": 15.5241747,
+        "sqrMagnitude": 241
+      },
+      {
+        "x": 17,
+        "y": 1,
+        "magnitude": 17.0293865,
+        "sqrMagnitude": 290
+      },
+      {
+        "x": 18,
+        "y": 14,
+        "magnitude": 22.8035088,
+        "sqrMagnitude": 520
+      },
+      {
+        "x": 1,
+        "y": 9,
+        "magnitude": 9.05538559,
+        "sqrMagnitude": 82
+      },
+      {
+        "x": 19,
+        "y": 4,
+        "magnitude": 19.4164886,
+        "sqrMagnitude": 377
+      },
+      {
+        "x": 14,
+        "y": 14,
+        "magnitude": 19.7989902,
+        "sqrMagnitude": 392
+      },
+      {
+        "x": 13,
+        "y": 17,
+        "magnitude": 21.4009342,
+        "sqrMagnitude": 458
+      },
+      {
+        "x": 19,
+        "y": 8,
+        "magnitude": 20.6155281,
+        "sqrMagnitude": 425
+      },
+      {
+        "x": 13,
+        "y": 2,
+        "magnitude": 13.1529465,
+        "sqrMagnitude": 173
+      },
+      {
+        "x": 2,
+        "y": 18,
+        "magnitude": 18.1107712,
+        "sqrMagnitude": 328
+      },
+      {
+        "x": 16,
+        "y": 4,
+        "magnitude": 16.4924221,
+        "sqrMagnitude": 272
+      },
+      {
+        "x": 16,
+        "y": 1,
+        "magnitude": 16.0312195,
+        "sqrMagnitude": 257
+      },
+      {
+        "x": 19,
+        "y": 14,
+        "magnitude": 23.6008472,
+        "sqrMagnitude": 557
+      },
+      {
+        "x": 2,
+        "y": 9,
+        "magnitude": 9.21954441,
+        "sqrMagnitude": 85
+      },
+      {
+        "x": 18,
+        "y": 4,
+        "magnitude": 18.4390888,
+        "sqrMagnitude": 340
+      },
+      {
+        "x": 14,
+        "y": 13,
+        "magnitude": 19.1049728,
+        "sqrMagnitude": 365
+      },
+      {
+        "x": 14,
+        "y": 17,
+        "magnitude": 22.0227146,
+        "sqrMagnitude": 485
+      },
+      {
+        "x": 18,
+        "y": 8,
+        "magnitude": 19.6977158,
+        "sqrMagnitude": 388
+      },
+      {
+        "x": 12,
+        "y": 2,
+        "magnitude": 12.1655254,
+        "sqrMagnitude": 148
+      },
+      {
+        "x": 2,
+        "y": 19,
+        "magnitude": 19.1049728,
+        "sqrMagnitude": 365
+      }
+    ]
+  },
+  {
+    "agent": "human5",
+    "actions": [
+      "ShootUp",
+      "MoveDown",
+      "MoveBack",
+      "MoveUp",
+      "MoveBack",
+      "MoveRight",
+      "MoveRight",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack",
+      "MoveUp",
+      "MoveBack",
+      "MoveBack",
+      "MoveRight",
+      "MoveUp",
+      "MoveUp",
+      "MoveBack",
+      "MoveLeft",
+      "MoveBack",
+      "MoveBack",
+      "MoveLeft",
+      "MoveBack",
+      "MoveLeft",
+      "MoveRight",
+      "MoveRight",
+      "MoveBack",
+      "MoveUp",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveUp",
+      "MoveLeft",
+      "MoveDown",
+      "MoveUp",
+      "PickUp"
+    ],
+    "positions": [
+      {
+        "x": 16,
+        "y": 4,
+        "magnitude": 16.4924221,
+        "sqrMagnitude": 272
+      },
+      {
+        "x": 16,
+        "y": 0,
+        "magnitude": 16,
+        "sqrMagnitude": 256
+      },
+      {
+        "x": 18,
+        "y": 14,
+        "magnitude": 22.8035088,
+        "sqrMagnitude": 520
+      },
+      {
+        "x": 2,
+        "y": 10,
+        "magnitude": 10.1980391,
+        "sqrMagnitude": 104
+      },
+      {
+        "x": 17,
+        "y": 4,
+        "magnitude": 17.4642487,
+        "sqrMagnitude": 305
+      },
+      {
+        "x": 15,
+        "y": 13,
+        "magnitude": 19.8494339,
+        "sqrMagnitude": 394
+      },
+      {
+        "x": 15,
+        "y": 17,
+        "magnitude": 22.6715679,
+        "sqrMagnitude": 514
+      },
+      {
+        "x": 17,
+        "y": 8,
+        "magnitude": 18.7882938,
+        "sqrMagnitude": 353
+      },
+      {
+        "x": 11,
+        "y": 2,
+        "magnitude": 11.1803398,
+        "sqrMagnitude": 125
+      },
+      {
+        "x": 2,
+        "y": 18,
+        "magnitude": 18.1107712,
+        "sqrMagnitude": 328
+      },
+      {
+        "x": 16,
+        "y": 5,
+        "magnitude": 16.7630539,
+        "sqrMagnitude": 281
+      },
+      {
+        "x": 16,
+        "y": 1,
+        "magnitude": 16.0312195,
+        "sqrMagnitude": 257
+      },
+      {
+        "x": 17,
+        "y": 14,
+        "magnitude": 22.0227146,
+        "sqrMagnitude": 485
+      },
+      {
+        "x": 3,
+        "y": 10,
+        "magnitude": 10.4403067,
+        "sqrMagnitude": 109
+      },
+      {
+        "x": 17,
+        "y": 5,
+        "magnitude": 17.7200451,
+        "sqrMagnitude": 314
+      },
+      {
+        "x": 15,
+        "y": 14,
+        "magnitude": 20.5182838,
+        "sqrMagnitude": 421
+      },
+      {
+        "x": 14,
+        "y": 17,
+        "magnitude": 22.0227146,
+        "sqrMagnitude": 485
+      },
+      {
+        "x": 16,
+        "y": 8,
+        "magnitude": 17.8885441,
+        "sqrMagnitude": 320
+      },
+      {
+        "x": 10,
+        "y": 2,
+        "magnitude": 10.1980391,
+        "sqrMagnitude": 104
+      },
+      {
+        "x": 3,
+        "y": 18,
+        "magnitude": 18.2482872,
+        "sqrMagnitude": 333
+      },
+      {
+        "x": 15,
+        "y": 5,
+        "magnitude": 15.811388,
+        "sqrMagnitude": 250
+      },
+      {
+        "x": 15,
+        "y": 1,
+        "magnitude": 15.0332966,
+        "sqrMagnitude": 226
+      },
+      {
+        "x": 16,
+        "y": 14,
+        "magnitude": 21.2602921,
+        "sqrMagnitude": 452
+      },
+      {
+        "x": 4,
+        "y": 10,
+        "magnitude": 10.7703295,
+        "sqrMagnitude": 116
+      },
+      {
+        "x": 18,
+        "y": 5,
+        "magnitude": 18.6815414,
+        "sqrMagnitude": 349
+      },
+      {
+        "x": 15,
+        "y": 13,
+        "magnitude": 19.8494339,
+        "sqrMagnitude": 394
+      },
+      {
+        "x": 14,
+        "y": 18,
+        "magnitude": 22.8035088,
+        "sqrMagnitude": 520
+      },
+      {
+        "x": 15,
+        "y": 8,
+        "magnitude": 17,
+        "sqrMagnitude": 289
+      },
+      {
+        "x": 9,
+        "y": 2,
+        "magnitude": 9.21954441,
+        "sqrMagnitude": 85
+      },
+      {
+        "x": 3,
+        "y": 19,
+        "magnitude": 19.235384,
+        "sqrMagnitude": 370
+      },
+      {
+        "x": 14,
+        "y": 5,
+        "magnitude": 14.8660688,
+        "sqrMagnitude": 221
+      },
+      {
+        "x": 15,
+        "y": 0,
+        "magnitude": 15,
+        "sqrMagnitude": 225
+      },
+      {
+        "x": 16,
+        "y": 15,
+        "magnitude": 21.9317131,
+        "sqrMagnitude": 481
+      },
+      {
+        "x": 4,
+        "y": 10,
+        "magnitude": 10.7703295,
+        "sqrMagnitude": 116
+      }
+    ]
+  },
+  {
+    "agent": "human6",
+    "actions": [
+      "MoveRight",
+      "MoveBack",
+      "MoveRight",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveBack",
+      "MoveLeft",
+      "MoveBack",
+      "MoveRight",
+      "MoveBack",
+      "MoveBack",
+      "MoveLeft",
+      "MoveBack",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveBack",
+      "MoveLeft",
+      "MoveBack",
+      "MoveRight",
+      "MoveBack",
+      "MoveBack",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveUp",
+      "MoveLeft",
+      "MoveDown",
+      "MoveRight",
+      "MoveBack",
+      "MoveUp",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveLeft"
+    ],
+    "positions": [
+      {
+        "x": 19,
+        "y": 5,
+        "magnitude": 19.646883,
+        "sqrMagnitude": 386
+      },
+      {
+        "x": 14,
+        "y": 13,
+        "magnitude": 19.1049728,
+        "sqrMagnitude": 365
+      },
+      {
+        "x": 15,
+        "y": 18,
+        "magnitude": 23.4307499,
+        "sqrMagnitude": 549
+      },
+      {
+        "x": 14,
+        "y": 8,
+        "magnitude": 16.1245155,
+        "sqrMagnitude": 260
+      },
+      {
+        "x": 8,
+        "y": 2,
+        "magnitude": 8.24621105,
+        "sqrMagnitude": 68
+      },
+      {
+        "x": 3,
+        "y": 18,
+        "magnitude": 18.2482872,
+        "sqrMagnitude": 333
+      },
+      {
+        "x": 13,
+        "y": 5,
+        "magnitude": 13.9283886,
+        "sqrMagnitude": 194
+      },
+      {
+        "x": 15,
+        "y": 1,
+        "magnitude": 15.0332966,
+        "sqrMagnitude": 226
+      },
+      {
+        "x": 17,
+        "y": 15,
+        "magnitude": 22.6715679,
+        "sqrMagnitude": 514
+      },
+      {
+        "x": 3,
+        "y": 10,
+        "magnitude": 10.4403067,
+        "sqrMagnitude": 109
+      },
+      {
+        "x": 18,
+        "y": 5,
+        "magnitude": 18.6815414,
+        "sqrMagnitude": 349
+      },
+      {
+        "x": 13,
+        "y": 13,
+        "magnitude": 18.3847771,
+        "sqrMagnitude": 338
+      },
+      {
+        "x": 14,
+        "y": 18,
+        "magnitude": 22.8035088,
+        "sqrMagnitude": 520
+      },
+      {
+        "x": 13,
+        "y": 8,
+        "magnitude": 15.2643375,
+        "sqrMagnitude": 233
+      },
+      {
+        "x": 7,
+        "y": 2,
+        "magnitude": 7.28010988,
+        "sqrMagnitude": 53
+      },
+      {
+        "x": 4,
+        "y": 18,
+        "magnitude": 18.4390888,
+        "sqrMagnitude": 340
+      },
+      {
+        "x": 12,
+        "y": 5,
+        "magnitude": 13,
+        "sqrMagnitude": 169
+      },
+      {
+        "x": 14,
+        "y": 1,
+        "magnitude": 14.0356684,
+        "sqrMagnitude": 197
+      },
+      {
+        "x": 18,
+        "y": 15,
+        "magnitude": 23.4307499,
+        "sqrMagnitude": 549
+      },
+      {
+        "x": 2,
+        "y": 10,
+        "magnitude": 10.1980391,
+        "sqrMagnitude": 104
+      },
+      {
+        "x": 17,
+        "y": 5,
+        "magnitude": 17.7200451,
+        "sqrMagnitude": 314
+      },
+      {
+        "x": 12,
+        "y": 13,
+        "magnitude": 17.6918068,
+        "sqrMagnitude": 313
+      },
+      {
+        "x": 13,
+        "y": 18,
+        "magnitude": 22.2036037,
+        "sqrMagnitude": 493
+      },
+      {
+        "x": 12,
+        "y": 8,
+        "magnitude": 14.422205,
+        "sqrMagnitude": 208
+      },
+      {
+        "x": 6,
+        "y": 2,
+        "magnitude": 6.3245554,
+        "sqrMagnitude": 40
+      },
+      {
+        "x": 4,
+        "y": 19,
+        "magnitude": 19.4164886,
+        "sqrMagnitude": 377
+      },
+      {
+        "x": 11,
+        "y": 5,
+        "magnitude": 12.083046,
+        "sqrMagnitude": 146
+      },
+      {
+        "x": 14,
+        "y": 0,
+        "magnitude": 14,
+        "sqrMagnitude": 196
+      },
+      {
+        "x": 19,
+        "y": 15,
+        "magnitude": 24.2074375,
+        "sqrMagnitude": 586
+      },
+      {
+        "x": 2,
+        "y": 9,
+        "magnitude": 9.21954441,
+        "sqrMagnitude": 85
+      },
+      {
+        "x": 17,
+        "y": 6,
+        "magnitude": 18.0277557,
+        "sqrMagnitude": 325
+      },
+      {
+        "x": 11,
+        "y": 13,
+        "magnitude": 17.0293865,
+        "sqrMagnitude": 290
+      },
+      {
+        "x": 12,
+        "y": 18,
+        "magnitude": 21.6333084,
+        "sqrMagnitude": 468
+      },
+      {
+        "x": 11,
+        "y": 8,
+        "magnitude": 13.6014709,
+        "sqrMagnitude": 185
+      }
+    ]
+  },
+  {
+    "agent": "human7",
+    "actions": [
+      "MoveLeft",
+      "MoveBack",
+      "MoveLeft",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack",
+      "MoveRight",
+      "MoveLeft",
+      "MoveBack",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveBack",
+      "MoveLeft",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack",
+      "MoveRight",
+      "MoveLeft",
+      "MoveUp",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveUp",
+      "MoveLeft",
+      "MoveDown",
+      "MoveUp",
+      "MoveBack",
+      "MoveBack",
+      "MoveLeft",
+      "MoveBack",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveBack",
+      "MoveLeft",
+      "MoveBack"
+    ],
+    "positions": [
+      {
+        "x": 5,
+        "y": 2,
+        "magnitude": 5.38516474,
+        "sqrMagnitude": 29
+      },
+      {
+        "x": 4,
+        "y": 18,
+        "magnitude": 18.4390888,
+        "sqrMagnitude": 340
+      },
+      {
+        "x": 10,
+        "y": 5,
+        "magnitude": 11.1803398,
+        "sqrMagnitude": 125
+      },
+      {
+        "x": 14,
+        "y": 1,
+        "magnitude": 14.0356684,
+        "sqrMagnitude": 197
+      },
+      {
+        "x": 18,
+        "y": 15,
+        "magnitude": 23.4307499,
+        "sqrMagnitude": 549
+      },
+      {
+        "x": 3,
+        "y": 9,
+        "magnitude": 9.48683262,
+        "sqrMagnitude": 90
+      },
+      {
+        "x": 18,
+        "y": 6,
+        "magnitude": 18.9736652,
+        "sqrMagnitude": 360
+      },
+      {
+        "x": 10,
+        "y": 13,
+        "magnitude": 16.4012203,
+        "sqrMagnitude": 269
+      },
+      {
+        "x": 13,
+        "y": 18,
+        "magnitude": 22.2036037,
+        "sqrMagnitude": 493
+      },
+      {
+        "x": 10,
+        "y": 8,
+        "magnitude": 12.8062487,
+        "sqrMagnitude": 164
+      },
+      {
+        "x": 4,
+        "y": 2,
+        "magnitude": 4.47213602,
+        "sqrMagnitude": 20
+      },
+      {
+        "x": 5,
+        "y": 18,
+        "magnitude": 18.6815414,
+        "sqrMagnitude": 349
+      },
+      {
+        "x": 9,
+        "y": 5,
+        "magnitude": 10.2956305,
+        "sqrMagnitude": 106
+      },
+      {
+        "x": 13,
+        "y": 1,
+        "magnitude": 13.0384045,
+        "sqrMagnitude": 170
+      },
+      {
+        "x": 17,
+        "y": 15,
+        "magnitude": 22.6715679,
+        "sqrMagnitude": 514
+      },
+      {
+        "x": 4,
+        "y": 9,
+        "magnitude": 9.84885788,
+        "sqrMagnitude": 97
+      },
+      {
+        "x": 19,
+        "y": 6,
+        "magnitude": 19.9248581,
+        "sqrMagnitude": 397
+      },
+      {
+        "x": 9,
+        "y": 13,
+        "magnitude": 15.811388,
+        "sqrMagnitude": 250
+      },
+      {
+        "x": 13,
+        "y": 19,
+        "magnitude": 23.0217285,
+        "sqrMagnitude": 530
+      },
+      {
+        "x": 9,
+        "y": 8,
+        "magnitude": 12.0415945,
+        "sqrMagnitude": 145
+      },
+      {
+        "x": 3,
+        "y": 2,
+        "magnitude": 3.60555124,
+        "sqrMagnitude": 13
+      },
+      {
+        "x": 5,
+        "y": 19,
+        "magnitude": 19.646883,
+        "sqrMagnitude": 386
+      },
+      {
+        "x": 8,
+        "y": 5,
+        "magnitude": 9.43398094,
+        "sqrMagnitude": 89
+      },
+      {
+        "x": 13,
+        "y": 0,
+        "magnitude": 13,
+        "sqrMagnitude": 169
+      },
+      {
+        "x": 17,
+        "y": 16,
+        "magnitude": 23.3452358,
+        "sqrMagnitude": 545
+      },
+      {
+        "x": 5,
+        "y": 9,
+        "magnitude": 10.2956305,
+        "sqrMagnitude": 106
+      },
+      {
+        "x": 18,
+        "y": 6,
+        "magnitude": 18.9736652,
+        "sqrMagnitude": 360
+      },
+      {
+        "x": 8,
+        "y": 13,
+        "magnitude": 15.2643375,
+        "sqrMagnitude": 233
+      },
+      {
+        "x": 13,
+        "y": 18,
+        "magnitude": 22.2036037,
+        "sqrMagnitude": 493
+      },
+      {
+        "x": 8,
+        "y": 8,
+        "magnitude": 11.3137083,
+        "sqrMagnitude": 128
+      },
+      {
+        "x": 2,
+        "y": 2,
+        "magnitude": 2.82842708,
+        "sqrMagnitude": 8
+      },
+      {
+        "x": 5,
+        "y": 18,
+        "magnitude": 18.6815414,
+        "sqrMagnitude": 349
+      },
+      {
+        "x": 7,
+        "y": 5,
+        "magnitude": 8.60232544,
+        "sqrMagnitude": 74
+      },
+      {
+        "x": 13,
+        "y": 1,
+        "magnitude": 13.0384045,
+        "sqrMagnitude": 170
+      }
+    ]
+  },
+  {
+    "agent": "human8",
+    "actions": [
+      "MoveRight",
+      "MoveBack",
+      "MoveBack",
+      "MoveLeft",
+      "MoveBack",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack",
+      "MoveRight",
+      "MoveBack",
+      "MoveBack",
+      "MoveDown",
+      "MoveUp",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveUp",
+      "MoveUp",
+      "MoveDown",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack",
+      "MoveLeft",
+      "MoveBack",
+      "MoveLeft",
+      "MoveBack",
+      "MoveBack",
+      "MoveUp",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack"
+    ],
+    "positions": [
+      {
+        "x": 18,
+        "y": 16,
+        "magnitude": 24.083189,
+        "sqrMagnitude": 580
+      },
+      {
+        "x": 6,
+        "y": 9,
+        "magnitude": 10.8166542,
+        "sqrMagnitude": 117
+      },
+      {
+        "x": 17,
+        "y": 6,
+        "magnitude": 18.0277557,
+        "sqrMagnitude": 325
+      },
+      {
+        "x": 7,
+        "y": 13,
+        "magnitude": 14.764823,
+        "sqrMagnitude": 218
+      },
+      {
+        "x": 14,
+        "y": 18,
+        "magnitude": 22.8035088,
+        "sqrMagnitude": 520
+      },
+      {
+        "x": 7,
+        "y": 8,
+        "magnitude": 10.630146,
+        "sqrMagnitude": 113
+      },
+      {
+        "x": 1,
+        "y": 2,
+        "magnitude": 2.23606801,
+        "sqrMagnitude": 5
+      },
+      {
+        "x": 6,
+        "y": 18,
+        "magnitude": 18.9736652,
+        "sqrMagnitude": 360
+      },
+      {
+        "x": 8,
+        "y": 5,
+        "magnitude": 9.43398094,
+        "sqrMagnitude": 89
+      },
+      {
+        "x": 12,
+        "y": 1,
+        "magnitude": 12.0415945,
+        "sqrMagnitude": 145
+      },
+      {
+        "x": 19,
+        "y": 16,
+        "magnitude": 24.8394852,
+        "sqrMagnitude": 617
+      },
+      {
+        "x": 7,
+        "y": 9,
+        "magnitude": 11.4017544,
+        "sqrMagnitude": 130
+      },
+      {
+        "x": 17,
+        "y": 5,
+        "magnitude": 17.7200451,
+        "sqrMagnitude": 314
+      },
+      {
+        "x": 7,
+        "y": 12,
+        "magnitude": 13.8924437,
+        "sqrMagnitude": 193
+      },
+      {
+        "x": 14,
+        "y": 19,
+        "magnitude": 23.6008472,
+        "sqrMagnitude": 557
+      },
+      {
+        "x": 6,
+        "y": 8,
+        "magnitude": 10,
+        "sqrMagnitude": 100
+      },
+      {
+        "x": 0,
+        "y": 2,
+        "magnitude": 2,
+        "sqrMagnitude": 4
+      },
+      {
+        "x": 6,
+        "y": 19,
+        "magnitude": 19.9248581,
+        "sqrMagnitude": 397
+      },
+      {
+        "x": 8,
+        "y": 6,
+        "magnitude": 10,
+        "sqrMagnitude": 100
+      },
+      {
+        "x": 12,
+        "y": 0,
+        "magnitude": 12,
+        "sqrMagnitude": 144
+      },
+      {
+        "x": 18,
+        "y": 16,
+        "magnitude": 24.083189,
+        "sqrMagnitude": 580
+      },
+      {
+        "x": 8,
+        "y": 9,
+        "magnitude": 12.0415945,
+        "sqrMagnitude": 145
+      },
+      {
+        "x": 17,
+        "y": 4,
+        "magnitude": 17.4642487,
+        "sqrMagnitude": 305
+      },
+      {
+        "x": 6,
+        "y": 12,
+        "magnitude": 13.4164076,
+        "sqrMagnitude": 180
+      },
+      {
+        "x": 14,
+        "y": 18,
+        "magnitude": 22.8035088,
+        "sqrMagnitude": 520
+      },
+      {
+        "x": 5,
+        "y": 8,
+        "magnitude": 9.43398094,
+        "sqrMagnitude": 89
+      },
+      {
+        "x": 1,
+        "y": 2,
+        "magnitude": 2.23606801,
+        "sqrMagnitude": 5
+      },
+      {
+        "x": 6,
+        "y": 18,
+        "magnitude": 18.9736652,
+        "sqrMagnitude": 360
+      },
+      {
+        "x": 8,
+        "y": 7,
+        "magnitude": 10.630146,
+        "sqrMagnitude": 113
+      },
+      {
+        "x": 12,
+        "y": 1,
+        "magnitude": 12.0415945,
+        "sqrMagnitude": 145
+      },
+      {
+        "x": 17,
+        "y": 16,
+        "magnitude": 23.3452358,
+        "sqrMagnitude": 545
+      },
+      {
+        "x": 9,
+        "y": 9,
+        "magnitude": 12.7279224,
+        "sqrMagnitude": 162
+      },
+      {
+        "x": 17,
+        "y": 3,
+        "magnitude": 17.2626762,
+        "sqrMagnitude": 298
+      },
+      {
+        "x": 7,
+        "y": 12,
+        "magnitude": 13.8924437,
+        "sqrMagnitude": 193
+      }
+    ]
+  },
+  {
+    "agent": "human9",
+    "actions": [
+      "MoveBack",
+      "MoveLeft",
+      "MoveBack",
+      "MoveBack",
+      "MoveRight",
+      "MoveBack",
+      "MoveLeft",
+      "MoveBack",
+      "MoveBack",
+      "MoveDown",
+      "MoveBack",
+      "MoveLeft",
+      "MoveDown",
+      "MoveUp",
+      "MoveRight",
+      "MoveDown",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack",
+      "MoveRight",
+      "MoveBack",
+      "MoveLeft",
+      "MoveRight",
+      "MoveBack",
+      "MoveRight",
+      "MoveBack",
+      "MoveUp",
+      "MoveBack",
+      "MoveBack",
+      "MoveRight",
+      "MoveBack",
+      "MoveLeft",
+      "MoveRight",
+      "MoveRight"
+    ],
+    "positions": [
+      {
+        "x": 14,
+        "y": 17,
+        "magnitude": 22.0227146,
+        "sqrMagnitude": 485
+      },
+      {
+        "x": 4,
+        "y": 8,
+        "magnitude": 8.94427204,
+        "sqrMagnitude": 80
+      },
+      {
+        "x": 2,
+        "y": 2,
+        "magnitude": 2.82842708,
+        "sqrMagnitude": 8
+      },
+      {
+        "x": 7,
+        "y": 18,
+        "magnitude": 19.3132076,
+        "sqrMagnitude": 373
+      },
+      {
+        "x": 9,
+        "y": 7,
+        "magnitude": 11.4017544,
+        "sqrMagnitude": 130
+      },
+      {
+        "x": 11,
+        "y": 1,
+        "magnitude": 11.0453606,
+        "sqrMagnitude": 122
+      },
+      {
+        "x": 16,
+        "y": 16,
+        "magnitude": 22.6274166,
+        "sqrMagnitude": 512
+      },
+      {
+        "x": 10,
+        "y": 9,
+        "magnitude": 13.4536238,
+        "sqrMagnitude": 181
+      },
+      {
+        "x": 16,
+        "y": 3,
+        "magnitude": 16.27882,
+        "sqrMagnitude": 265
+      },
+      {
+        "x": 7,
+        "y": 11,
+        "magnitude": 13.0384045,
+        "sqrMagnitude": 170
+      },
+      {
+        "x": 13,
+        "y": 17,
+        "magnitude": 21.4009342,
+        "sqrMagnitude": 458
+      },
+      {
+        "x": 3,
+        "y": 8,
+        "magnitude": 8.54400349,
+        "sqrMagnitude": 73
+      },
+      {
+        "x": 2,
+        "y": 1,
+        "magnitude": 2.23606801,
+        "sqrMagnitude": 5
+      },
+      {
+        "x": 7,
+        "y": 19,
+        "magnitude": 20.248457,
+        "sqrMagnitude": 410
+      },
+      {
+        "x": 10,
+        "y": 7,
+        "magnitude": 12.2065554,
+        "sqrMagnitude": 149
+      },
+      {
+        "x": 11,
+        "y": 0,
+        "magnitude": 11,
+        "sqrMagnitude": 121
+      },
+      {
+        "x": 17,
+        "y": 16,
+        "magnitude": 23.3452358,
+        "sqrMagnitude": 545
+      },
+      {
+        "x": 11,
+        "y": 9,
+        "magnitude": 14.2126703,
+        "sqrMagnitude": 202
+      },
+      {
+        "x": 15,
+        "y": 3,
+        "magnitude": 15.2970581,
+        "sqrMagnitude": 234
+      },
+      {
+        "x": 8,
+        "y": 11,
+        "magnitude": 13.6014709,
+        "sqrMagnitude": 185
+      },
+      {
+        "x": 12,
+        "y": 17,
+        "magnitude": 20.8086529,
+        "sqrMagnitude": 433
+      },
+      {
+        "x": 2,
+        "y": 8,
+        "magnitude": 8.24621105,
+        "sqrMagnitude": 68
+      },
+      {
+        "x": 3,
+        "y": 1,
+        "magnitude": 3.1622777,
+        "sqrMagnitude": 10
+      },
+      {
+        "x": 7,
+        "y": 18,
+        "magnitude": 19.3132076,
+        "sqrMagnitude": 373
+      },
+      {
+        "x": 11,
+        "y": 7,
+        "magnitude": 13.0384045,
+        "sqrMagnitude": 170
+      },
+      {
+        "x": 11,
+        "y": 1,
+        "magnitude": 11.0453606,
+        "sqrMagnitude": 122
+      },
+      {
+        "x": 17,
+        "y": 17,
+        "magnitude": 24.0416298,
+        "sqrMagnitude": 578
+      },
+      {
+        "x": 12,
+        "y": 9,
+        "magnitude": 15,
+        "sqrMagnitude": 225
+      },
+      {
+        "x": 14,
+        "y": 3,
+        "magnitude": 14.3178215,
+        "sqrMagnitude": 205
+      },
+      {
+        "x": 9,
+        "y": 11,
+        "magnitude": 14.2126703,
+        "sqrMagnitude": 202
+      },
+      {
+        "x": 11,
+        "y": 17,
+        "magnitude": 20.248457,
+        "sqrMagnitude": 410
+      },
+      {
+        "x": 1,
+        "y": 8,
+        "magnitude": 8.06225777,
+        "sqrMagnitude": 65
+      },
+      {
+        "x": 4,
+        "y": 1,
+        "magnitude": 4.12310553,
+        "sqrMagnitude": 17
+      },
+      {
+        "x": 8,
+        "y": 18,
+        "magnitude": 19.6977158,
+        "sqrMagnitude": 388
+      }
+    ]
+  }
+]
