@@ -1,0 +1,914 @@
+[
+  {
+    "randomSeed": 1,
+    "gridMin": {
+      "x": 0,
+      "y": 0
+    },
+    "gridMax": {
+      "x": 20,
+      "y": 20
+    },
+    "tileSize": 1.05,
+    "nbPit": 12,
+    "nbWumpus": 12,
+    "nbGold": 1,
+    "nbAgent": 10,
+    "aiType": "Basic",
+    "personalities": [
+      0,
+      3
+    ],
+    "agents": 10,
+    "isGameOver": true,
+    "isModeAuto": true,
+    "turnDuration": [
+      49.65,
+      1.20,
+      0.84,
+      0.77,
+      0.80,
+      0.87,
+      0.80,
+      0.76,
+      0.80,
+      1.07,
+      0.65,
+      0.57,
+      0.62,
+      0.74,
+      0.63,
+      0.70
+    ]
+  },
+  {
+    "agent": "human0",
+    "actions": [
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveLeft",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight"
+    ],
+    "positions": [
+      {
+        "x": 6,
+        "y": 11
+      },
+      {
+        "x": 16,
+        "y": 13
+      },
+      {
+        "x": 16,
+        "y": 3
+      },
+      {
+        "x": 2,
+        "y": 9
+      },
+      {
+        "x": 16,
+        "y": 2
+      },
+      {
+        "x": 9,
+        "y": 16
+      },
+      {
+        "x": 19,
+        "y": 16
+      },
+      {
+        "x": 19,
+        "y": 14
+      },
+      {
+        "x": 19,
+        "y": 15
+      },
+      {
+        "x": 11,
+        "y": 15
+      },
+      {
+        "x": 7,
+        "y": 11
+      },
+      {
+        "x": 17,
+        "y": 13
+      },
+      {
+        "x": 15,
+        "y": 3
+      },
+      {
+        "x": 3,
+        "y": 9
+      },
+      {
+        "x": 17,
+        "y": 2
+      },
+      {
+        "x": 10,
+        "y": 16
+      }
+    ]
+  },
+  {
+    "agent": "human1",
+    "actions": [
+      "MoveLeft",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveLeft",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveBack",
+      "MoveBack",
+      "MoveRight"
+    ],
+    "positions": [
+      {
+        "x": 18,
+        "y": 16
+      },
+      {
+        "x": 18,
+        "y": 14
+      },
+      {
+        "x": 18,
+        "y": 15
+      },
+      {
+        "x": 12,
+        "y": 15
+      },
+      {
+        "x": 8,
+        "y": 11
+      },
+      {
+        "x": 18,
+        "y": 13
+      },
+      {
+        "x": 14,
+        "y": 3
+      },
+      {
+        "x": 4,
+        "y": 9
+      },
+      {
+        "x": 18,
+        "y": 2
+      },
+      {
+        "x": 11,
+        "y": 16
+      },
+      {
+        "x": 17,
+        "y": 16
+      },
+      {
+        "x": 17,
+        "y": 14
+      },
+      {
+        "x": 17,
+        "y": 15
+      },
+      {
+        "x": 11,
+        "y": 15
+      },
+      {
+        "x": 7,
+        "y": 11
+      },
+      {
+        "x": 19,
+        "y": 13
+      }
+    ]
+  },
+  {
+    "agent": "human2",
+    "actions": [
+      "MoveLeft",
+      "MoveRight",
+      "MoveRight",
+      "MoveBack",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveDown",
+      "MoveUp",
+      "MoveBack",
+      "MoveLeft",
+      "MoveRight",
+      "MoveBack",
+      "MoveUp",
+      "MoveLeft",
+      "MoveLeft"
+    ],
+    "positions": [
+      {
+        "x": 13,
+        "y": 3
+      },
+      {
+        "x": 5,
+        "y": 9
+      },
+      {
+        "x": 19,
+        "y": 2
+      },
+      {
+        "x": 10,
+        "y": 16
+      },
+      {
+        "x": 16,
+        "y": 16
+      },
+      {
+        "x": 16,
+        "y": 14
+      },
+      {
+        "x": 16,
+        "y": 15
+      },
+      {
+        "x": 11,
+        "y": 14
+      },
+      {
+        "x": 7,
+        "y": 12
+      },
+      {
+        "x": 18,
+        "y": 13
+      },
+      {
+        "x": 12,
+        "y": 3
+      },
+      {
+        "x": 6,
+        "y": 9
+      },
+      {
+        "x": 18,
+        "y": 2
+      },
+      {
+        "x": 10,
+        "y": 17
+      },
+      {
+        "x": 15,
+        "y": 16
+      },
+      {
+        "x": 15,
+        "y": 14
+      }
+    ]
+  },
+  {
+    "agent": "human3",
+    "actions": [
+      "MoveLeft",
+      "MoveLeft",
+      "MoveRight",
+      "MoveDown",
+      "MoveLeft",
+      "MoveRight",
+      "MoveUp",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveBack",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveRight",
+      "MoveRight",
+      "MoveLeft",
+      "MoveRight"
+    ],
+    "positions": [
+      {
+        "x": 15,
+        "y": 15
+      },
+      {
+        "x": 10,
+        "y": 14
+      },
+      {
+        "x": 8,
+        "y": 12
+      },
+      {
+        "x": 18,
+        "y": 12
+      },
+      {
+        "x": 11,
+        "y": 3
+      },
+      {
+        "x": 7,
+        "y": 9
+      },
+      {
+        "x": 18,
+        "y": 3
+      },
+      {
+        "x": 9,
+        "y": 17
+      },
+      {
+        "x": 14,
+        "y": 16
+      },
+      {
+        "x": 16,
+        "y": 14
+      },
+      {
+        "x": 14,
+        "y": 15
+      },
+      {
+        "x": 9,
+        "y": 14
+      },
+      {
+        "x": 9,
+        "y": 12
+      },
+      {
+        "x": 19,
+        "y": 12
+      },
+      {
+        "x": 10,
+        "y": 3
+      },
+      {
+        "x": 8,
+        "y": 9
+      }
+    ]
+  },
+  {
+    "agent": "human4",
+    "actions": [
+      "MoveRight",
+      "MoveLeft",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack",
+      "MoveLeft",
+      "MoveRight",
+      "MoveBack",
+      "MoveLeft",
+      "MoveBack",
+      "MoveBack",
+      "MoveLeft",
+      "MoveUp",
+      "MoveRight",
+      "MoveBack",
+      "MoveLeft"
+    ],
+    "positions": [
+      {
+        "x": 19,
+        "y": 3
+      },
+      {
+        "x": 8,
+        "y": 17
+      },
+      {
+        "x": 15,
+        "y": 16
+      },
+      {
+        "x": 17,
+        "y": 14
+      },
+      {
+        "x": 15,
+        "y": 15
+      },
+      {
+        "x": 8,
+        "y": 14
+      },
+      {
+        "x": 10,
+        "y": 12
+      },
+      {
+        "x": 18,
+        "y": 12
+      },
+      {
+        "x": 9,
+        "y": 3
+      },
+      {
+        "x": 7,
+        "y": 9
+      },
+      {
+        "x": 18,
+        "y": 3
+      },
+      {
+        "x": 7,
+        "y": 17
+      },
+      {
+        "x": 15,
+        "y": 17
+      },
+      {
+        "x": 18,
+        "y": 14
+      },
+      {
+        "x": 16,
+        "y": 15
+      },
+      {
+        "x": 7,
+        "y": 14
+      }
+    ]
+  },
+  {
+    "agent": "human5",
+    "actions": [
+      "MoveRight",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveUp",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveRight",
+      "MoveRight",
+      "MoveBack",
+      "MoveLeft",
+      "MoveBack",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveBack",
+      "MoveUp",
+      "MoveLeft"
+    ],
+    "positions": [
+      {
+        "x": 11,
+        "y": 12
+      },
+      {
+        "x": 17,
+        "y": 12
+      },
+      {
+        "x": 8,
+        "y": 3
+      },
+      {
+        "x": 7,
+        "y": 10
+      },
+      {
+        "x": 17,
+        "y": 3
+      },
+      {
+        "x": 6,
+        "y": 17
+      },
+      {
+        "x": 16,
+        "y": 17
+      },
+      {
+        "x": 18,
+        "y": 14
+      },
+      {
+        "x": 17,
+        "y": 15
+      },
+      {
+        "x": 6,
+        "y": 14
+      },
+      {
+        "x": 10,
+        "y": 12
+      },
+      {
+        "x": 16,
+        "y": 12
+      },
+      {
+        "x": 7,
+        "y": 3
+      },
+      {
+        "x": 7,
+        "y": 9
+      },
+      {
+        "x": 17,
+        "y": 4
+      },
+      {
+        "x": 5,
+        "y": 17
+      }
+    ]
+  },
+  {
+    "agent": "human6",
+    "actions": [
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "PickUp",
+      "MoveUp",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveDown",
+      "MoveBack",
+      "MoveLeft",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveBack",
+      "MoveRight",
+      "MoveLeft"
+    ],
+    "positions": [
+      {
+        "x": 17,
+        "y": 17
+      },
+      {
+        "x": 18,
+        "y": 14
+      },
+      {
+        "x": 18,
+        "y": 15
+      },
+      {
+        "x": 6,
+        "y": 14
+      },
+      {
+        "x": 10,
+        "y": 13
+      },
+      {
+        "x": 15,
+        "y": 12
+      },
+      {
+        "x": 6,
+        "y": 3
+      },
+      {
+        "x": 7,
+        "y": 8
+      },
+      {
+        "x": 17,
+        "y": 3
+      },
+      {
+        "x": 4,
+        "y": 17
+      },
+      {
+        "x": 18,
+        "y": 17
+      },
+      {
+        "x": 18,
+        "y": 14
+      },
+      {
+        "x": 18,
+        "y": 15
+      },
+      {
+        "x": 7,
+        "y": 14
+      },
+      {
+        "x": 11,
+        "y": 13
+      },
+      {
+        "x": 14,
+        "y": 12
+      }
+    ]
+  },
+  {
+    "agent": "human7",
+    "actions": [
+      "MoveLeft",
+      "MoveRight",
+      "MoveBack",
+      "MoveLeft",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveBack",
+      "MoveRight",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveRight",
+      "MoveUp",
+      "MoveLeft",
+      "MoveBack",
+      "MoveRight"
+    ],
+    "positions": [
+      {
+        "x": 5,
+        "y": 3
+      },
+      {
+        "x": 8,
+        "y": 8
+      },
+      {
+        "x": 18,
+        "y": 3
+      },
+      {
+        "x": 3,
+        "y": 17
+      },
+      {
+        "x": 19,
+        "y": 17
+      },
+      {
+        "x": 18,
+        "y": 14
+      },
+      {
+        "x": 18,
+        "y": 15
+      },
+      {
+        "x": 8,
+        "y": 14
+      },
+      {
+        "x": 12,
+        "y": 13
+      },
+      {
+        "x": 13,
+        "y": 12
+      },
+      {
+        "x": 4,
+        "y": 3
+      },
+      {
+        "x": 9,
+        "y": 8
+      },
+      {
+        "x": 18,
+        "y": 4
+      },
+      {
+        "x": 2,
+        "y": 17
+      },
+      {
+        "x": 18,
+        "y": 17
+      },
+      {
+        "x": 18,
+        "y": 14
+      }
+    ]
+  },
+  {
+    "agent": "human8",
+    "actions": [
+      "MoveRight",
+      "MoveBack",
+      "MoveBack",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveRight",
+      "MoveRight",
+      "MoveLeft",
+      "MoveUp",
+      "MoveRight",
+      "MoveRight",
+      "MoveBack",
+      "MoveBack",
+      "MoveDown",
+      "MoveBack",
+      "MoveRight"
+    ],
+    "positions": [
+      {
+        "x": 18,
+        "y": 15
+      },
+      {
+        "x": 9,
+        "y": 14
+      },
+      {
+        "x": 11,
+        "y": 13
+      },
+      {
+        "x": 12,
+        "y": 12
+      },
+      {
+        "x": 3,
+        "y": 3
+      },
+      {
+        "x": 10,
+        "y": 8
+      },
+      {
+        "x": 19,
+        "y": 4
+      },
+      {
+        "x": 1,
+        "y": 17
+      },
+      {
+        "x": 18,
+        "y": 18
+      },
+      {
+        "x": 18,
+        "y": 14
+      },
+      {
+        "x": 18,
+        "y": 15
+      },
+      {
+        "x": 10,
+        "y": 14
+      },
+      {
+        "x": 10,
+        "y": 13
+      },
+      {
+        "x": 12,
+        "y": 11
+      },
+      {
+        "x": 4,
+        "y": 3
+      },
+      {
+        "x": 11,
+        "y": 8
+      }
+    ]
+  },
+  {
+    "agent": "human9",
+    "actions": [
+      "MoveBack",
+      "MoveLeft",
+      "MoveRight",
+      "MoveRight",
+      "MoveRight",
+      "MoveBack",
+      "MoveLeft",
+      "MoveBack",
+      "MoveUp",
+      "MoveRight",
+      "MoveUp",
+      "MoveBack",
+      "MoveBack",
+      "MoveRight",
+      "MoveRight",
+      "MoveBack"
+    ],
+    "positions": [
+      {
+        "x": 18,
+        "y": 4
+      },
+      {
+        "x": 0,
+        "y": 17
+      },
+      {
+        "x": 19,
+        "y": 18
+      },
+      {
+        "x": 18,
+        "y": 14
+      },
+      {
+        "x": 18,
+        "y": 15
+      },
+      {
+        "x": 11,
+        "y": 14
+      },
+      {
+        "x": 9,
+        "y": 13
+      },
+      {
+        "x": 12,
+        "y": 12
+      },
+      {
+        "x": 4,
+        "y": 4
+      },
+      {
+        "x": 12,
+        "y": 8
+      },
+      {
+        "x": 18,
+        "y": 5
+      },
+      {
+        "x": 1,
+        "y": 17
+      },
+      {
+        "x": 18,
+        "y": 18
+      },
+      {
+        "x": 18,
+        "y": 14
+      },
+      {
+        "x": 18,
+        "y": 15
+      },
+      {
+        "x": 11,
+        "y": 15
+      }
+    ]
+  }
+]
