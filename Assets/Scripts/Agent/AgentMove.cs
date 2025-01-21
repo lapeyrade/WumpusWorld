@@ -101,10 +101,11 @@ namespace Agent
             var agentCoords = $"[{_agent.coords.x}, {_agent.coords.y}]";
             var agentName = _agent.name;
             var agentTag = _agent.tag.ToLower();
-            
-            _prologInterface.QueryText += 
-                $", retract(data_concept([{agentName}, {agentCoords}], {agentTag})), " +
-                $"retract({agentTag}([{agentName}, {agentCoords}]))";
+
+            if (GameManager.Instance.aiType is GameManager.AIType.Prolog)
+                _prologInterface.QueryText += 
+                    $", retract(data_concept([{agentName}, {agentCoords}], {agentTag})), " +
+                    $"retract({agentTag}([{agentName}, {agentCoords}]))";
             
             // Update agent's position and visuals
             _agent.transform.position = GridManager.GetAgentMapOffset(newCoord);
@@ -124,9 +125,12 @@ namespace Agent
 
             // Update Prolog knowledge base with new position
             if (GameManager.Instance.aiType is GameManager.AIType.Prolog)
-                _prologInterface.QueryText +=
-                 $", assertz(data_concept([{agentName}, {agentCoords}], {agentTag})), " +
-                 $"assertz({agentTag}([{agentName}, {agentCoords}]))";
+            {
+                agentCoords = $"[{_agent.coords.x}, {_agent.coords.y}]";
+                _prologInterface.QueryText += 
+                    $", assertz(data_concept([{agentName}, {agentCoords}], {agentTag})), " +
+                    $"assertz({agentTag}([{agentName}, {agentCoords}]))";
+            }
             GridManager.AddToGrids(Coords, "VisitedCell");
         }
 
