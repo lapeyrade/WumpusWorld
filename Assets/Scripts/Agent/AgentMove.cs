@@ -123,11 +123,10 @@ namespace Agent
             _agent.coords = newCoord;
 
             // Update Prolog knowledge base with new position
-            agentCoords = $"[{_agent.coords.x}, {_agent.coords.y}]";
-            _prologInterface.QueryText +=
-                $", assertz(data_concept([{agentName}, {agentCoords}], {agentTag})), " +
-                $"assertz({agentTag}([{agentName}, {agentCoords}]))";
-                
+            if (GameManager.Instance.aiType is GameManager.AIType.Prolog)
+                _prologInterface.QueryText +=
+                 $", assertz(data_concept([{agentName}, {agentCoords}], {agentTag})), " +
+                 $"assertz({agentTag}([{agentName}, {agentCoords}]))";
             GridManager.AddToGrids(Coords, "VisitedCell");
         }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Prolog;
 using UnityEngine;
 using Random = UnityEngine.Random;
+using System.Linq;
 
 namespace GameManagement
 {
@@ -20,7 +21,7 @@ namespace GameManagement
         public bool saveData;
         public bool isGameOver;
         public bool isModeAuto;
-        [Range(0.0f, 1.0f)] public float timerInterval = 0.016f;
+        [Range(0.0f, 1.0f)] public float timerInterval = 0.0f;
 
         // Grid configuration
         public int randomSeed = 1;           // Seed for reproducible randomization
@@ -46,7 +47,7 @@ namespace GameManagement
         public List<GameObject>[,] AgentsMap;         // Agent knowledge grid
 
         // Game metrics and history
-        public List<float> turnDuration = new();      // Performance tracking
+        public List<decimal> turnDuration = new();      // Performance tracking
         public List<string> agentAction = new();      // Action history
         public List<Vector2Int> agentPosition = new();// Position history
 
@@ -58,7 +59,7 @@ namespace GameManagement
 
             // Cache required components
             if (aiType is AIType.Prolog)
-                _prologInterface = GetComponent<PrologInterface>();
+                _prologInterface = gameObject.AddComponent<PrologInterface>();
             _gridBuilder = GetComponent<GridBuilder>();
             _cameraController = GameObject.Find("Main Camera").GetComponent<CameraController>();
 
@@ -104,9 +105,9 @@ namespace GameManagement
         {
             new() {
                 {"randomSeed", randomSeed},
-                {"gridMin", gridMin},
-                {"gridMax", gridMax},
-                {"tileSize", tileSize},
+                {"gridMin", new { x = gridMin.x, y = gridMin.y }},
+                {"gridMax", new { x = gridMax.x, y = gridMax.y }},
+                {"tileSize", Math.Round(tileSize, 2)},
                 {"nbPit", nbPit},
                 {"nbWumpus", nbWumpus},
                 {"nbGold", nbGold},
@@ -116,7 +117,7 @@ namespace GameManagement
                 {"agents", agents.Count},
                 {"isGameOver", isGameOver},
                 {"isModeAuto", isModeAuto},
-                {"turnDuration", turnDuration},
+                {"turnDuration", turnDuration.Select(d => Math.Round(d, 2)).ToList()},
             }
         };
 
@@ -127,7 +128,8 @@ namespace GameManagement
                 var agentData = new Dictionary<string, object> {
                     {"agent", agent.name},
                     {"actions", agentAction.GetRange(i * turnDuration.Count, turnDuration.Count)},
-                    {"positions", agentPosition.GetRange(i * turnDuration.Count, turnDuration.Count)},
+                    {"positions", agentPosition.GetRange(i * turnDuration.Count, turnDuration.Count)
+                        .Select(v => new { x = v.x, y = v.y }).ToList()},
                 };
                 data.Add(agentData);
             }
@@ -135,7 +137,8 @@ namespace GameManagement
             // Serialize and save to file
             var json = System.Text.Json.JsonSerializer.Serialize(data, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
             // Create file /../data/DATE-AIType-Personalities.json and write json to it
-            var path = $"data/{DateTime.Now:yy_MM_dd_HH_mm_ss}-{aiType}-{string.Join("-", personalities)}.json";
+            // var path = $"data/{DateTime.Now:yy_MM_dd_HH_mm_ss}-{aiType}-{string.Join("-", personalities)}.json";
+            var path = $"data/{gridMax.x}x{gridMax.y}-{nbAgent}a-{nbWumpus}wp-{nbGold}g-{string.Join("-", personalities)}-{aiType}.json";
             System.IO.File.WriteAllText(path, json);
         }
     }

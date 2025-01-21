@@ -1467,7 +1467,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1979442550}
   - component: {fileID: 1979442551}
-  - component: {fileID: 1979442556}
   m_Layer: 0
   m_Name: Grid
   m_TagString: Untagged
@@ -1506,35 +1505,19 @@ MonoBehaviour:
   isGameOver: 0
   isModeAuto: 0
   timerInterval: 0
-  randomSeed: 2
+  randomSeed: 1
   gridMin: {x: 0, y: 0}
   gridMax: {x: 20, y: 20}
   tileSize: 1.05
-  nbPit: 10
-  nbWumpus: 10
+  nbPit: 12
+  nbWumpus: 12
   nbGold: 1
   nbAgent: 1
-  aiType: 0
+  aiType: 3
   personalities: 0000000002000000
   agents: []
-  turnDuration: []
   agentAction: []
   agentPosition: []
---- !u!114 &1979442556
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1979442548}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 638a6ed3871f47929af0a093d8ab118e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  debug_query: data_concept(X, Y)
-  askQuery: 0
-  QueryText: 
 --- !u!1 &2138976747
 GameObject:
   m_ObjectHideFlags: 0

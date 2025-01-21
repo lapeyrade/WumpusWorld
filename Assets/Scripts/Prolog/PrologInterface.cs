@@ -31,7 +31,8 @@ namespace Prolog
 
         public string debug_query = "";
         public bool askQuery;
-        private readonly string _prologFilePath = Path.Combine(Application.streamingAssetsPath, "article.pl");
+        // private readonly string _prologFilePath = Path.Combine(Application.streamingAssetsPath, "prolog_default/main.pl");
+        private readonly string _prologFilePath = Path.Combine(Application.streamingAssetsPath, "prolog_subsumedby/article.pl");
         public string QueryText = "";
 
         // Debug settings
@@ -92,7 +93,7 @@ namespace Prolog
                 if (QueryText.Length > 2)
                     QueryText = QueryText.Remove(0, 2);
                 _prologThread.Query(QueryText);
-                // Append query text into result.txt
+                // For Debugging: Append query text into result.txt
                 // File.AppendAllText("result.txt", QueryText + ",");
                 QueryText = "";
             }
@@ -300,7 +301,7 @@ namespace Prolog
 
             var socketTime = (prologStartTime - socketStartTime) * 1000f;
             var prologTime = (Time.realtimeSinceStartup - prologStartTime) * 1000f;
-            Debug.Log($"Found {answerCount} possible actions, Socket time: {socketTime:F2}ms, Prolog inference time: {prologTime:F2}ms");
+            // Debug.Log($"Found {answerCount} possible actions, Socket time: {socketTime:F2}ms, Prolog inference time: {prologTime:F2}ms");
             _dropdown.captionText.text = chosenExplanation;
 
             return action;

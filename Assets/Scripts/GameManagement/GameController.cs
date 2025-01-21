@@ -1,6 +1,7 @@
 using UnityEngine;
 using Prolog;
 using Agent.AI;
+using System;
 
 namespace GameManagement
 {
@@ -18,7 +19,8 @@ namespace GameManagement
         private void Awake()
         {
             _gameManager = GameManager.Instance;
-            _prologInterface = _gameManager.GetComponent<PrologInterface>();
+            if (GameManager.Instance.aiType is GameManager.AIType.Prolog)
+                _prologInterface = _gameManager.GetComponent<PrologInterface>();
         }
 
         // Initialize game state and agent components
@@ -27,7 +29,7 @@ namespace GameManagement
             // Cache agent components for efficient access
             _agent = new Agent.Agent[_gameManager.agents.Count];
             _aiComponents = new AIBasic[_gameManager.agents.Count];
-            
+
             // Initialize each agent's components and execute their first turn
             for (int i = 0; i < _gameManager.agents.Count; i++)
             {
@@ -35,7 +37,7 @@ namespace GameManagement
                 _aiComponents[i] = _gameManager.agents[i].GetComponent<AIBasic>();
                 _aiComponents[i].FirstTurn();
             }
-            
+
             // Initialize Prolog knowledge base if using Prolog AI
             if (_gameManager.aiType is GameManager.AIType.Prolog)
                 _prologInterface.RunQuery();
@@ -67,15 +69,18 @@ namespace GameManagement
                 _gameManager.SetGameOver(true);
             else if (Input.GetKeyDown(KeyCode.Backspace))
             {
-                ScreenCapture.CaptureScreenshot("Screenshots/screenshot " + System.DateTime.Now.ToString("MM-dd-yy (HH-mm-ss)") + ".png");
+                ScreenCapture.CaptureScreenshot("Screenshots/screenshot " +
+                    System.DateTime.Now.ToString("MM-dd-yy (HH-mm-ss)") + ".png");
                 Debug.Log("Screenshot saved!");
             }
             // Execute turn on movement keys, space, return, or in auto mode
-            else if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space) || 
-                     Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.LeftArrow) || 
+            else if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space) ||
+                     Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.LeftArrow) ||
                      Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow) ||
                      _gameManager.isModeAuto)
             {
+                bool allAgentsSkipped = true;
+
                 // Process each agent's turn
                 for (int i = 0; i < _aiComponents.Length; i++)
                 {
@@ -88,8 +93,16 @@ namespace GameManagement
                         && !_gameManager.AgentsMap[agent.coords.x, agent.coords.y + 1].Exists(e => e.tag is "SafeCell")
                         && !_gameManager.AgentsMap[agent.coords.x, agent.coords.y - 1].Exists(e => e.tag is "SafeCell"))
                         continue;
-                    
+
+                    allAgentsSkipped = false;
                     _aiComponents[i].PlayTurn();
+                }
+
+                // End game if all agents were skipped (no valid moves)
+                if (allAgentsSkipped)
+                {
+                    _gameManager.SetGameOver(false);
+                    return;
                 }
 
                 // Update Prolog knowledge base if using Prolog AI
@@ -100,7 +113,7 @@ namespace GameManagement
             // Record performance metrics and agent state
             watch.Stop();
             Debug.Log($"Execution Time: {watch.ElapsedTicks / 10000.0:F3} ms");
-            _gameManager.turnDuration.Add(watch.ElapsedMilliseconds);
+            _gameManager.turnDuration.Add(decimal.Round((decimal)(watch.ElapsedTicks / 10000.0), 3));
 
             // Update game state with each agent's position and last action
             for (int i = 0; i < _agent.Length; i++)

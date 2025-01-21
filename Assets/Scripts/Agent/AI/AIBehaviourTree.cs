@@ -17,16 +17,16 @@ namespace Agent.AI
                 .Sequence("Execute Action")
                     // 1. Generate Objectives based on personality and environment
                     .Selector("Generate Objective")
-                        .Sequence("Generate Wealth")
-                            .Condition("Cupid Personality", () => _agent.GetPersonality<Cupid>())
-                            .Condition("Valuable Item", () => _agentObjective.ExistElementCell<ValuableItem>())
-                            .Do("Add Wealth", () =>
+                        .Sequence("Objective: Safety")
+                            .Condition("Coward Personality", () => _agent.GetPersonality<Coward>())
+                            .Condition("Dangerous Element", () => _agentObjective.ExistElementNearCells<IDangerous>())
+                            .Do("Add Safety", () =>
                             {
-                                _agent.SetObjective<Wealth>(true);
+                                _agent.SetObjective<Safety>(true);
                                 return TaskStatus.Success;
                             })
                         .End()
-                        .Sequence("Objective: Wealth")
+                        .Sequence("Objective: Fight")
                             .Condition("Brave Personality", () => _agent.GetPersonality<Brave>())
                             .Condition("Monster", () => _agentObjective.ExistElementNearCells<Monster>())
                             .Do("Add Fight", () =>
@@ -35,12 +35,12 @@ namespace Agent.AI
                                 return TaskStatus.Success;
                             })
                         .End()
-                        .Sequence("Objective: Safety")
-                            .Condition("Coward Personality", () => _agent.GetPersonality<Coward>())
-                            .Condition("Dangerous Element", () => _agentObjective.ExistElementNearCells<IDangerous>())
-                            .Do("Add Safety", () =>
+                        .Sequence("Objective: Wealth")
+                            .Condition("Cupid Personality", () => _agent.GetPersonality<Cupid>())
+                            .Condition("Valuable Item", () => _agentObjective.ExistElementCell<ValuableItem>())
+                            .Do("Add Wealth", () =>
                             {
-                                _agent.SetObjective<Safety>(true);
+                                _agent.SetObjective<Wealth>(true);
                                 return TaskStatus.Success;
                             })
                         .End()
@@ -73,27 +73,9 @@ namespace Agent.AI
                             })
                         .End()
                     .End()
-                    
+
                     // 2. Generate Actions based on objectives and personality
                     .Selector("Generate Action")
-                        .Sequence("Action: PickUp")
-                            .Condition("Wealth Objective", () => _agent.GetObjective<Wealth>())
-                            .Condition("Personality Cupid", () => _agent.GetPersonality<Cupid>())
-                            .Do("Add PickUp", () =>
-                            {
-                                _agent.SetAction<PickUp>(true);
-                                return TaskStatus.Success;
-                            })
-                        .End()
-                        .Sequence("Action: Discard")
-                            .Condition("Abstinence Objective", () => _agent.GetObjective<Abstinence>())
-                            .Condition("Personality Ascetic", () => _agent.GetPersonality<Ascetic>())
-                            .Do("Add Discard", () =>
-                            {
-                                _agent.SetAction<Discard>(true);
-                                return TaskStatus.Success;
-                            })
-                        .End()
                         .Sequence("Action: MoveBack")
                             .Condition("Safety Objective", () => _agent.GetObjective<Safety>())
                             .Condition("Personality Coward", () => _agent.GetPersonality<Coward>())
@@ -121,12 +103,21 @@ namespace Agent.AI
                                 return TaskStatus.Success;
                             })
                         .End()
-                        .Sequence("Action: Move")
-                            .Condition("Explore Objective", () => _agent.GetObjective<Explore>())
-                            .Condition("Any Personality", () => _agent.GetPersonality<Personality>())
-                            .Do("Add Move", () =>
+                        .Sequence("Action: PickUp")
+                            .Condition("Wealth Objective", () => _agent.GetObjective<Wealth>())
+                            .Condition("Personality Cupid", () => _agent.GetPersonality<Cupid>())
+                            .Do("Add PickUp", () =>
                             {
-                                _agent.SetAction<Move>(true);
+                                _agent.SetAction<PickUp>(true);
+                                return TaskStatus.Success;
+                            })
+                        .End()
+                        .Sequence("Action: Discard")
+                            .Condition("Abstinence Objective", () => _agent.GetObjective<Abstinence>())
+                            .Condition("Personality Ascetic", () => _agent.GetPersonality<Ascetic>())
+                            .Do("Add Discard", () =>
+                            {
+                                _agent.SetAction<Discard>(true);
                                 return TaskStatus.Success;
                             })
                         .End()
@@ -139,8 +130,17 @@ namespace Agent.AI
                                 return TaskStatus.Success;
                             })
                         .End()
+                        .Sequence("Action: Move")
+                            .Condition("Explore Objective", () => _agent.GetObjective<Explore>())
+                            .Condition("Any Personality", () => _agent.GetPersonality<Personality>())
+                            .Do("Add Move", () =>
+                            {
+                                _agent.SetAction<Move>(true);
+                                return TaskStatus.Success;
+                            })
+                        .End()
                     .End()
-                    
+
                     // 3. Evaluate and Execute Actions
                     .Do("Generate Utility", () =>
                     {
@@ -152,14 +152,14 @@ namespace Agent.AI
                             _agentAction.ExecuteHighestUtility();
                             return TaskStatus.Success;
                         })
-                    
+
                     // 4. Update Environment Knowledge
                     .Do("Sense Cell", () =>
                     {
                         _agentSense.SenseCell();
                         return TaskStatus.Success;
                     })
-                    
+
                     // 5. Cleanup for Next Turn
                     .Do("Remove Previous Action", () =>
                     {
