@@ -184,12 +184,12 @@ satisfy(O, SubA):-
     satisfy(O, A), subClassOf(SubA, A).
 
 /* Link Personality-Action */
-encline(cupid, interact, 5).
-encline(ascetic, interact, 3).
-encline(coward, moveback, 10).
-encline(brave, attack, 9).
 encline(personality, move, 1).
 encline(personality, bumpwall, 2).
+encline(ascetic, interact, 3).
+encline(cupid, interact, 5).
+encline(brave, attack, 9).
+encline(coward, moveback, 10).
 encline(SubP, A, U):-
     encline(P, A, U), subClassOf(SubP, P).
 encline(P, SubA, U):-
