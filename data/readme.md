@@ -56,3 +56,24 @@ Common parameters across all configurations:
 We have 7 grid sizes, 3 personality sets, 5 AI types, and 3 agent numbers.
 
 So, there are `7*3*5*3=315` configurations.
+
+## Test Environment
+The tests were conducted using the following hardware and software configuration:
+- **Hardware**: 16-inch MacBook Pro M3
+  - CPU: 12 cores (6 performance, 6 efficiency)
+  - RAM: 36GB
+- **Software**: Unity v6000.0.34f1 (Silicon version)
+
+*Note: Performance results may vary depending on the system configuration used.*
+
+Tests using the PrologMetaInterpreter approach on the 100x100 grid configuration could not be completed due to systematic Unity crashes during execution as the Prolog code of this implementation is not optimized and the number of elements become too large.
+
+### Results Storage
+The results for each grid configuration are stored in their respective folders:
+- [10x10](./10x10)
+- [15x15](./15x15)
+- [20x20](./20x20)
+- [25x25](./25x25)
+- [30x30](./30x30)
+- [50x50](./50x50)
+- [100x100](./100x100)
