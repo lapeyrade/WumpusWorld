@@ -137,13 +137,13 @@ satisfy(Obj, Act):-
     satisfy(Obj, GenAct), 
     subsumedBy(GenAct, Act).
 
-%% Inclination System
+%% Utility System
 %% Personality-action preferences:
-%% - cupid: strong interaction (5)
-%% - ascetic: moderate interaction (3)
-%% - coward: strong retreat (10)
-%% - brave: strong attack (9)
 %% - general: basic movement (1-2)
+%% - ascetic: moderate interaction (3)
+%% - cupid: strong interaction (5)
+%% - brave: strong attack (9)
+%% - coward: strong retreat (10)
 encline(personality, move, 1).
 encline(personality, bumpwall, 2).
 encline(ascetic, interact, 3).
