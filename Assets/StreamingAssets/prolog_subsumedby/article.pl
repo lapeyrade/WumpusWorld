@@ -95,12 +95,12 @@ satisfy(Obj, Act):-
 
 %% Inclination System - Base Facts
 %% Defines how strongly personalities are inclined toward actions
-encline(cupid, interact, 5).       % Cupid strongly inclined to interact
-encline(ascetic, interact, 3).     % Ascetic moderately inclined to interact
 encline(coward, moveback, 10).     % Coward very strongly inclined to retreat
 encline(brave, attack, 9).         % Brave strongly inclined to attack
-encline(personality, move, 1).     % Basic inclination to move
+encline(cupid, interact, 5).       % Cupid strongly inclined to interact
+encline(ascetic, interact, 3).     % Ascetic moderately inclined to interact
 encline(personality, bumpwall, 2). % Basic inclination to bump walls
+encline(personality, move, 1).     % Basic inclination to move
 
 %% Inclination Inheritance
 %% Allows inclinations to be inherited through personality hierarchy

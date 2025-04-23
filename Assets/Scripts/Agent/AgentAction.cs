@@ -44,18 +44,18 @@ namespace Agent
         public void GenerateUtility()
         {
             // Assign utility values based on personality and action combinations
-            if (_agent.GetPersonality<Cupid>() && _agent.GetAction<Interact>())
-                _agent.GetAction<Interact>().Utility = 5;     // Cupids value interaction highly
-            if (_agent.GetPersonality<Ascetic>() && _agent.GetAction<Interact>())
-                _agent.GetAction<Interact>().Utility = 3;     // Ascetics value interaction moderately
             if (_agent.GetPersonality<Coward>() && _agent.GetAction<MoveBack>())
                 _agent.GetAction<MoveBack>().Utility = 10;    // Cowards highly value retreating
             if (_agent.GetPersonality<Brave>() && _agent.GetAction<Attack>())
                 _agent.GetAction<Attack>().Utility = 9;       // Brave agents value attacking highly
-            if (_agent.GetPersonality<Personality>() && _agent.GetAction<Move>())
-                _agent.GetAction<Move>().Utility = 1;         // Basic movement has low utility
+            if (_agent.GetPersonality<Cupid>() && _agent.GetAction<Interact>())
+                _agent.GetAction<Interact>().Utility = 5;     // Cupids value interaction highly
+            if (_agent.GetPersonality<Ascetic>() && _agent.GetAction<Interact>())
+                _agent.GetAction<Interact>().Utility = 3;     // Ascetics value interaction moderately
             if (_agent.GetPersonality<Personality>() && _agent.GetAction<BumpWall>())
                 _agent.GetAction<BumpWall>().Utility = 2;     // Wall interaction has low utility
+            if (_agent.GetPersonality<Personality>() && _agent.GetAction<Move>())
+                _agent.GetAction<Move>().Utility = 1;         // Basic movement has low utility
         }
 
         public void ExecuteHighestUtility()

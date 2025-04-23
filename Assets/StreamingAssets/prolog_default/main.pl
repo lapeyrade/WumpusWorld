@@ -139,17 +139,17 @@ satisfy(Obj, Act):-
 
 %% Utility System
 %% Personality-action preferences:
-%% - general: basic movement (1-2)
-%% - ascetic: moderate interaction (3)
-%% - cupid: strong interaction (5)
-%% - brave: strong attack (9)
 %% - coward: strong retreat (10)
-encline(personality, move, 1).
-encline(personality, bumpwall, 2).
-encline(ascetic, interact, 3).
-encline(cupid, interact, 5).
-encline(brave, attack, 9).
+%% - brave: strong attack (9)
+%% - cupid: strong interaction (5)
+%% - ascetic: moderate interaction (3)
+%% - general: basic movement (1-2)
 encline(coward, moveback, 10).
+encline(brave, attack, 9).
+encline(cupid, interact, 5).
+encline(ascetic, interact, 3).
+encline(personality, bumpwall, 2).
+encline(personality, move, 1).
 
 %% Inclination Inheritance Rules
 %% Implements preference propagation:
