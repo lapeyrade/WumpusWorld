@@ -58,16 +58,6 @@
       9.00,
       6.41,
       5.83,
-      6.20,
-      5.39,
-      5.93,
-      6.01,
-      2.87,
-      3.19,
-      2.84,
-      3.02,
-      3.00,
-      3.03,
       2.87,
       3.12,
       2.97,
@@ -98,44 +88,34 @@
       "MoveBack",
       "MoveUp",
       "ShootUp",
-      "MoveUp",
+      "MoveLeft",
       "MoveRight",
       "MoveDown",
       "MoveDown",
-      "MoveUp",
-      "ShootRight",
+      "MoveBack",
+      "MoveLeft",
       "MoveBack",
       "MoveRight",
       "MoveDown",
+      "MoveBack",
       "MoveLeft",
+      "MoveDown",
       "MoveRight",
       "MoveDown",
-      "MoveRight",
-      "MoveDown",
-      "MoveLeft",
-      "MoveBack",
-      "MoveRight",
-      "MoveBack",
-      "MoveDown",
-      "MoveLeft",
-      "MoveDown",
-      "MoveBack",
-      "MoveDown",
-      "MoveDown",
-      "MoveLeft",
-      "MoveDown",
-      "MoveLeft",
-      "ShootDown",
-      "MoveDown",
-      "MoveLeft",
       "MoveDown",
       "MoveLeft",
       "MoveRight",
-      "MoveDown",
       "MoveBack",
       "MoveDown",
       "MoveLeft",
-      "MoveBack"
+      "MoveLeft",
+      "MoveBack",
+      "MoveDown",
+      "MoveDown",
+      "MoveLeft",
+      "MoveLeft",
+      "MoveLeft",
+      "ShootDown"
     ],
     "positions": [
       {
@@ -203,7 +183,7 @@
         "y": 3
       },
       {
-        "x": 7,
+        "x": 6,
         "y": 4
       },
       {
@@ -219,11 +199,11 @@
         "y": 8
       },
       {
-        "x": 6,
-        "y": 4
+        "x": 5,
+        "y": 3
       },
       {
-        "x": 7,
+        "x": 5,
         "y": 4
       },
       {
@@ -239,11 +219,11 @@
         "y": 8
       },
       {
-        "x": 5,
-        "y": 4
+        "x": 4,
+        "y": 3
       },
       {
-        "x": 8,
+        "x": 4,
         "y": 4
       },
       {
@@ -260,10 +240,10 @@
       },
       {
         "x": 4,
-        "y": 4
+        "y": 2
       },
       {
-        "x": 7,
+        "x": 3,
         "y": 4
       },
       {
@@ -280,11 +260,11 @@
       },
       {
         "x": 3,
-        "y": 4
+        "y": 2
       },
       {
-        "x": 7,
-        "y": 3
+        "x": 2,
+        "y": 4
       },
       {
         "x": 8,
@@ -300,23 +280,7 @@
       },
       {
         "x": 2,
-        "y": 4
-      },
-      {
-        "x": 7,
-        "y": 3
-      },
-      {
-        "x": 7,
-        "y": 1
-      },
-      {
-        "x": 8,
-        "y": 6
-      },
-      {
-        "x": 8,
-        "y": 8
+        "y": 2
       },
       {
         "x": 1,
@@ -324,30 +288,6 @@
       },
       {
         "x": 7,
-        "y": 3
-      },
-      {
-        "x": 6,
-        "y": 1
-      },
-      {
-        "x": 9,
-        "y": 6
-      },
-      {
-        "x": 8,
-        "y": 8
-      },
-      {
-        "x": 2,
-        "y": 4
-      },
-      {
-        "x": 7,
-        "y": 3
-      },
-      {
-        "x": 5,
         "y": 1
       },
       {
@@ -360,51 +300,24 @@
     "agent": "human1",
     "actions": [
       "MoveDown",
-      "MoveUp",
-      "MoveDown",
-      "MoveLeft",
       "MoveLeft",
       "MoveDown",
+      "MoveLeft",
       "MoveRight",
       "MoveDown",
       "MoveLeft",
-      "MoveLeft",
-      "MoveDown",
       "MoveRight",
-      "MoveDown",
-      "MoveLeft",
-      "MoveLeft",
-      "MoveDown",
-      "MoveBack",
-      "MoveDown",
       "MoveLeft",
       "MoveBack",
       "MoveDown",
-      "MoveUp",
-      "MoveDown",
-      "MoveLeft",
-      "MoveUp",
-      "MoveDown",
       "MoveBack",
-      "MoveDown",
       "MoveBack",
       "MoveLeft",
-      "MoveDown",
-      "MoveBack",
-      "MoveDown",
-      "MoveUp",
       "MoveLeft",
       "MoveDown",
-      "MoveBack",
       "MoveDown",
-      "MoveRight",
-      "MoveBack",
-      "MoveDown",
-      "MoveDown",
-      "MoveDown",
-      "MoveRight",
-      "MoveUp",
-      "MoveDown",
+      "MoveLeft",
+      "MoveLeft",
       "MoveLeft",
       "MoveDown",
       "MoveRight",
@@ -412,6 +325,23 @@
       "MoveDown",
       "MoveLeft",
       "MoveDown",
+      "MoveDown",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack",
+      "MoveDown",
+      "MoveBack",
+      "MoveLeft",
+      "MoveBack",
+      "MoveUp",
+      "MoveDown",
+      "MoveBack",
+      "MoveBack",
+      "MoveDown",
+      "MoveLeft",
+      "MoveDown",
+      "MoveLeft",
+      "MoveBack",
       "MoveBack"
     ],
     "positions": [
@@ -420,278 +350,308 @@
         "y": 8
       },
       {
-        "x": 2,
-        "y": 5
-      },
-      {
-        "x": 7,
-        "y": 3
-      },
-      {
-        "x": 4,
-        "y": 1
-      },
-      {
-        "x": 7,
-        "y": 6
-      },
-      {
-        "x": 8,
-        "y": 8
-      },
-      {
-        "x": 3,
-        "y": 5
-      },
-      {
-        "x": 7,
-        "y": 3
-      },
-      {
-        "x": 3,
-        "y": 1
-      },
-      {
-        "x": 6,
-        "y": 6
-      },
-      {
-        "x": 8,
-        "y": 8
-      },
-      {
-        "x": 4,
-        "y": 5
-      },
-      {
-        "x": 7,
-        "y": 3
-      },
-      {
-        "x": 2,
-        "y": 1
-      },
-      {
-        "x": 5,
-        "y": 6
-      },
-      {
-        "x": 8,
-        "y": 8
-      },
-      {
-        "x": 3,
-        "y": 5
-      },
-      {
-        "x": 7,
-        "y": 3
+        "x": 1,
+        "y": 2
       },
       {
         "x": 1,
-        "y": 1
+        "y": 3
       },
       {
         "x": 6,
+        "y": 1
+      },
+      {
+        "x": 9,
         "y": 6
       },
       {
         "x": 8,
         "y": 8
-      },
-      {
-        "x": 3,
-        "y": 6
-      },
-      {
-        "x": 7,
-        "y": 3
       },
       {
         "x": 0,
-        "y": 1
-      },
-      {
-        "x": 6,
-        "y": 7
-      },
-      {
-        "x": 8,
-        "y": 8
-      },
-      {
-        "x": 3,
-        "y": 5
-      },
-      {
-        "x": 7,
-        "y": 3
-      },
-      {
-        "x": 1,
-        "y": 1
-      },
-      {
-        "x": 5,
-        "y": 7
-      },
-      {
-        "x": 8,
-        "y": 8
+        "y": 2
       },
       {
         "x": 2,
-        "y": 5
+        "y": 3
       },
       {
-        "x": 7,
-        "y": 3
+        "x": 5,
+        "y": 1
+      },
+      {
+        "x": 8,
+        "y": 6
+      },
+      {
+        "x": 8,
+        "y": 8
       },
       {
         "x": 1,
         "y": 2
       },
       {
+        "x": 1,
+        "y": 3
+      },
+      {
         "x": 4,
+        "y": 1
+      },
+      {
+        "x": 7,
+        "y": 6
+      },
+      {
+        "x": 8,
+        "y": 8
+      },
+      {
+        "x": 1,
+        "y": 1
+      },
+      {
+        "x": 0,
+        "y": 3
+      },
+      {
+        "x": 3,
+        "y": 1
+      },
+      {
+        "x": 6,
+        "y": 6
+      },
+      {
+        "x": 8,
+        "y": 8
+      },
+      {
+        "x": 2,
+        "y": 1
+      },
+      {
+        "x": 1,
+        "y": 3
+      },
+      {
+        "x": 3,
+        "y": 0
+      },
+      {
+        "x": 5,
+        "y": 6
+      },
+      {
+        "x": 8,
+        "y": 8
+      },
+      {
+        "x": 2,
+        "y": 0
+      },
+      {
+        "x": 1,
+        "y": 4
+      },
+      {
+        "x": 3,
+        "y": 1
+      },
+      {
+        "x": 6,
+        "y": 6
+      },
+      {
+        "x": 8,
+        "y": 8
+      },
+      {
+        "x": 2,
+        "y": 1
+      },
+      {
+        "x": 0,
+        "y": 4
+      },
+      {
+        "x": 4,
+        "y": 1
+      },
+      {
+        "x": 6,
         "y": 7
       },
       {
         "x": 8,
         "y": 8
+      },
+      {
+        "x": 1,
+        "y": 1
+      },
+      {
+        "x": 1,
+        "y": 4
+      },
+      {
+        "x": 4,
+        "y": 0
+      },
+      {
+        "x": 5,
+        "y": 7
+      },
+      {
+        "x": 8,
+        "y": 8
+      },
+      {
+        "x": 0,
+        "y": 1
       },
       {
         "x": 2,
         "y": 4
       },
       {
-        "x": 7,
-        "y": 3
-      },
-      {
-        "x": 2,
-        "y": 2
-      },
-      {
-        "x": 5,
-        "y": 7
-      },
-      {
-        "x": 8,
-        "y": 8
-      },
-      {
-        "x": 2,
-        "y": 3
-      },
-      {
-        "x": 7,
-        "y": 3
-      },
-      {
-        "x": 3,
-        "y": 2
-      },
-      {
-        "x": 5,
-        "y": 8
-      },
-      {
-        "x": 8,
-        "y": 8
-      },
-      {
-        "x": 1,
-        "y": 3
-      },
-      {
-        "x": 7,
-        "y": 3
-      },
-      {
         "x": 4,
-        "y": 2
-      },
-      {
-        "x": 5,
-        "y": 7
-      },
-      {
-        "x": 8,
-        "y": 8
-      },
-      {
-        "x": 0,
-        "y": 3
-      },
-      {
-        "x": 7,
-        "y": 3
-      },
-      {
-        "x": 3,
-        "y": 2
+        "y": 1
       }
     ]
   },
   {
     "agent": "human2",
     "actions": [
+      "MoveLeft",
+      "MoveDown",
       "MoveBack",
+      "MoveUp",
+      "MoveBack",
+      "MoveBack",
+      "MoveDown",
+      "MoveDown",
+      "MoveRight",
+      "MoveDown",
+      "MoveUp",
+      "MoveDown",
+      "MoveBack",
+      "MoveRight",
+      "MoveBack",
+      "MoveBack",
+      "MoveDown",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack",
+      "MoveDown",
+      "MoveBack",
+      "MoveUp",
       "MoveDown",
       "MoveBack",
       "MoveDown",
       "MoveBack",
       "MoveBack",
-      "MoveDown",
-      "MoveBack",
-      "MoveDown",
       "MoveBack",
       "MoveDown",
       "MoveDown",
       "MoveBack",
+      "MoveBack",
+      "MoveBack",
+      "MoveRight",
+      "MoveDown",
+      "MoveBack",
+      "MoveBack",
+      "MoveDown",
+      "MoveRight",
       "MoveDown",
       "MoveLeft",
-      "MoveRight",
-      "MoveDown",
-      "MoveBack",
-      "MoveDown",
-      "MoveBack",
-      "MoveRight",
-      "MoveDown",
-      "MoveBack",
-      "MoveDown",
-      "MoveBack",
-      "MoveRight",
-      "MoveDown",
-      "MoveBack",
-      "MoveDown",
-      "MoveDown",
-      "MoveBack",
-      "MoveDown",
-      "MoveBack",
-      "MoveDown",
-      "MoveBack",
-      "MoveBack",
-      "MoveDown",
-      "MoveBack",
-      "MoveDown",
-      "MoveBack",
-      "MoveBack",
-      "MoveDown",
-      "MoveBack",
-      "MoveDown",
-      "MoveDown",
-      "MoveBack",
-      "MoveDown",
-      "MoveBack",
-      "MoveDown",
-      "MoveBack",
-      "MoveBack",
-      "MoveDown",
-      "MoveLeft",
-      "MoveDown"
+      "MoveBack"
     ],
     "positions": [
+      {
+        "x": 4,
+        "y": 7
+      },
+      {
+        "x": 8,
+        "y": 8
+      },
+      {
+        "x": 1,
+        "y": 1
+      },
+      {
+        "x": 2,
+        "y": 5
+      },
+      {
+        "x": 5,
+        "y": 1
+      },
+      {
+        "x": 5,
+        "y": 7
+      },
+      {
+        "x": 8,
+        "y": 8
+      },
+      {
+        "x": 1,
+        "y": 0
+      },
+      {
+        "x": 3,
+        "y": 5
+      },
+      {
+        "x": 5,
+        "y": 0
+      },
+      {
+        "x": 5,
+        "y": 8
+      },
+      {
+        "x": 8,
+        "y": 8
+      },
+      {
+        "x": 1,
+        "y": 1
+      },
+      {
+        "x": 4,
+        "y": 5
+      },
+      {
+        "x": 5,
+        "y": 1
+      },
+      {
+        "x": 5,
+        "y": 7
+      },
+      {
+        "x": 8,
+        "y": 8
+      },
+      {
+        "x": 1,
+        "y": 2
+      },
+      {
+        "x": 3,
+        "y": 5
+      },
+      {
+        "x": 6,
+        "y": 1
+      },
       {
         "x": 6,
         "y": 7
@@ -701,16 +661,16 @@
         "y": 8
       },
       {
-        "x": 1,
-        "y": 3
-      },
-      {
-        "x": 7,
-        "y": 3
-      },
-      {
         "x": 2,
         "y": 2
+      },
+      {
+        "x": 3,
+        "y": 6
+      },
+      {
+        "x": 6,
+        "y": 0
       },
       {
         "x": 6,
@@ -721,16 +681,16 @@
         "y": 8
       },
       {
-        "x": 2,
-        "y": 3
-      },
-      {
-        "x": 7,
-        "y": 3
-      },
-      {
-        "x": 1,
+        "x": 3,
         "y": 2
+      },
+      {
+        "x": 3,
+        "y": 5
+      },
+      {
+        "x": 6,
+        "y": 1
       },
       {
         "x": 6,
@@ -741,39 +701,19 @@
         "y": 8
       },
       {
-        "x": 2,
-        "y": 4
-      },
-      {
-        "x": 7,
-        "y": 3
-      },
-      {
-        "x": 0,
+        "x": 4,
         "y": 2
       },
       {
-        "x": 7,
+        "x": 2,
         "y": 5
       },
       {
-        "x": 8,
-        "y": 8
-      },
-      {
-        "x": 3,
-        "y": 4
+        "x": 7,
+        "y": 1
       },
       {
         "x": 7,
-        "y": 3
-      },
-      {
-        "x": 1,
-        "y": 2
-      },
-      {
-        "x": 8,
         "y": 5
       },
       {
@@ -782,14 +722,105 @@
       },
       {
         "x": 4,
+        "y": 3
+      },
+      {
+        "x": 2,
         "y": 4
       },
       {
         "x": 7,
+        "y": 0
+      },
+      {
+        "x": 8,
+        "y": 5
+      },
+      {
+        "x": 8,
+        "y": 8
+      },
+      {
+        "x": 3,
         "y": 3
       },
       {
-        "x": 1,
+        "x": 3,
+        "y": 4
+      }
+    ]
+  },
+  {
+    "agent": "human3",
+    "actions": [
+      "MoveBack",
+      "ShootDown",
+      "MoveDown",
+      "MoveLeft",
+      "MoveBack",
+      "MoveBack",
+      "MoveRight",
+      "MoveDown",
+      "MoveLeft",
+      "MoveBack",
+      "MoveDown",
+      "MoveBack",
+      "MoveDown",
+      "MoveLeft",
+      "MoveBack",
+      "MoveBack",
+      "MoveDown",
+      "MoveDown",
+      "MoveLeft",
+      "MoveBack",
+      "MoveBack",
+      "MoveRight",
+      "MoveDown",
+      "MoveLeft",
+      "MoveDown",
+      "MoveBack",
+      "MoveBack",
+      "MoveDown",
+      "MoveLeft",
+      "MoveDown",
+      "MoveBack",
+      "MoveBack",
+      "MoveDown",
+      "MoveLeft",
+      "MoveDown",
+      "MoveLeft",
+      "MoveBack",
+      "MoveDown",
+      "MoveLeft",
+      "MoveDown",
+      "MoveLeft",
+      "MoveBack",
+      "MoveDown",
+      "MoveLeft"
+    ],
+    "positions": [
+      {
+        "x": 7,
+        "y": 1
+      },
+      {
+        "x": 8,
+        "y": 5
+      },
+      {
+        "x": 8,
+        "y": 8
+      },
+      {
+        "x": 3,
+        "y": 3
+      },
+      {
+        "x": 4,
+        "y": 4
+      },
+      {
+        "x": 8,
         "y": 1
       },
       {
@@ -801,15 +832,15 @@
         "y": 8
       },
       {
+        "x": 3,
+        "y": 3
+      },
+      {
         "x": 5,
         "y": 4
       },
       {
-        "x": 7,
-        "y": 3
-      },
-      {
-        "x": 1,
+        "x": 8,
         "y": 0
       },
       {
@@ -819,18 +850,98 @@
       {
         "x": 8,
         "y": 8
+      },
+      {
+        "x": 3,
+        "y": 3
       },
       {
         "x": 6,
         "y": 4
       },
       {
+        "x": 8,
+        "y": 1
+      },
+      {
+        "x": 8,
+        "y": 4
+      },
+      {
+        "x": 8,
+        "y": 8
+      },
+      {
+        "x": 3,
+        "y": 3
+      },
+      {
+        "x": 7,
+        "y": 4
+      },
+      {
+        "x": 8,
+        "y": 2
+      },
+      {
+        "x": 9,
+        "y": 4
+      },
+      {
+        "x": 8,
+        "y": 8
+      },
+      {
+        "x": 3,
+        "y": 3
+      },
+      {
         "x": 7,
         "y": 3
       },
       {
-        "x": 1,
-        "y": 1
+        "x": 7,
+        "y": 2
+      },
+      {
+        "x": 8,
+        "y": 4
+      },
+      {
+        "x": 8,
+        "y": 8
+      },
+      {
+        "x": 3,
+        "y": 3
+      },
+      {
+        "x": 7,
+        "y": 3
+      },
+      {
+        "x": 6,
+        "y": 2
+      },
+      {
+        "x": 8,
+        "y": 5
+      },
+      {
+        "x": 8,
+        "y": 8
+      },
+      {
+        "x": 3,
+        "y": 3
+      },
+      {
+        "x": 7,
+        "y": 3
+      },
+      {
+        "x": 5,
+        "y": 2
       },
       {
         "x": 7,
@@ -841,7 +952,7 @@
         "y": 8
       },
       {
-        "x": 6,
+        "x": 3,
         "y": 3
       },
       {
@@ -849,333 +960,12 @@
         "y": 3
       },
       {
-        "x": 2,
-        "y": 1
+        "x": 5,
+        "y": 2
       },
       {
         "x": 6,
         "y": 5
-      },
-      {
-        "x": 8,
-        "y": 8
-      },
-      {
-        "x": 5,
-        "y": 3
-      },
-      {
-        "x": 7,
-        "y": 3
-      },
-      {
-        "x": 2,
-        "y": 0
-      },
-      {
-        "x": 6,
-        "y": 6
-      },
-      {
-        "x": 8,
-        "y": 8
-      },
-      {
-        "x": 4,
-        "y": 3
-      },
-      {
-        "x": 7,
-        "y": 3
-      },
-      {
-        "x": 2,
-        "y": 1
-      },
-      {
-        "x": 7,
-        "y": 6
-      },
-      {
-        "x": 8,
-        "y": 8
-      },
-      {
-        "x": 3,
-        "y": 3
-      },
-      {
-        "x": 7,
-        "y": 3
-      }
-    ]
-  },
-  {
-    "agent": "human3",
-    "actions": [
-      "MoveBack",
-      "MoveBack",
-      "MoveDown",
-      "MoveLeft",
-      "MoveDown",
-      "MoveDown",
-      "MoveBack",
-      "MoveDown",
-      "MoveLeft",
-      "MoveDown",
-      "MoveBack",
-      "MoveBack",
-      "MoveDown",
-      "MoveLeft",
-      "MoveDown",
-      "MoveBack",
-      "MoveBack",
-      "MoveDown",
-      "MoveLeft",
-      "MoveDown",
-      "MoveDown",
-      "MoveLeft",
-      "MoveDown",
-      "MoveLeft",
-      "MoveDown",
-      "MoveBack",
-      "MoveUp",
-      "MoveDown",
-      "MoveLeft",
-      "MoveDown",
-      "MoveBack",
-      "MoveDown",
-      "MoveDown",
-      "MoveLeft",
-      "MoveDown",
-      "MoveDown",
-      "MoveDown",
-      "MoveDown",
-      "MoveLeft",
-      "MoveDown",
-      "MoveBack",
-      "MoveDown",
-      "MoveDown",
-      "MoveLeft",
-      "MoveDown",
-      "MoveBack",
-      "MoveDown",
-      "MoveDown",
-      "MoveLeft",
-      "MoveDown",
-      "MoveDown",
-      "MoveDown",
-      "MoveDown",
-      "MoveLeft"
-    ],
-    "positions": [
-      {
-        "x": 3,
-        "y": 1
-      },
-      {
-        "x": 8,
-        "y": 6
-      },
-      {
-        "x": 8,
-        "y": 8
-      },
-      {
-        "x": 3,
-        "y": 3
-      },
-      {
-        "x": 7,
-        "y": 3
-      },
-      {
-        "x": 3,
-        "y": 0
-      },
-      {
-        "x": 8,
-        "y": 7
-      },
-      {
-        "x": 8,
-        "y": 8
-      },
-      {
-        "x": 3,
-        "y": 3
-      },
-      {
-        "x": 7,
-        "y": 3
-      },
-      {
-        "x": 3,
-        "y": 1
-      },
-      {
-        "x": 7,
-        "y": 7
-      },
-      {
-        "x": 8,
-        "y": 8
-      },
-      {
-        "x": 3,
-        "y": 3
-      },
-      {
-        "x": 7,
-        "y": 3
-      },
-      {
-        "x": 4,
-        "y": 1
-      },
-      {
-        "x": 7,
-        "y": 8
-      },
-      {
-        "x": 8,
-        "y": 8
-      },
-      {
-        "x": 3,
-        "y": 3
-      },
-      {
-        "x": 7,
-        "y": 3
-      },
-      {
-        "x": 4,
-        "y": 0
-      },
-      {
-        "x": 6,
-        "y": 8
-      },
-      {
-        "x": 8,
-        "y": 8
-      },
-      {
-        "x": 3,
-        "y": 3
-      },
-      {
-        "x": 7,
-        "y": 3
-      },
-      {
-        "x": 4,
-        "y": 1
-      },
-      {
-        "x": 6,
-        "y": 9
-      },
-      {
-        "x": 8,
-        "y": 8
-      },
-      {
-        "x": 3,
-        "y": 3
-      },
-      {
-        "x": 7,
-        "y": 3
-      },
-      {
-        "x": 5,
-        "y": 1
-      },
-      {
-        "x": 6,
-        "y": 8
-      },
-      {
-        "x": 8,
-        "y": 8
-      },
-      {
-        "x": 3,
-        "y": 3
-      },
-      {
-        "x": 7,
-        "y": 3
-      },
-      {
-        "x": 5,
-        "y": 0
-      },
-      {
-        "x": 6,
-        "y": 8
-      },
-      {
-        "x": 8,
-        "y": 8
-      },
-      {
-        "x": 3,
-        "y": 3
-      },
-      {
-        "x": 7,
-        "y": 3
-      },
-      {
-        "x": 5,
-        "y": 1
-      },
-      {
-        "x": 6,
-        "y": 8
-      },
-      {
-        "x": 8,
-        "y": 8
-      },
-      {
-        "x": 3,
-        "y": 3
-      },
-      {
-        "x": 7,
-        "y": 3
-      },
-      {
-        "x": 6,
-        "y": 1
-      },
-      {
-        "x": 6,
-        "y": 8
-      },
-      {
-        "x": 8,
-        "y": 8
-      },
-      {
-        "x": 3,
-        "y": 3
-      },
-      {
-        "x": 7,
-        "y": 3
-      },
-      {
-        "x": 6,
-        "y": 0
-      },
-      {
-        "x": 6,
-        "y": 8
       },
       {
         "x": 8,
@@ -1191,53 +981,43 @@
     "agent": "human4",
     "actions": [
       "MoveDown",
+      "MoveLeft",
       "MoveBack",
       "MoveDown",
-      "MoveDown",
       "MoveLeft",
       "MoveDown",
+      "MoveLeft",
       "MoveBack",
       "MoveDown",
-      "MoveDown",
       "MoveLeft",
       "MoveDown",
-      "MoveDown",
-      "MoveDown",
-      "MoveDown",
       "MoveLeft",
-      "MoveDown",
       "MoveBack",
       "MoveDown",
-      "MoveDown",
       "MoveLeft",
       "MoveDown",
+      "MoveLeft",
       "MoveBack",
       "MoveDown",
-      "MoveDown",
       "MoveLeft",
       "MoveDown",
-      "MoveDown",
-      "MoveDown",
-      "MoveDown",
       "MoveLeft",
-      "MoveDown",
       "MoveBack",
       "MoveDown",
+      "MoveLeft",
+      "MoveDown",
+      "MoveLeft",
+      "MoveBack",
       "MoveDown",
       "MoveLeft",
       "MoveDown",
-      "MoveBack",
-      "MoveDown",
+      "MoveLeft",
+      "MoveLeft",
       "MoveDown",
       "MoveLeft",
       "MoveDown",
-      "MoveBack",
-      "MoveDown",
-      "MoveDown",
       "MoveLeft",
-      "MoveDown",
-      "MoveBack",
-      "MoveDown",
+      "MoveUp",
       "MoveDown",
       "MoveLeft",
       "MoveDown",
@@ -1251,11 +1031,111 @@
         "y": 3
       },
       {
-        "x": 6,
-        "y": 1
+        "x": 5,
+        "y": 2
       },
       {
         "x": 6,
+        "y": 6
+      },
+      {
+        "x": 8,
+        "y": 8
+      },
+      {
+        "x": 3,
+        "y": 3
+      },
+      {
+        "x": 7,
+        "y": 3
+      },
+      {
+        "x": 5,
+        "y": 2
+      },
+      {
+        "x": 7,
+        "y": 6
+      },
+      {
+        "x": 8,
+        "y": 8
+      },
+      {
+        "x": 3,
+        "y": 3
+      },
+      {
+        "x": 7,
+        "y": 3
+      },
+      {
+        "x": 5,
+        "y": 2
+      },
+      {
+        "x": 8,
+        "y": 6
+      },
+      {
+        "x": 8,
+        "y": 8
+      },
+      {
+        "x": 3,
+        "y": 3
+      },
+      {
+        "x": 7,
+        "y": 3
+      },
+      {
+        "x": 5,
+        "y": 2
+      },
+      {
+        "x": 8,
+        "y": 7
+      },
+      {
+        "x": 8,
+        "y": 8
+      },
+      {
+        "x": 3,
+        "y": 3
+      },
+      {
+        "x": 7,
+        "y": 3
+      },
+      {
+        "x": 5,
+        "y": 2
+      },
+      {
+        "x": 7,
+        "y": 7
+      },
+      {
+        "x": 8,
+        "y": 8
+      },
+      {
+        "x": 3,
+        "y": 3
+      },
+      {
+        "x": 7,
+        "y": 3
+      },
+      {
+        "x": 5,
+        "y": 2
+      },
+      {
+        "x": 7,
         "y": 8
       },
       {
@@ -1271,127 +1151,7 @@
         "y": 3
       },
       {
-        "x": 7,
-        "y": 1
-      },
-      {
-        "x": 6,
-        "y": 8
-      },
-      {
-        "x": 8,
-        "y": 8
-      },
-      {
-        "x": 3,
-        "y": 3
-      },
-      {
-        "x": 7,
-        "y": 3
-      },
-      {
-        "x": 7,
-        "y": 0
-      },
-      {
-        "x": 6,
-        "y": 8
-      },
-      {
-        "x": 8,
-        "y": 8
-      },
-      {
-        "x": 3,
-        "y": 3
-      },
-      {
-        "x": 7,
-        "y": 3
-      },
-      {
-        "x": 7,
-        "y": 1
-      },
-      {
-        "x": 6,
-        "y": 8
-      },
-      {
-        "x": 8,
-        "y": 8
-      },
-      {
-        "x": 3,
-        "y": 3
-      },
-      {
-        "x": 7,
-        "y": 3
-      },
-      {
-        "x": 8,
-        "y": 1
-      },
-      {
-        "x": 6,
-        "y": 8
-      },
-      {
-        "x": 8,
-        "y": 8
-      },
-      {
-        "x": 3,
-        "y": 3
-      },
-      {
-        "x": 7,
-        "y": 3
-      },
-      {
-        "x": 8,
-        "y": 0
-      },
-      {
-        "x": 6,
-        "y": 8
-      },
-      {
-        "x": 8,
-        "y": 8
-      },
-      {
-        "x": 3,
-        "y": 3
-      },
-      {
-        "x": 7,
-        "y": 3
-      },
-      {
-        "x": 8,
-        "y": 1
-      },
-      {
-        "x": 6,
-        "y": 8
-      },
-      {
-        "x": 8,
-        "y": 8
-      },
-      {
-        "x": 3,
-        "y": 3
-      },
-      {
-        "x": 7,
-        "y": 3
-      },
-      {
-        "x": 8,
+        "x": 5,
         "y": 2
       },
       {
@@ -1411,32 +1171,12 @@
         "y": 3
       },
       {
-        "x": 7,
+        "x": 5,
         "y": 2
       },
       {
         "x": 6,
-        "y": 8
-      },
-      {
-        "x": 8,
-        "y": 8
-      },
-      {
-        "x": 3,
-        "y": 3
-      },
-      {
-        "x": 7,
-        "y": 3
-      },
-      {
-        "x": 6,
-        "y": 2
-      },
-      {
-        "x": 6,
-        "y": 8
+        "y": 9
       },
       {
         "x": 8,
