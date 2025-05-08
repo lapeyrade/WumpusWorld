@@ -43,11 +43,11 @@
 ## Key Features
 *   **Classic Wumpus World Gameplay**: Navigate a dangerous cave, avoid pits and the Wumpus, find gold, and return safely.
 *   **Multiple AI Control Mechanisms**:
-    *   **Basic Rule-Based AI**: A simple `if-then-else` logic (`AIBasic.cs`).
-    *   **Finite State Machine**: Agent behavior driven by states and transitions (`AIFiniteStateMachine.cs`).
-    *   **Behavior Tree**: Utilizes the [Fluid Behaviour Tree](https://github.com/ashblue/fluid-behaviour-tree) library for modular AI design (`AIBehaviourTree.cs`).
-    *   **Prolog-Based Logical AI**: Employs SWI-Prolog for sophisticated reasoning, using a defined knowledge base and ontologies (`AIProlog.cs` with `.pl` files).
-    *   **Experimental Large Language Model (LLM) AI**: Initial exploration into LLM-driven agent control (`AILargeLanguageModel.cs`).
+    *   **Basic Rule-Based AI**: A simple `if-then-else` logic ([`AIBasic.cs`](Assets/Scripts/Agent/AI/AIBasic.cs)).
+    *   **Finite State Machine**: Agent behavior driven by states and transitions ([`AIFiniteStateMachine.cs`](Assets/Scripts/Agent/AI/AIFiniteStateMachine.cs)).
+    *   **Behavior Tree**: Utilizes the [Fluid Behaviour Tree](https://github.com/ashblue/fluid-behaviour-tree) library for modular AI design ([`AIBehaviourTree.cs`](Assets/Scripts/Agent/AI/AIBehaviourTree.cs)).
+    *   **Prolog-Based Logical AI**: Employs SWI-Prolog for sophisticated reasoning, using a defined knowledge base and ontologies ([`AIProlog.cs`](Assets/Scripts/Agent/AI/AIProlog.cs) with `.pl` files).
+    *   **Experimental Large Language Model (LLM) AI**: Initial exploration into LLM-driven agent control ([`AILargeLanguageModel.cs`](Assets/Scripts/Agent/AI/AILargeLanguageModel.cs)).
 *   **Configurable Game Environment**: Customize grid size, number of pits, Wumpuses, gold, agents, and the random seed for reproducible worlds.
 *   **Agent Personalization**: Assign personality traits (e.g., Brave, Coward) that influence AI decision-making, especially for the Prolog AI.
 *   **Dual World Visualization**: See both the agent's limited perception of the world and the true state of the world side-by-side.
@@ -142,11 +142,11 @@ Before starting, you can customize the game environment:
     *   **Tile Size**: Visual spacing between cell centers (primarily affects appearance).
     *   **Nb Pit, Wumpus, Gold, Agent**: Specify the quantity of each game element. Ensure the total number of fixed elements (pits, Wumpus, gold, start positions for agents) does not exceed available grid cells.
     *   **AI Type**: Choose the agent's control logic from the dropdown:
-        *   `Basic`: Simple ad-hoc if-then-else rules (`AIBasic.cs`).
-        *   `FiniteStateMachine`: Behavior driven by a finite state machine (`AIFiniteStateMachine.cs`).
-        *   `BehaviourTree`: AI using a behavior tree structure (`AIBehaviourTree.cs`).
-        *   `Prolog`: Decisions made by querying an SWI-Prolog knowledge base (`AIProlog.cs`).
-        *   `LargeLanguageModel`: Experimental AI using an LLM (currently in development, `AILargeLanguageModel.cs`).
+        *   `Basic`: Simple ad-hoc if-then-else rules ([`AIBasic.cs`](Assets/Scripts/Agent/AI/AIBasic.cs)).
+        *   `FiniteStateMachine`: Behavior driven by a finite state machine ([`AIFiniteStateMachine.cs`](Assets/Scripts/Agent/AI/AIFiniteStateMachine.cs)).
+        *   `BehaviourTree`: AI using a behavior tree structure ([`AIBehaviourTree.cs`](Assets/Scripts/Agent/AI/AIBehaviourTree.cs)).
+        *   `Prolog`: Decisions made by querying an SWI-Prolog knowledge base ([`AIProlog.cs`](Assets/Scripts/Agent/AI/AIProlog.cs)).
+        *   `LargeLanguageModel`: Experimental AI using an LLM (currently in development, [`AILargeLanguageModel.cs`](Assets/Scripts/Agent/AI/AILargeLanguageModel.cs)).
     *   **Personalities**: Assign personality traits to agents (e.g., Brave, Coward, Cupid). Multiple traits can be selected. For the `AIProlog` AI, these personalities are asserted as facts into its knowledge base, influencing its decisions based on Prolog rules.
 
 3.  Click the **Play button** (►) at the top of the Unity Editor to start the game with your chosen settings.
@@ -174,22 +174,22 @@ This project explores various AI paradigms for controlling the Wumpus World agen
 
 ### C#-based AIs
 These AIs are implemented directly in C# within the Unity environment.
-*   **`AIBasic.cs`**: A straightforward rule-based system. It uses C# [Ontology classes](#c-ontology-classes-explained) (like `Objective.cs` and `Action.cs`) to generate goals, evaluate the utility of possible actions, and execute the best one.
-*   **`AIFiniteStateMachine.cs`**: Implements a classic Finite State Machine where the agent transitions between predefined states (e.g., Exploring, Attacking, Retreating) based on environmental perceptions.
-*   **`AIBehaviourTree.cs`**: Leverages the [Fluid Behaviour Tree](https://github.com/ashblue/fluid-behaviour-tree) library to create a modular and hierarchical tree of behaviors (sequences, selectors, conditions, actions) that dictate the agent's decisions.
+*   **[`AIBasic.cs`](Assets/Scripts/Agent/AI/AIBasic.cs)**: A straightforward rule-based system. It uses C# [Ontology classes](#c-ontology-classes-explained) (like [`Objective.cs`](Assets/Scripts/Ontology/Objective.cs) and [`Action.cs`](Assets/Scripts/Ontology/Action.cs)) to generate goals, evaluate the utility of possible actions, and execute the best one.
+*   **[`AIFiniteStateMachine.cs`](Assets/Scripts/Agent/AI/AIFiniteStateMachine.cs)**: Implements a classic Finite State Machine where the agent transitions between predefined states (e.g., Exploring, Attacking, Retreating) based on environmental perceptions.
+*   **[`AIBehaviourTree.cs`](Assets/Scripts/Agent/AI/AIBehaviourTree.cs)**: Leverages the [Fluid Behaviour Tree](https://github.com/ashblue/fluid-behaviour-tree) library to create a modular and hierarchical tree of behaviors (sequences, selectors, conditions, actions) that dictate the agent's decisions.
 
 ### Prolog-based AI
-*   **`AIProlog.cs`**: This AI delegates its decision-making to an external SWI-Prolog engine.
+*   **[`AIProlog.cs`](Assets/Scripts/Agent/AI/AIProlog.cs)**: This AI delegates its decision-making to an external SWI-Prolog engine.
     *   **Knowledge Representation**: Its understanding of the game world, actions, objectives, and personalities is defined by a set of structured Prolog files (`.pl`) located in `Assets/StreamingAssets/prolog_default/`. These include:
         *   [`main.pl`](Assets/StreamingAssets/prolog_default/main.pl): The core reasoning rules and entry point.
         *   [`action.pl`](Assets/StreamingAssets/prolog_default/action.pl): Ontology for game actions.
         *   [`element.pl`](Assets/StreamingAssets/prolog_default/element.pl): Ontology for game elements (Wumpus, Pit, Gold, Cell types).
         *   [`objective.pl`](Assets/StreamingAssets/prolog_default/objective.pl): Ontology for agent objectives.
         *   [`personality.pl`](Assets/StreamingAssets/prolog_default/personality.pl): Ontology for agent personalities.
-    *   **Interface**: Communication is handled by `PrologInterface.cs`, which sends facts (agent perceptions, selected C# `Personalities`) to the Prolog KB and queries it for the next action.
+    *   **Interface**: Communication is handled by [`PrologInterface.cs`](Assets/Scripts/Prolog/PrologInterface.cs), which sends facts (agent perceptions, selected C# `Personalities`) to the Prolog KB and queries it for the next action.
 
 ### Experimental LLM AI
-*   **`AILargeLanguageModel.cs`**: An exploratory AI aiming to use a Large Language Model for agent control. This is currently in the early stages of development and not fully functional.
+*   **[`AILargeLanguageModel.cs`](Assets/Scripts/Agent/AI/AILargeLanguageModel.cs)**: An exploratory AI aiming to use a Large Language Model for agent control. This is currently in the early stages of development and not fully functional.
 
 ---
 
@@ -197,33 +197,33 @@ These AIs are implemented directly in C# within the Unity environment.
 
 ### Agent Architecture
 The agent's behavior and interaction with the world are managed by several key C# scripts:
-*   **`Agent.cs`**: The core script for an agent. It initializes the agent, holds its state (like coordinates, inventory), and manages its various components (AI, personality, actions, objectives).
-*   **`AgentSense.cs`**: Handles how the agent perceives its environment (e.g., detecting breezes, stenches). Perceptual information is crucial for decision-making.
-*   **`AgentMove.cs`**: Manages all movement-related logic for the agent, including executing moves to adjacent cells and handling collisions with walls.
-*   **`AgentAction.cs`**: Responsible for executing non-movement actions, such as picking up gold or shooting an arrow.
-*   **`AgentObjective.cs`**: Used primarily by the `AIBasic` AI (and potentially adaptable for others), this component helps in generating high-level goals for the agent (e.g., explore, find gold).
+*   **[`Agent.cs`](Assets/Scripts/Agent/Agent.cs)**: The core script for an agent. It initializes the agent, holds its state (like coordinates, inventory), and manages its various components (AI, personality, actions, objectives).
+*   **[`AgentSense.cs`](Assets/Scripts/Agent/AgentSense.cs)**: Handles how the agent perceives its environment (e.g., detecting breezes, stenches). Perceptual information is crucial for decision-making.
+*   **[`AgentMove.cs`](Assets/Scripts/Agent/AgentMove.cs)**: Manages all movement-related logic for the agent, including executing moves to adjacent cells and handling collisions with walls.
+*   **[`AgentAction.cs`](Assets/Scripts/Agent/AgentAction.cs)**: Responsible for executing non-movement actions, such as picking up gold or shooting an arrow.
+*   **[`AgentObjective.cs`](Assets/Scripts/Agent/AgentObjective.cs)**: Used primarily by the `AIBasic` AI (and potentially adaptable for others), this component helps in generating high-level goals for the agent (e.g., explore, find gold).
 
 ### Prolog Integration Details (`AIProlog`)
-The Prolog-based AI (`AIProlog.cs`) leverages an external SWI-Prolog engine for its decision-making:
-*   **`PrologInterface.cs`**: This script acts as a bridge between Unity (C#) and SWI-Prolog. It uses SWI-Prolog's Machine Query Interface (MQI) to send queries and receive results. It directly consults `main.pl` upon initialization.
+The Prolog-based AI ([`AIProlog.cs`](Assets/Scripts/Agent/AI/AIProlog.cs)) leverages an external SWI-Prolog engine for its decision-making:
+*   **[`PrologInterface.cs`](Assets/Scripts/Prolog/PrologInterface.cs)**: This script acts as a bridge between Unity (C#) and SWI-Prolog. It uses SWI-Prolog's Machine Query Interface (MQI) to send queries and receive results. It directly consults `main.pl` upon initialization.
 *   **Knowledge Base Files (in `Assets/StreamingAssets/prolog_default/`)**:
-    *   **`main.pl`**: This is the primary Prolog file consulted by `PrologInterface.cs`. It contains the core reasoning logic, predicates, and rules that drive the agent's behavior. It is responsible for consulting the other specialized ontology `.pl` files.
+    *   **`main.pl`**: This is the primary Prolog file consulted by [`PrologInterface.cs`](Assets/Scripts/Prolog/PrologInterface.cs). It contains the core reasoning logic, predicates, and rules that drive the agent's behavior. It is responsible for consulting the other specialized ontology `.pl` files.
     *   **Ontology Files**: `action.pl`, `element.pl`, `objective.pl`, and `personality.pl`. These files define the detailed ontologies—hierarchies, properties, and relationships—for game actions, elements (like Wumpus, pits, gold, cell types), agent objectives, and personality traits. They provide the structured knowledge representation that `main.pl` uses for reasoning.
 *   **Operation**:
-    1.  During its turn, `AIProlog.cs` gathers current agent state (e.g., coordinates, perceived cell contents via `AgentSense.cs`) and selected C# `Personalities` (from `GameManager`).
-    2.  These are asserted as temporary facts into the Prolog knowledge base via `PrologInterface.cs`. For instance, a selected C# `Personality` like "Brave" becomes a Prolog fact `brave(agentName, _)`, which `personality.pl` and `main.pl` can then use in their reasoning.
-    3.  `AIProlog.cs` then calls `PrologInterface.QueryKb(...)`, sending the agent's name and coordinates. This triggers the Prolog engine to consult its rule set using all available facts.
+    1.  During its turn, [`AIProlog.cs`](Assets/Scripts/Agent/AI/AIProlog.cs) gathers current agent state (e.g., coordinates, perceived cell contents via [`AgentSense.cs`](Assets/Scripts/Agent/AgentSense.cs)) and selected C# `Personalities` (from `GameManager`).
+    2.  These are asserted as temporary facts into the Prolog knowledge base via [`PrologInterface.cs`](Assets/Scripts/Prolog/PrologInterface.cs). For instance, a selected C# `Personality` like "Brave" becomes a Prolog fact `brave(agentName, _)`, which `personality.pl` and `main.pl` can then use in their reasoning.
+    3.  [`AIProlog.cs`](Assets/Scripts/Agent/AI/AIProlog.cs) then calls `PrologInterface.QueryKb(...)`, sending the agent's name and coordinates. This triggers the Prolog engine to consult its rule set using all available facts.
     4.  The Prolog engine returns a string representing the suggested action (e.g., "move", "shoot", "pickup").
-    5.  `AIProlog.cs` then calls the appropriate methods on `AgentMove.cs` or `AgentAction.cs` to execute this action.
+    5.  [`AIProlog.cs`](Assets/Scripts/Agent/AI/AIProlog.cs) then calls the appropriate methods on [`AgentMove.cs`](Assets/Scripts/Agent/AgentMove.cs) or [`AgentAction.cs`](Assets/Scripts/Agent/AgentAction.cs) to execute this action.
     6.  The `GameController` also calls `PrologInterface.RunQuery()` at the end of the turn to process any globally accumulated Prolog queries or assertions.
 
 ### C# Ontology Classes Explained
 Located in `Assets/Scripts/Ontology/`, these C# classes define the conceptual building blocks for game elements and AI logic primarily for the **C#-based AI systems** (`AIBasic`, `AIBehaviourTree`, `AIFiniteStateMachine`) and for representing these concepts within the general C# game logic.
-*   **`Action.cs`**: Base class for all actions an agent can perform (e.g., `Move`, `Attack`, `PickUp`). Includes a `Utility` property used by `AIBasic`.
-*   **`Cell.cs`**: Represents a cell in the game grid and its properties (e.g., `isVisited`, `hasPit`).
-*   **`Element.cs`**: Base class for game objects like Wumpus, Pit, Gold.
-*   **`Objective.cs`**: Base class for agent objectives, used by `AIBasic` (e.g., `Explore`, `GetGold`).
-*   **`Personality.cs`**: Defines various C# personality components (e.g., `Brave`, `Coward`) that can be attached to agents. The names of these selected C# personalities are converted to facts for the Prolog AI, which then uses its own Prolog-defined ontologies (e.g., `personality.pl`) to interpret and reason about these traits.
+*   **[`Action.cs`](Assets/Scripts/Ontology/Action.cs)**: Base class for all actions an agent can perform (e.g., `Move`, `Attack`, `PickUp`). Includes a `Utility` property used by `AIBasic`.
+*   **[`Cell.cs`](Assets/Scripts/Ontology/Cell.cs)**: Represents a cell in the game grid and its properties (e.g., `isVisited`, `hasPit`).
+*   **[`Element.cs`](Assets/Scripts/Ontology/Element.cs)**: Base class for game objects like Wumpus, Pit, Gold.
+*   **[`Objective.cs`](Assets/Scripts/Ontology/Objective.cs)**: Base class for agent objectives, used by `AIBasic` (e.g., `Explore`, `GetGold`).
+*   **[`Personality.cs`](Assets/Scripts/Ontology/Personality.cs)**: Defines various C# personality components (e.g., `Brave`, `Coward`) that can be attached to agents. The names of these selected C# personalities are converted to facts for the Prolog AI, which then uses its own Prolog-defined ontologies (e.g., `personality.pl`) to interpret and reason about these traits.
 
 While the C# `Ontology` classes and the Prolog `.pl` ontology files may cover similar conceptual domains (actions, personalities, etc.), they serve different AI systems. The Prolog ontologies are specifically for the `AIProlog` AI and are defined purely in Prolog, whereas the C# classes are for the C# AIs and engine-level representation.
 
