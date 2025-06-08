@@ -45,7 +45,7 @@
 *   **Multiple AI Control Mechanisms**:
     *   **Basic Rule-Based AI**: A simple `if-then-else` logic ([`AIBasic.cs`](Assets/Scripts/Agent/AI/AIBasic.cs)).
     *   **Finite State Machine**: Agent behavior driven by states and transitions ([`AIFiniteStateMachine.cs`](Assets/Scripts/Agent/AI/AIFiniteStateMachine.cs)).
-    *   **Behavior Tree**: Utilizes the [Fluid Behaviour Tree](https://github.com/ashblue/fluid-behaviour-tree) library for modular AI design ([`AIBehaviourTree.cs`](Assets/Scripts/Agent/AI/AIBehaviourTree.cs)).
+    *   **Behavior Tree**: Utilizes the [Fluid Behavior Tree](https://github.com/ashblue/fluid-behavior-tree) library for modular AI design ([`AIBehaviorTree.cs`](Assets/Scripts/Agent/AI/AIBehaviorTree.cs)).
     *   **Prolog-Based Logical AI**: Employs SWI-Prolog for sophisticated reasoning, using a defined knowledge base and ontologies ([`AIProlog.cs`](Assets/Scripts/Agent/AI/AIProlog.cs) with `.pl` files).
     *   **Experimental Large Language Model (LLM) AI**: Initial exploration into LLM-driven agent control ([`AILargeLanguageModel.cs`](Assets/Scripts/Agent/AI/AILargeLanguageModel.cs)).
 *   **Configurable Game Environment**: Customize grid size, number of pits, Wumpuses, gold, agents, and the random seed for reproducible worlds.
@@ -91,7 +91,7 @@ A small demo of this project is available by clicking on the following image:
 ## Technologies Used
 *   **Game Engine**: Unity (programmed in C#)
 *   **Logic Programming Engine**: SWI-Prolog (for the `AIProlog` agent)
-*   **Behavior Tree Library**: [Fluid Behaviour Tree](https://github.com/ashblue/fluid-behaviour-tree) by CleverCrow
+*   **Behavior Tree Library**: [Fluid Behavior Tree](https://github.com/ashblue/fluid-behavior-tree) by CleverCrow
 *   **Development Environment**: Unity Editor, IDE for C# (e.g., Visual Studio, Rider)
 *   **Version Control**: Git & GitHub
 
@@ -144,7 +144,7 @@ Before starting, you can customize the game environment:
     *   **AI Type**: Choose the agent's control logic from the dropdown:
         *   `Basic`: Simple ad-hoc if-then-else rules ([`AIBasic.cs`](Assets/Scripts/Agent/AI/AIBasic.cs)).
         *   `FiniteStateMachine`: Behavior driven by a finite state machine ([`AIFiniteStateMachine.cs`](Assets/Scripts/Agent/AI/AIFiniteStateMachine.cs)).
-        *   `BehaviourTree`: AI using a behavior tree structure ([`AIBehaviourTree.cs`](Assets/Scripts/Agent/AI/AIBehaviourTree.cs)).
+        *   `BehaviorTree`: AI using a behavior tree structure ([`AIBehaviorTree.cs`](Assets/Scripts/Agent/AI/AIBehaviorTree.cs)).
         *   `Prolog`: Decisions made by querying an SWI-Prolog knowledge base ([`AIProlog.cs`](Assets/Scripts/Agent/AI/AIProlog.cs)).
         *   `LargeLanguageModel`: Experimental AI using an LLM (currently in development, [`AILargeLanguageModel.cs`](Assets/Scripts/Agent/AI/AILargeLanguageModel.cs)).
     *   **Personalities**: Assign personality traits to agents (e.g., Brave, Coward, Cupid). Multiple traits can be selected. For the `AIProlog` AI, these personalities are asserted as facts into its knowledge base, influencing its decisions based on Prolog rules.
@@ -176,7 +176,7 @@ This project explores various AI paradigms for controlling the Wumpus World agen
 These AIs are implemented directly in C# within the Unity environment.
 *   **[`AIBasic.cs`](Assets/Scripts/Agent/AI/AIBasic.cs)**: A straightforward rule-based system. It uses C# [Ontology classes](#c-ontology-classes-explained) (like [`Objective.cs`](Assets/Scripts/Ontology/Objective.cs) and [`Action.cs`](Assets/Scripts/Ontology/Action.cs)) to generate goals, evaluate the utility of possible actions, and execute the best one.
 *   **[`AIFiniteStateMachine.cs`](Assets/Scripts/Agent/AI/AIFiniteStateMachine.cs)**: Implements a classic Finite State Machine where the agent transitions between predefined states (e.g., Exploring, Attacking, Retreating) based on environmental perceptions.
-*   **[`AIBehaviourTree.cs`](Assets/Scripts/Agent/AI/AIBehaviourTree.cs)**: Leverages the [Fluid Behaviour Tree](https://github.com/ashblue/fluid-behaviour-tree) library to create a modular and hierarchical tree of behaviors (sequences, selectors, conditions, actions) that dictate the agent's decisions.
+*   **[`AIBehaviorTree.cs`](Assets/Scripts/Agent/AI/AIBehaviorTree.cs)**: Leverages the [Fluid Behavior Tree](https://github.com/ashblue/fluid-behavior-tree) library to create a modular and hierarchical tree of behaviors (sequences, selectors, conditions, actions) that dictate the agent's decisions.
 
 ### Prolog-based AI
 *   **[`AIProlog.cs`](Assets/Scripts/Agent/AI/AIProlog.cs)**: This AI delegates its decision-making to an external SWI-Prolog engine.
@@ -218,7 +218,7 @@ The Prolog-based AI ([`AIProlog.cs`](Assets/Scripts/Agent/AI/AIProlog.cs)) lever
     6.  The `GameController` also calls `PrologInterface.RunQuery()` at the end of the turn to process any globally accumulated Prolog queries or assertions.
 
 ### C# Ontology Classes Explained
-Located in `Assets/Scripts/Ontology/`, these C# classes define the conceptual building blocks for game elements and AI logic primarily for the **C#-based AI systems** (`AIBasic`, `AIBehaviourTree`, `AIFiniteStateMachine`) and for representing these concepts within the general C# game logic.
+Located in `Assets/Scripts/Ontology/`, these C# classes define the conceptual building blocks for game elements and AI logic primarily for the **C#-based AI systems** (`AIBasic`, `AIBehaviorTree`, `AIFiniteStateMachine`) and for representing these concepts within the general C# game logic.
 *   **[`Action.cs`](Assets/Scripts/Ontology/Action.cs)**: Base class for all actions an agent can perform (e.g., `Move`, `Attack`, `PickUp`). Includes a `Utility` property used by `AIBasic`.
 *   **[`Cell.cs`](Assets/Scripts/Ontology/Cell.cs)**: Represents a cell in the game grid and its properties (e.g., `isVisited`, `hasPit`).
 *   **[`Element.cs`](Assets/Scripts/Ontology/Element.cs)**: Base class for game objects like Wumpus, Pit, Gold.
@@ -371,6 +371,7 @@ sequenceDiagram
 *   `AIProlog_i`: The `AIProlog` component.
 *   `PI`: `PrologInterface` - Bridge to the SWI-Prolog engine.
 *   `AM_i`: The `AgentMove` component.
+*   `AA_i`: The `AgentAction` component.
 
 ### Data Logging
 The game includes a feature to log data from each session:
@@ -389,7 +390,7 @@ WumpusWorld
 │   │   ├── Agent
 │   │   │   ├── AI                  # Different AI implementations for the agent
 │   │   │   │   ├── AIBasic.cs
-│   │   │   │   ├── AIBehaviourTree.cs
+│   │   │   │   ├── AIBehaviorTree.cs
 │   │   │   │   ├── AIFiniteStateMachine.cs
 │   │   │   │   ├── AILargeLanguageModel.cs
 │   │   │   │   ├── AIProlog.cs
@@ -461,7 +462,7 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ## Acknowledgments
 *   This project is inspired by the Wumpus World example in "Artificial Intelligence: A Modern Approach" by Stuart Russell and Peter Norvig.
-*   The Behavior Tree AI implementation uses the [Fluid Behaviour Tree](https://github.com/ashblue/fluid-behaviour-tree) library by CleverCrow.
+*   The Behavior Tree AI implementation uses the [Fluid Behavior Tree](https://github.com/ashblue/fluid-behavior-tree) library by CleverCrow.
 *   The C# implementation for interacting with SWI-Prolog was inspired by the Python `swiplserver` library, part of the [SWI-Prolog Machine Query Interface (MQI)](https://github.com/SWI-Prolog/packages-mqi).
 *   Special thanks to [Jan Wielemaker](https://github.com/JanWielemaker) for his invaluable help with Prolog-related questions and contributions to the SWI-Prolog ecosystem.
 *   Thanks to the developers of SWI-Prolog and especially [Jan Wielemaker](https://github.com/JanWielemaker) for providing a robust Prolog engine.

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Prolog;
 using UnityEngine;
 using Random = UnityEngine.Random;
-using System.Linq;
 
 namespace GameManagement
 {
@@ -36,7 +36,7 @@ namespace GameManagement
         public int nbAgent = 2;     // Number of agents
 
         // AI configuration
-        public enum AIType { Prolog, BehaviourTree, LargeLanguageModel, Basic, FiniteStateMachine }
+        public enum AIType { Prolog, BehaviorTree, LargeLanguageModel, Basic, FiniteStateMachine }
         public AIType aiType = AIType.Basic;
         public enum Personalities { Cupid, Ascetic, Brave, Coward }
         public List<Personalities> personalities = new() { Personalities.Brave };

@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Agent.AI;
-using UnityEngine;
 using GameManagement;
 using Ontology;
+using UnityEngine;
 
 namespace Agent
 {
@@ -12,12 +12,12 @@ namespace Agent
     {
         // Core game references
         private GameManager _gameManager;
-        
+
         // Component collections
         private readonly Dictionary<string, Personality> _personalities = new();
         private readonly Dictionary<string, Objective> _objectives = new();
         private readonly Dictionary<string, Ontology.Action> _actions = new();
-        
+
         // Agent state properties
         public Vector2Int startCoord;
         public Vector2Int coords;
@@ -76,7 +76,7 @@ namespace Agent
             var aiComponentType = _gameManager.aiType switch
             {
                 GameManager.AIType.Prolog => typeof(AIProlog),
-                GameManager.AIType.BehaviourTree => typeof(AIBehaviourTree),
+                GameManager.AIType.BehaviorTree => typeof(AIBehaviorTree),
                 GameManager.AIType.FiniteStateMachine => typeof(AIFiniteStateMachine),
                 GameManager.AIType.LargeLanguageModel => typeof(AILargeLanguageModel),
                 _ => typeof(AIBasic),

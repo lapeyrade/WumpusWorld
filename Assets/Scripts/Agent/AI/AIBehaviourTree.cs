@@ -1,11 +1,11 @@
 using CleverCrow.Fluid.BTs.Tasks;
 using CleverCrow.Fluid.BTs.Trees;
-using UnityEngine;
 using Ontology;
+using UnityEngine;
 
 namespace Agent.AI
 {
-    public class AIBehaviourTree : AIBasic
+    public class AIBehaviorTree : AIBasic
     {
         [SerializeField]
         private BehaviorTree tree;
