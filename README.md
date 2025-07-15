@@ -46,7 +46,8 @@
     *   **Basic Rule-Based AI**: A simple `if-then-else` logic ([`AIBasic.cs`](Assets/Scripts/Agent/AI/AIBasic.cs)).
     *   **Finite State Machine**: Agent behavior driven by states and transitions ([`AIFiniteStateMachine.cs`](Assets/Scripts/Agent/AI/AIFiniteStateMachine.cs)).
     *   **Behavior Tree**: Utilizes the [Fluid Behavior Tree](https://github.com/ashblue/fluid-behavior-tree) library for modular AI design ([`AIBehaviorTree.cs`](Assets/Scripts/Agent/AI/AIBehaviorTree.cs)).
-    *   **Prolog-Based Logical AI**: Employs SWI-Prolog for sophisticated reasoning, using a defined knowledge base and ontologies ([`AIProlog.cs`](Assets/Scripts/Agent/AI/AIProlog.cs) with `.pl` files).
+    *   **Prolog-Based Logical AI**: Employs SWI-Prolog for reasoning, using a defined knowledge base and ontologies ([`AIProlog.cs`](Assets/Scripts/Agent/AI/AIProlog.cs) with [Prolog files](Assets/StreamingAssets/prolog_default/)).
+    *   **Prolog-Based Logical AI with Meta-Interpreter**: Employs SWI-Prolog for reasoning, using a defined knowledge base, ontologies and a meta-interpreter([`AIPrologMetaInterpreter.cs`](Assets/Scripts/Agent/AI/AIPrologMetaInterpreter.cs) with [Prolog files](Assets/StreamingAssets/prolog_subsumedby/)).
     *   **Experimental Large Language Model (LLM) AI**: Initial exploration into LLM-driven agent control ([`AILargeLanguageModel.cs`](Assets/Scripts/Agent/AI/AILargeLanguageModel.cs)).
 *   **Configurable Game Environment**: Customize grid size, number of pits, Wumpuses, gold, agents, and the random seed for reproducible worlds.
 *   **Agent Personalization**: Assign personality traits (e.g., Brave, Coward) that influence AI decision-making, especially for the Prolog AI.
