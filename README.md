@@ -179,6 +179,13 @@ These AIs are implemented directly in C# within the Unity environment.
 *   **[`AIFiniteStateMachine.cs`](Assets/Scripts/Agent/AI/AIFiniteStateMachine.cs)**: Implements a classic Finite State Machine where the agent transitions between predefined states (e.g., Exploring, Attacking, Retreating) based on environmental perceptions.
 *   **[`AIBehaviorTree.cs`](Assets/Scripts/Agent/AI/AIBehaviorTree.cs)**: Leverages the [Fluid Behavior Tree](https://github.com/ashblue/fluid-behavior-tree) library to create a modular and hierarchical tree of behaviors (sequences, selectors, conditions, actions) that dictate the agent's decisions.
 
+<p align="center">
+  <a href="Assets/Illustrations/full_behavior_tree.png">
+    <img src="Assets/Illustrations/full_behavior_tree.png" alt="Full Behavior Tree">
+  </a>
+</p>
+<p align="center"><em>A snapshot of the full behavior tree used by <code>AIBehaviorTree.cs</code>. Click to see the full image.</em></p>
+
 ### Prolog-based AI
 *   **[`AIProlog.cs`](Assets/Scripts/Agent/AI/AIProlog.cs)**: This AI delegates its decision-making to an external SWI-Prolog engine.
     *   **Knowledge Representation**: Its understanding of the game world, actions, objectives, and personalities is defined by a set of structured Prolog files (`.pl`) located in `Assets/StreamingAssets/prolog_default/`. These include:
