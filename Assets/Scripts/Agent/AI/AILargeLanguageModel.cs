@@ -23,11 +23,6 @@ namespace Agent.AI
 {
     public class AILargeLanguageModel : AIBasic
     {
-        // Specifies the LLM provider to use.
-        public enum ApiProvider { OpenAI, Mistral, Ollama, OpenRouter }
-        // The LLM provider to use for generating actions.
-        public ApiProvider apiProvider = ApiProvider.OpenRouter;
-
         // LLM and game state variables
         private string _apiKey;
         private readonly List<ApiMessage> _chatHistory = new();
@@ -39,12 +34,12 @@ namespace Agent.AI
         {
             get
             {
-                return apiProvider switch
+                return _gameManager.apiProvider switch
                 {
-                    ApiProvider.OpenAI => "https://api.openai.com/v1/chat/completions",
-                    ApiProvider.Mistral => "https://api.mistral.ai/v1/chat/completions",
-                    ApiProvider.OpenRouter => "https://openrouter.ai/api/v1/chat/completions",
-                    ApiProvider.Ollama => "http://localhost:11434/api/chat",
+                    GameManager.ApiProvider.OpenAI => "https://api.openai.com/v1/chat/completions",
+                    GameManager.ApiProvider.Mistral => "https://api.mistral.ai/v1/chat/completions",
+                    GameManager.ApiProvider.OpenRouter => "https://openrouter.ai/api/v1/chat/completions",
+                    GameManager.ApiProvider.Ollama => "http://localhost:11434/api/chat",
                     _ => null
                 };
             }
@@ -108,13 +103,13 @@ namespace Agent.AI
         private void Start()
         {
             LoadEnv();
-            if (apiProvider != ApiProvider.Ollama)
+            if (_gameManager.apiProvider != GameManager.ApiProvider.Ollama)
             {
-                _apiKey = GetEnvValue(apiProvider switch
+                _apiKey = GetEnvValue(_gameManager.apiProvider switch
                 {
-                    ApiProvider.OpenAI => "OPENAI_API_KEY",
-                    ApiProvider.Mistral => "MISTRAL_API_KEY",
-                    ApiProvider.OpenRouter => "OPENROUTER_API_KEY",
+                    GameManager.ApiProvider.OpenAI => "OPENAI_API_KEY",
+                    GameManager.ApiProvider.Mistral => "MISTRAL_API_KEY",
+                    GameManager.ApiProvider.OpenRouter => "OPENROUTER_API_KEY",
                     _ => ""
                 });
             }
@@ -170,9 +165,9 @@ You will be given the current game state each turn. You must respond with only t
 
 **--- Response Format ---**
 Your response must be a single line with the action and direction, like `Move Right` or `Shoot Up`.
-"});
+" });
             // Example Game
-            _chatHistory.Add(new ApiMessage{role = "user", content = @"New Turn:
+            _chatHistory.Add(new ApiMessage { role = "user", content = @"New Turn:
 Current position: (1, 1)
 Has gold: false
 Known map:
@@ -182,10 +177,10 @@ Cells with breeze:
 Cells with stench: 
 Perceived Wumpus cells: 
 Perceived wall cells: 
-What is your next action?"});
-            _chatHistory.Add(new ApiMessage{role = "assistant", content = "Move Right"});
-            
-            _chatHistory.Add(new ApiMessage{role = "user", content = @"New Turn:
+What is your next action?" });
+            _chatHistory.Add(new ApiMessage { role = "assistant", content = "Move Right" });
+
+            _chatHistory.Add(new ApiMessage { role = "user", content = @"New Turn:
 Current position: (2, 1)
 Has gold: false
 Known map:
@@ -195,10 +190,10 @@ Cells with breeze: (2,1)
 Cells with stench: 
 Perceived Wumpus cells: 
 Perceived wall cells: 
-What is your next action?"});
-            _chatHistory.Add(new ApiMessage{role = "assistant", content = "Move Left"});
-            
-            _chatHistory.Add(new ApiMessage{role = "user", content = @"New Turn:
+What is your next action?" });
+            _chatHistory.Add(new ApiMessage { role = "assistant", content = "Move Left" });
+
+            _chatHistory.Add(new ApiMessage { role = "user", content = @"New Turn:
 Current position: (1, 1)
 Has gold: false
 Known map:
@@ -208,8 +203,8 @@ Cells with breeze: (2,1)
 Cells with stench: 
 Perceived Wumpus cells: 
 Perceived wall cells: 
-What is your next action?"});
-            _chatHistory.Add(new ApiMessage{role = "assistant", content = "Move Up"});
+What is your next action?" });
+            _chatHistory.Add(new ApiMessage { role = "assistant", content = "Move Up" });
         }
 
         // Executes the agent's turn.
@@ -285,17 +280,17 @@ What is your next action?"});
         {
             _chatHistory.Add(new ApiMessage { role = "user", content = prompt });
 
-            var modelName = apiProvider switch
+            var modelName = _gameManager.apiProvider switch
             {
-                ApiProvider.OpenAI => "o4-mini",
-                ApiProvider.Mistral => "mistral-large-latest",
-                ApiProvider.OpenRouter => "deepseek/deepseek-r1:free",
-                ApiProvider.Ollama => "deepseek-r1:latest",
+                GameManager.ApiProvider.OpenAI => "o4-mini",
+                GameManager.ApiProvider.Mistral => "mistral-large-latest",
+                GameManager.ApiProvider.OpenRouter => "deepseek/deepseek-r1:free",
+                GameManager.ApiProvider.Ollama => "deepseek-r1:latest",
                 _ => "o4-mini"
             };
 
             string requestJson;
-            if (apiProvider == ApiProvider.Ollama)
+            if (_gameManager.apiProvider == GameManager.ApiProvider.Ollama)
             {
                 var requestBody = new OllamaApiRequestBody
                 {
@@ -323,13 +318,13 @@ What is your next action?"});
             request.uploadHandler = new UploadHandlerRaw(bodyRaw);
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
-            
-            if (apiProvider != ApiProvider.Ollama)
+
+            if (_gameManager.apiProvider != GameManager.ApiProvider.Ollama)
             {
                 request.SetRequestHeader("Authorization", $"Bearer {_apiKey}");
             }
 
-            if (apiProvider == ApiProvider.OpenRouter)
+            if (_gameManager.apiProvider == GameManager.ApiProvider.OpenRouter)
             {
                 request.SetRequestHeader("HTTP-Referer", "https://github.com/lapeyrade/Wumpus_World");
                 request.SetRequestHeader("X-Title", "Wumpus World");
@@ -350,7 +345,7 @@ What is your next action?"});
 
                 string responseMessage;
 
-                if (apiProvider == ApiProvider.Ollama)
+                if (_gameManager.apiProvider == GameManager.ApiProvider.Ollama)
                 {
                     var response = JsonUtility.FromJson<OllamaApiResponse>(responseJson);
                     responseMessage = response.message.content.Trim();

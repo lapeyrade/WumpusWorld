@@ -38,6 +38,8 @@ namespace GameManagement
         // AI configuration
         public enum AIType { Prolog, BehaviorTree, LargeLanguageModel, Basic, FiniteStateMachine }
         public AIType aiType = AIType.Basic;
+        public enum ApiProvider { OpenAI, Mistral, Ollama, OpenRouter }
+        public ApiProvider apiProvider = ApiProvider.OpenAI;
         public enum Personalities { Cupid, Ascetic, Brave, Coward }
         public List<Personalities> personalities = new() { Personalities.Brave };
 
@@ -101,25 +103,26 @@ namespace GameManagement
         private void SaveData()
         {
             // Prepare game configuration data
-            var data = new List<Dictionary<string, object>>
-        {
-            new() {
-                {"randomSeed", randomSeed},
-                {"gridMin", new { x = gridMin.x, y = gridMin.y }},
-                {"gridMax", new { x = gridMax.x, y = gridMax.y }},
-                {"tileSize", Math.Round(tileSize, 2)},
-                {"nbPit", nbPit},
-                {"nbWumpus", nbWumpus},
-                {"nbGold", nbGold},
-                {"nbAgent", nbAgent},
-                {"aiType", aiType.ToString()},
-                {"personalities", personalities},
-                {"agents", agents.Count},
-                {"isGameOver", isGameOver},
-                {"isModeAuto", isModeAuto},
-                {"turnDuration", turnDuration.Select(d => Math.Round(d, 2)).ToList()},
-            }
-        };
+            var gameConfig = new Dictionary<string, object>
+            {
+                { "randomSeed", randomSeed },
+                { "gridMin", new { x = gridMin.x, y = gridMin.y } },
+                { "gridMax", new { x = gridMax.x, y = gridMax.y } },
+                { "tileSize", Math.Round(tileSize, 2) },
+                { "nbPit", nbPit },
+                { "nbWumpus", nbWumpus },
+                { "nbGold", nbGold },
+                { "nbAgent", nbAgent },
+                { "aiType", aiType.ToString() },
+                { "personalities", personalities },
+                { "agents", agents.Count },
+                { "isGameOver", isGameOver },
+                { "isModeAuto", isModeAuto },
+                { "turnDuration", turnDuration.Select(d => Math.Round(d, 2)).ToList() }
+            };
+            if (aiType is AIType.LargeLanguageModel) gameConfig.Add("apiProvider", apiProvider.ToString());
+
+            var data = new List<Dictionary<string, object>> { gameConfig };
 
             // Add individual agent data
             for (var i = 0; i < agents.Count; i++)
