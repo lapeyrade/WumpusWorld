@@ -81,3 +81,6 @@ ignore.conf
 
 /Assets/Scripts/Agent/AI/gpt_key.txt*
 **/.DS_Store
+
+# Environment variables (API keys)Assets/Resources/env.txt
+Assets/Resources/env.txt

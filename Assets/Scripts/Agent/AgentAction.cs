@@ -81,6 +81,29 @@ namespace Agent
         // Remove gold from the current cell
         internal void Discard() { GridManager.RemoveFromGrids(Coords, "Gold"); }
 
+        // Shoot an arrow in a given direction (used by the LLM AI)
+        public void ShootArrow(Vector2Int direction)
+        {
+            if (_agent.nbArrow < 1) return;
+            _agent.nbArrow--;
+
+            var targetCoord = Coords + direction;
+
+            if (GridManager.CellInGridLimits(targetCoord) &&
+                _gameManager.Map[targetCoord.x, targetCoord.y].Exists(e => e.CompareTag("Wumpus")))
+            {
+                GridManager.RemoveFromGrids(targetCoord, "Wumpus");
+                GridManager.RemoveFromGrids(targetCoord, "DangerousCell");
+                GridManager.AddToGrids(targetCoord, "DeadWumpus");
+                GridManager.AddToGrids(targetCoord, "SafeCell");
+            }
+
+            if (direction == Vector2Int.right) _agent.lastAction = "ShootRight";
+            else if (direction == Vector2Int.left) _agent.lastAction = "ShootLeft";
+            else if (direction == Vector2Int.up) _agent.lastAction = "ShootUp";
+            else if (direction == Vector2Int.down) _agent.lastAction = "ShootDown";
+        }
+
         public void TryShootingArrow()
         {
             // Verify arrow availability
