@@ -283,7 +283,7 @@ What is your next action?" });
             var modelName = _gameManager.apiProvider switch
             {
                 GameManager.ApiProvider.OpenAI => "o4-mini",
-                GameManager.ApiProvider.Mistral => "mistral-large-latest",
+                GameManager.ApiProvider.Mistral => "mistral-medium-latest",
                 GameManager.ApiProvider.OpenRouter => "deepseek/deepseek-r1:free",
                 GameManager.ApiProvider.Ollama => "deepseek-r1:latest",
                 _ => "o4-mini"
