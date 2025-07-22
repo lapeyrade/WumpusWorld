@@ -48,7 +48,7 @@
     *   **Behavior Tree**: Utilizes the [Fluid Behavior Tree](https://github.com/ashblue/fluid-behavior-tree) library for modular AI design ([`AIBehaviorTree.cs`](Assets/Scripts/Agent/AI/AIBehaviorTree.cs)).
     *   **Prolog-Based Logical AI**: Employs SWI-Prolog for reasoning, using a defined knowledge base and ontologies ([`AIProlog.cs`](Assets/Scripts/Agent/AI/AIProlog.cs) with [Prolog files](Assets/StreamingAssets/prolog_default/)).
     *   **Prolog-Based Logical AI with Meta-Interpreter**: Employs SWI-Prolog for reasoning, using a defined knowledge base, ontologies and a meta-interpreter([`AIPrologMetaInterpreter.cs`](Assets/Scripts/Agent/AI/AIProlog.cs) with [Prolog files](Assets/StreamingAssets/prolog_subsumedby/)).
-    *   **Experimental Large Language Model (LLM) AI**: Initial exploration into LLM-driven agent control ([`AILargeLanguageModel.cs`](Assets/Scripts/Agent/AI/AILargeLanguageModel.cs)).
+    *   **Experimental Large Language Model (LLM) AI**: A functional, yet experimental, AI that uses an LLM for decision-making via API calls to providers like OpenAI, Mistral, Ollama, or OpenRouter ([`AILargeLanguageModel.cs`](Assets/Scripts/Agent/AI/AILargeLanguageModel.cs)).
 *   **Configurable Game Environment**: Customize grid size, number of pits, Wumpuses, gold, agents, and the random seed for reproducible worlds.
 *   **Agent Personalization**: Assign personality traits (e.g., Brave, Coward) that influence AI decision-making, especially for the Prolog AI.
 *   **Dual World Visualization**: See both the agent's limited perception of the world and the true state of the world side-by-side.
@@ -147,7 +147,7 @@ Before starting, you can customize the game environment:
         *   `FiniteStateMachine`: Behavior driven by a finite state machine ([`AIFiniteStateMachine.cs`](Assets/Scripts/Agent/AI/AIFiniteStateMachine.cs)).
         *   `BehaviorTree`: AI using a behavior tree structure ([`AIBehaviorTree.cs`](Assets/Scripts/Agent/AI/AIBehaviorTree.cs)).
         *   `Prolog`: Decisions made by querying an SWI-Prolog knowledge base ([`AIProlog.cs`](Assets/Scripts/Agent/AI/AIProlog.cs)).
-        *   `LargeLanguageModel`: Experimental AI using an LLM (currently in development, [`AILargeLanguageModel.cs`](Assets/Scripts/Agent/AI/AILargeLanguageModel.cs)).
+        *   `LargeLanguageModel`: An experimental AI that queries a Large Language Model to decide its next move. It is functional but not as effective as other methods ([`AILargeLanguageModel.cs`](Assets/Scripts/Agent/AI/AILargeLanguageModel.cs)).
     *   **Personalities**: Assign personality traits to agents (e.g., Brave, Coward, Cupid). Multiple traits can be selected. For the `AIProlog` AI, these personalities are asserted as facts into its knowledge base, influencing its decisions based on Prolog rules.
 
 3.  Click the **Play button** (►) at the top of the Unity Editor to start the game with your chosen settings.
@@ -197,7 +197,14 @@ These AIs are implemented directly in C# within the Unity environment.
     *   **Interface**: Communication is handled by [`PrologInterface.cs`](Assets/Scripts/Prolog/PrologInterface.cs), which sends facts (agent perceptions, selected C# `Personalities`) to the Prolog KB and queries it for the next action.
 
 ### Experimental LLM AI
-*   **[`AILargeLanguageModel.cs`](Assets/Scripts/Agent/AI/AILargeLanguageModel.cs)**: An exploratory AI aiming to use a Large Language Model for agent control. This is currently in the early stages of development and not fully functional.
+*   **[`AILargeLanguageModel.cs`](Assets/Scripts/Agent/AI/AILargeLanguageModel.cs)**: This AI uses a Large Language Model to make decisions. Although functional, it should be considered **experimental** and is, by a wide margin, not as efficient or reliable as the other AI methods. Its performance heavily depends on the model provider, the specific model used, and network latency.
+    *   **How it Works**: It constructs a detailed prompt containing the agent's current knowledge of the world (position, visited cells, perceived hazards) and sends it to an LLM API. It then parses the text response to execute an action (e.g., "Move Up", "Shoot Left").
+    *   **Supported Providers**: The implementation supports several LLM providers: `OpenAI`, `Mistral`, `Ollama` (for local models), and `OpenRouter`.
+    *   **Setup**: To use this AI, you must:
+        1.  Select the `LargeLanguageModel` AI Type and your chosen `ApiProvider` in the `GameManager` inspector.
+        2.  For cloud providers (`OpenAI`, `Mistral`, `OpenRouter`), create a file named `env.txt` inside the `Assets/Resources/` folder.
+        3.  Add your API key to this file in the format `PROVIDER_API_KEY="your_key_here"` (e.g., `OPENAI_API_KEY="sk-..."`).
+        4.  If using `Ollama`, ensure your local Ollama server is running.
 
 ---
 
@@ -445,7 +452,7 @@ WumpusWorld
 
 ## Roadmap / Future Work
 *   **Performance Optimization**: Profile and optimize code for larger grids or more complex AI computations, including with the Prolog AI.
-*   **LLM Agent Finalization**: Fully implement and test the `AILargeLanguageModel.cs` agent.
+*   **LLM Agent Improvements**: Improve the prompt engineering, performance, and reliability of the `AILargeLanguageModel.cs` agent.
 *   **Advanced Prolog Reasoning**: Expand the Prolog knowledge base (`.pl` files) with more sophisticated rules, heuristic strategies, and learning capabilities (e.g., remembering paths, inferring Wumpus locations with more certainty).
 *   **Well-Founded Semantics (WFS)**: Further investigate and integrate the existing functional implementation of WFS for more advanced logical reasoning. While functional, it was excluded from the current experiments for simplicity but remains a promising area for future work.
 *   **Complex Personalities**: Enhance the impact of personalities on AI behavior across all AI types.
