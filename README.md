@@ -447,6 +447,7 @@ WumpusWorld
 *   **Performance Optimization**: Profile and optimize code for larger grids or more complex AI computations, including with the Prolog AI.
 *   **LLM Agent Finalization**: Fully implement and test the `AILargeLanguageModel.cs` agent.
 *   **Advanced Prolog Reasoning**: Expand the Prolog knowledge base (`.pl` files) with more sophisticated rules, heuristic strategies, and learning capabilities (e.g., remembering paths, inferring Wumpus locations with more certainty).
+*   **Well-Founded Semantics (WFS)**: Further investigate and integrate the existing functional implementation of WFS for more advanced logical reasoning. While functional, it was excluded from the current experiments for simplicity but remains a promising area for future work.
 *   **Complex Personalities**: Enhance the impact of personalities on AI behavior across all AI types.
 *   **UI/UX Improvements**: Develop a more user-friendly in-game UI for configuration, agent status display, and game feedback.
 *   **Additional Game Elements**: Introduce new challenges, items, or environmental factors.
