@@ -1,4 +1,4 @@
-%% Article System - Core decision-making and behavior rules
+%% Core decision-making and behavior rules
 %% This file implements the main reasoning system for agent behavior
 
 %% Load required ontologies and knowledge bases
