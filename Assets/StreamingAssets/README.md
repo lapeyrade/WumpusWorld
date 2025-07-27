@@ -10,73 +10,6 @@ swipl main.pl
 
 ---
 
-## Detailed Comparison: `prolog_default` vs. `prolog_meta`
-
-The core difference between these two approaches is how they determine relationships between concepts (i.e., what is a "subclass" of what), which has significant implications for expressivity and performance.
-
-### `prolog_default`: Direct and Explicit Hierarchy Traversal
-
-This approach determines concept hierarchies by recursively stepping through Prolog rules at query time. The logic for this is explicitly defined in the `subsumedBy/2` predicate in [`prolog_default/main.pl`](./prolog_default/main.pl):
-
-```prolog
-subsumedBy(Specific, General) :-
-    nonvar(Specific),
-    nonvar(General),
-    GeneralPred =.. [General, _],
-    clause(GeneralPred, BodyTerm),
-    BodyTerm =.. [Intermediate|_],
-    (Specific = Intermediate;  % Direct match
-     subsumedBy(Specific, Intermediate)).  % Recursive check
-```
-
-**What this means:**
-- It checks for simple rules like `general(X) :- intermediate(X).`.
-- It's a "hard-coded" way of traversing the hierarchy. It only looks for a single predicate in the body of a clause.
-- **Limitation & Lower Expressivity:** It can only understand simple, direct inheritance. If you had a more complex rule like `conceptA(X) :- conceptB(X), conceptC(X).`, this `subsumedBy` predicate would only identify `conceptB` as the parent, ignoring `conceptC`.
-
-The inheritance rules for properties also reflect this directness, requiring separate rules to generalize over each argument:
-```prolog
-% From prolog_default/main.pl
-desirable(Perso, Obj):-
-    desirable(GenPerso, Obj), 
-    subsumedBy(Perso, GenPerso).
-
-desirable(Perso, Obj):-
-    desirable(Perso, GenObj), 
-    subsumedBy(Obj, GenObj).
-```
-
-### `prolog_meta`: Abstract and Automated Hierarchy Construction
-
-This approach uses **meta-programming** to build a complete, abstract understanding of the concept hierarchy *before* any queries are run. The key logic resides in [`prolog_meta/onto.pl`](./prolog_meta/onto.pl).
-
-At startup, the `classification/2` predicate is called. It analyzes the **source code** of all the other `.pl` files, inspects the clauses, and automatically asserts a series of `subsumedBy(specific, general).` facts into the knowledge base.
-
-**What this means:**
-- **Higher Expressivity:** The system can understand more complex rules. For instance, the `subsume_intersection/2` predicate in `onto.pl` is designed to handle rules with multiple conditions in the body (e.g., `a(X) :- b(X), c(X).`). It correctly infers that both `b` and `c` are superclasses of `a`.
-- **Abstraction:** You can define concepts with complex logical rules, and the meta-engine figures out the hierarchy for you. You are not limited to simple `is-a` chains.
-- **More Powerful Inheritance:** The rules for inheriting properties are more generic and powerful. Instead of multiple direct rules, there is a single, more abstract rule using `generalize_pair/4`:
-
-    ```prolog
-    % From prolog_meta/main.pl
-    desirable(Perso, Obj):-
-        desirable(SupPerso, SupObj),
-        generalize_pair(Perso, Obj, SupPerso, SupObj).
-    ```
-    This single rule can handle inheritance across both personality and objective simultaneously, which is more powerful and concise.
-
-### Conclusion: Expressivity vs. Efficiency
-
-- **`prolog_default` is less expressive than `prolog_meta`** It's limited to simple hierarchical rules. `prolog_meta`'s ability to analyze the code and handle more complex rule structures makes it fundamentally more expressive and flexible.
-
-- **`prolog_meta` is less efficient than `prolog_default`** This power comes at a cost.
-    1.  **Startup Time:** The initial `classification` step, where it reads and analyzes the entire knowledge base, is slower and more memory-intensive.
-    2.  **Query Complexity:** The generic reasoning rules can lead to a larger search space for Prolog to explore when trying to find a solution, making individual queries slower.
-
-The `prolog_default` approach is faster because it's more direct and avoids the heavy overhead of full meta-analysis. In the current Wumpus World simulation, which is fairly simple, the `prolog_default` approach is expressive enough to handle the complexity of the game.
-
----
-
 ## 1. Default Approach (`prolog_default`)
 
 [Go to `prolog_default` directory](./prolog_default/)
@@ -125,3 +58,78 @@ This is another early and less expressive implementation. It is slightly more ad
 - **Predicate-based:** Relies on the `query_ontology` predicate for reasoning.
 - **Moderately Expressive:** A step up from simple inheritance but still limited compared to the `default` and `meta` approaches.
 - **Entry Point:** [`main.pl`](./prolog_queryontology/main.pl) 
+
+
+---
+
+## Detailed Comparison: `prolog_default` vs. `prolog_meta`
+
+`prolog_default` is not a simplified version of `prolog_meta` in terms of code, but it represents a radical simplification of the **reasoning strategy**. The most precise way to describe the difference is:
+
+*   **`prolog_meta`** uses an **"Ahead-of-Time" (AOT) classification** strategy.
+*   **`prolog_default`** uses a **"Query-Time" traversal** strategy.
+
+Let's break down what that means.
+
+### The `prolog_meta` Strategy: Analyze Everything First (AOT)
+
+This approach works like a compiler. Its philosophy is to **do the hard work once, up front.**
+
+1.  **Analysis Phase:** When it starts, it actively reads its own source code using meta-programming. The `classification/2` predicate in [`onto.pl`](./prolog_meta/onto.pl) inspects every rule to build a complete map of the concept hierarchy.
+
+2.  **Handling Complexity:** This analysis handles complex rules with multiple conditions in the body. When it sees a rule like `a(X) :- b(X), c(X).`, it interprets `a` as a concept that is subsumed by the *common ancestors* of `b` and `c`. For example, if `b` is a `monster` and `c` is an `item`, and both are `element`s, the system will infer `subsumedBy(a, element)`. It currently does not infer that `a` is a sub-concept of `b` and `c` themselves, but rather of what they have in common up the hierarchy.
+
+3.  **Storing the Results:** It then stores this complete map as simple `subsumedBy(child, parent).` facts in the database.
+
+4.  **Querying:** By the time you run a query, the hard work is done. The reasoning rules are highly abstract and just consult the pre-computed facts. This makes the inheritance rules powerful and concise. For example, a single rule handles generalization for the `desirable` predicate:
+
+    ```prolog
+    % From prolog_meta/main.pl
+    desirable(Perso, Obj):-
+        desirable(SupPerso, SupObj),
+        generalize_pair(Perso, Obj, SupPerso, SupObj).
+    ```
+
+**Analogy:** This is like reading a textbook, creating a detailed index, and then using that index to answer questions. The initial work is slow, but answering questions becomes very powerful.
+
+### The `prolog_default` Strategy: Figure It Out On-the-Fly (Query-Time)
+
+This approach's philosophy is: **do nothing until you're asked.**
+
+1.  **No Analysis Phase:** It simply loads the Prolog files. Startup is extremely fast.
+
+2.  **Query-Time Traversal:** When a query is made, its `subsumedBy/2` predicate starts a "live" search through the rules.
+
+    ```prolog
+    % From prolog_default/main.pl
+    subsumedBy(Specific, General) :-
+        nonvar(Specific),
+        nonvar(General),
+        GeneralPred =.. [General, _],
+        clause(GeneralPred, BodyTerm),
+        BodyTerm =.. [Intermediate|_],
+        (Specific = Intermediate;  % Direct match
+         subsumedBy(Specific, Intermediate)).  % Recursive check
+    ```
+
+3.  **The Critical Simplification:** Its traversal algorithm is intentionally simple and only supports rules with a single predicate in the body. For a rule like `a(X) :- b(X).`, the line `BodyTerm =.. [Intermediate|_]` correctly extracts `b` as the parent concept. However, for a rule with multiple goals, such as `a(X) :- b(X), c(X).`, the body is a term `','(b(X), c(X))`, whose main functor is the comma. The algorithm would try to find a parent named `,`, which is not a concept, and the subsumption check would fail. It is therefore blind to **both** `b` and `c`. This design forces a much simpler ontology, but is significantly faster as a result.
+
+4.  **Less Abstract Rules:** Because the traversal is limited, the reasoning rules must be more explicit. It needs two separate rules for the `desirable` predicate to handle generalization over each argument:
+    ```prolog
+    % From prolog_default/main.pl
+    desirable(Perso, Obj):-
+        desirable(GenPerso, Obj), 
+        subsumedBy(Perso, GenPerso).
+
+    desirable(Perso, Obj):-
+        desirable(Perso, GenObj), 
+        subsumedBy(Obj, GenObj).
+    ```
+
+**Analogy:** This is like being given a textbook and a question. You use the table of contents to find a chapter and start reading, following references as you go. It's faster to start, but you might miss connections.
+
+### Conclusion: Expressivity vs. Efficiency
+
+The `prolog_default` approach has a simplified **reasoning algorithm**. It's not a simplified version of the codebase, but a different architecture. It trades the expressivity and completeness of the meta-analysis for speed.
+
+This is a pragmatic and effective choice for the Wumpus World simulation, which is simple enough that `prolog_default` can handle its complexity while benefiting from the significant performance gains.
