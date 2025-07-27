@@ -47,7 +47,7 @@ desirable(brave, fight).          % Brave desires combat
 desirable(personality, explore).   % All personalities desire exploration
 desirable(personality, unconstrained). % All personalities desire freedom
 
-%% Desire Inheritance
+%% Desire Generalization and Specialization
 %% Allows desires to be inherited through personality hierarchy
 desirable(Perso, Obj):-
     desirable(SupPerso, SupObj),
@@ -63,7 +63,7 @@ motivation(safecell, explore).        % Safe cells motivate exploration
 motivation(visitedcell, explore).     % Visited cells motivate exploration
 motivation(obstacle, unconstrained).  % Obstacles relate to freedom of movement
 
-%% Motivation Inheritance
+%% Motivation Generalization and Specialization
 %% Allows motivations to be inherited through element hierarchy
 motivation(Elem, Obj):-
     motivation(SupElem, SupObj),
@@ -87,7 +87,7 @@ satisfy(fight, attack).            % Attack satisfies fighting
 satisfy(explore, move).            % Movement satisfies exploration
 satisfy(unconstrained, bumpwall).  % Wall bumping relates to constraints
 
-%% Satisfaction Inheritance
+%% Satisfaction Generalization and Specialization
 %% Allows satisfaction relationships to be inherited
 satisfy(Obj, Act):-
     satisfy(SupObj, SupAct),
@@ -102,7 +102,7 @@ encline(ascetic, interact, 3).     % Ascetic moderately inclined to interact
 encline(personality, bumpwall, 2). % Basic inclination to bump walls
 encline(personality, move, 1).     % Basic inclination to move
 
-%% Inclination Inheritance
+%% Inclination Generalization and Specialization
 %% Allows inclinations to be inherited through personality hierarchy
 encline(Perso, Act, Util):-
     encline(SupPerso, SupAct, Util),
