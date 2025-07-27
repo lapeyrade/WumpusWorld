@@ -15,7 +15,7 @@
 :- table (desirable/2, motivation/2, satisfy/2, encline/3, genObjective/4, genAction/6,
         data_concept/2, subsumedBy/2) as (incremental, dynamic).
 
-%% Subsumption System
+%% Subsumption System :
 %% Implements hierarchical relationships between concepts and transitive subsumption
 %% - Transitive relationships through recursive rules
 %% - Concept inheritance and instance classification 
@@ -53,7 +53,7 @@ desirable(brave, fight).
 desirable(personality, explore).
 desirable(personality, unconstrained).
 
-%% Desire Inheritance Rules
+%% Desire Generalization and Specialization Rules
 %% Implements desire propagation through hierarchies:
 %% - Personality-based inheritance
 %% - Objective-based inheritance
@@ -81,7 +81,7 @@ motivation(safecell, explore).
 motivation(visitedcell, explore).
 motivation(obstacle, unconstrained).
 
-%% Motivation Inheritance Rules
+%% Motivation Generalization and Specialization Rules
 %% Implements motivation propagation:
 %% - Element-based inheritance
 %% - Objective-based inheritance
@@ -120,7 +120,7 @@ satisfy(fight, attack).
 satisfy(explore, move).
 satisfy(unconstrained, bumpwall).
 
-%% Satisfaction Inheritance Rules
+%% Satisfaction Generalization and Specialization Rules
 %% Implements satisfaction propagation:
 %% - Objective-based inheritance
 %% - Action-based inheritance
@@ -146,7 +146,7 @@ encline(ascetic, interact, 3).
 encline(personality, bumpwall, 2).
 encline(personality, move, 1).
 
-%% Inclination Inheritance Rules
+%% Inclination Generalization and Specialization Rules
 %% Implements preference propagation:
 %% - Personality-based inheritance
 %% - Action-based inheritance
