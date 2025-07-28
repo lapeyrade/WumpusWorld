@@ -4,6 +4,7 @@ using System.Text;
 using GameManagement;
 using UnityEngine;
 using UnityEngine.Networking;
+using System.Text.Json.Serialization;
 
 // An AI controller that uses a Large Language Model (LLM) to decide the agent's actions.
 // This class constructs a prompt based on the current game state, sends it to an LLM API,
@@ -26,6 +27,7 @@ namespace Agent.AI
         // LLM and game state variables
         private string _apiKey;
         private readonly List<ApiMessage> _chatHistory = new();
+        public IReadOnlyList<ApiMessage> ChatHistory => _chatHistory.AsReadOnly();
         private GameManager _gameManager;
         private readonly Dictionary<string, string> _envVars = new();
 
@@ -47,9 +49,11 @@ namespace Agent.AI
 
         // Represents a single message in the chat history for the API request.
         [System.Serializable]
-        private class ApiMessage
+        public class ApiMessage
         {
+            [JsonInclude]
             public string role;
+            [JsonInclude]
             public string content;
         }
 
@@ -283,10 +287,13 @@ What is your next action?" });
             var modelName = _gameManager.apiProvider switch
             {
                 GameManager.ApiProvider.OpenAI => "o4-mini",
-                GameManager.ApiProvider.Mistral => "mistral-medium-latest",
-                // GameManager.ApiProvider.Mistral => "magistral-medium-latest",
+                // GameManager.ApiProvider.OpenAI => "gpt-4o-mini",
+                // GameManager.ApiProvider.Mistral => "mistral-medium-latest",
+                GameManager.ApiProvider.Mistral => "magistral-medium-latest",
                 GameManager.ApiProvider.OpenRouter => "deepseek/deepseek-r1:free",
-                GameManager.ApiProvider.Ollama => "deepseek-r1:latest",
+                // GameManager.ApiProvider.Ollama => "deepseek-r1:1.5b",
+                // GameManager.ApiProvider.Ollama => "deepseek-r1:14b",
+                GameManager.ApiProvider.Ollama => "gemma3n:e4b",
                 _ => "o4-mini"
             };
 
@@ -358,6 +365,10 @@ What is your next action?" });
                 }
 
                 _chatHistory.Add(new ApiMessage { role = "assistant", content = responseMessage });
+                
+                // Save the updated chat history after each turn
+                _gameManager.SaveLlmData(gameObject);
+                
                 callback?.Invoke(responseMessage);
             }
         }

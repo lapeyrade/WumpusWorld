@@ -4,6 +4,7 @@ using System.Linq;
 using Prolog;
 using UnityEngine;
 using Random = UnityEngine.Random;
+using System.Text.Json;
 
 namespace GameManagement
 {
@@ -142,6 +143,62 @@ namespace GameManagement
             // Create file /../data/DATE-AIType-Personalities.json and write json to it
             // var path = $"data/{DateTime.Now:yy_MM_dd_HH_mm_ss}-{aiType}-{string.Join("-", personalities)}.json";
             var path = $"data/{gridMax.x}x{gridMax.y}-{nbAgent}a-{nbWumpus}wp-{nbGold}g-{string.Join("-", personalities)}-{aiType}.json";
+            System.IO.File.WriteAllText(path, json);
+        }
+        
+        public void SaveLlmData(GameObject currentAgent)
+        {
+            if (aiType != AIType.LargeLanguageModel) return;
+            var path = $"data/{gridMax.x}x{gridMax.y}-{nbAgent}a-{nbWumpus}wp-{nbGold}g-{string.Join("-", personalities)}-{aiType}.json";
+
+            List<Dictionary<string, object>> data;
+            if (System.IO.File.Exists(path))
+            {
+                var existingJson = System.IO.File.ReadAllText(path);
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+                data = JsonSerializer.Deserialize<List<Dictionary<string, object>>>(existingJson, options);
+            }
+            else
+            {
+                data = new List<Dictionary<string, object>>();
+                var gameConfig = new Dictionary<string, object>
+                {
+                    { "randomSeed", randomSeed },
+                    { "gridMin", new { x = gridMin.x, y = gridMin.y } },
+                    { "gridMax", new { x = gridMax.x, y = gridMax.y } },
+                    { "tileSize", Math.Round(tileSize, 2) },
+                    { "nbPit", nbPit },
+                    { "nbWumpus", nbWumpus },
+                    { "nbGold", nbGold },
+                    { "nbAgent", nbAgent },
+                    { "aiType", aiType.ToString() },
+                    { "personalities", personalities },
+                    { "agents", agents.Count },
+                    { "isGameOver", isGameOver },
+                    { "isModeAuto", isModeAuto },
+                    { "apiProvider", apiProvider.ToString() }
+                };
+                data.Add(gameConfig);
+            }
+
+            var agentData = data.FirstOrDefault(d => d.ContainsKey("agent") && ((JsonElement)d["agent"]).GetString() == currentAgent.name);
+
+            var llm = currentAgent.GetComponent<Agent.AI.AILargeLanguageModel>();
+            if (llm != null)
+            {
+                if (agentData == null)
+                {
+                    agentData = new Dictionary<string, object> { { "agent", currentAgent.name } };
+                    data.Add(agentData);
+                }
+                agentData["chatHistory"] = llm.ChatHistory;
+            }
+
+            var json = JsonSerializer.Serialize(data,
+                new JsonSerializerOptions { WriteIndented = true, Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() }});
             System.IO.File.WriteAllText(path, json);
         }
     }

@@ -1,0 +1,946 @@
+[
+  {
+    "randomSeed": 1,
+    "gridMin": {
+      "x": 0,
+      "y": 0
+    },
+    "gridMax": {
+      "x": 10,
+      "y": 10
+    },
+    "tileSize": 1.05,
+    "nbPit": 3,
+    "nbWumpus": 3,
+    "nbGold": 1,
+    "nbAgent": 1,
+    "aiType": "LargeLanguageModel",
+    "personalities": [
+      0,
+      2
+    ],
+    "agents": 1,
+    "isGameOver": true,
+    "isModeAuto": false,
+    "turnDuration": [
+      0.02,
+      5.22,
+      0.37,
+      0.38,
+      0.00,
+      0.35,
+      0.36,
+      0.38,
+      0.36,
+      0.39,
+      0.42,
+      0.37,
+      0.40,
+      0.38,
+      0.38,
+      0.38,
+      0.39,
+      0.38,
+      0.38,
+      0.41,
+      0.41,
+      0.40,
+      0.42,
+      0.42,
+      0.45,
+      0.42,
+      0.42,
+      0.43,
+      0.44,
+      0.41,
+      0.42,
+      0.40,
+      0.41,
+      0.46,
+      0.44,
+      0.42,
+      0.43,
+      0.42,
+      0.42,
+      0.44,
+      0.47,
+      0.44,
+      0.45,
+      0.45,
+      0.40,
+      0.46,
+      0.47,
+      0.51,
+      0.55,
+      0.48,
+      0.42,
+      0.55,
+      0.46,
+      0.46,
+      0.47,
+      0.45,
+      0.48,
+      0.47,
+      0.49,
+      0.48,
+      0.52,
+      0.50,
+      0.50,
+      0.49
+    ],
+    "apiProvider": "OpenAI"
+  },
+  {
+    "agent": "human0",
+    "actions": [
+      "",
+      "",
+      "MoveDown",
+      "MoveLeft",
+      "MoveUp",
+      "MoveUp",
+      "MoveRight",
+      "MoveBack",
+      "MoveDown",
+      "MoveDown",
+      "MoveLeft",
+      "MoveUp",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack",
+      "MoveDown",
+      "MoveDown",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack",
+      "MoveDown",
+      "MoveDown",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack",
+      "MoveDown",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack",
+      "MoveDown",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack",
+      "MoveDown",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack",
+      "MoveLeft",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack",
+      "MoveUp",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack",
+      "MoveLeft",
+      "MoveBack",
+      "MoveDown",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack",
+      "MoveBack"
+    ],
+    "positions": [
+      {
+        "x": 3,
+        "y": 3
+      },
+      {
+        "x": 3,
+        "y": 3
+      },
+      {
+        "x": 3,
+        "y": 2
+      },
+      {
+        "x": 2,
+        "y": 2
+      },
+      {
+        "x": 2,
+        "y": 3
+      },
+      {
+        "x": 2,
+        "y": 3
+      },
+      {
+        "x": 3,
+        "y": 3
+      },
+      {
+        "x": 3,
+        "y": 2
+      },
+      {
+        "x": 3,
+        "y": 1
+      },
+      {
+        "x": 3,
+        "y": 0
+      },
+      {
+        "x": 2,
+        "y": 0
+      },
+      {
+        "x": 2,
+        "y": 1
+      },
+      {
+        "x": 2,
+        "y": 2
+      },
+      {
+        "x": 3,
+        "y": 2
+      },
+      {
+        "x": 3,
+        "y": 1
+      },
+      {
+        "x": 3,
+        "y": 0
+      },
+      {
+        "x": 3,
+        "y": 0
+      },
+      {
+        "x": 3,
+        "y": 1
+      },
+      {
+        "x": 3,
+        "y": 2
+      },
+      {
+        "x": 3,
+        "y": 1
+      },
+      {
+        "x": 2,
+        "y": 1
+      },
+      {
+        "x": 2,
+        "y": 2
+      },
+      {
+        "x": 3,
+        "y": 2
+      },
+      {
+        "x": 3,
+        "y": 1
+      },
+      {
+        "x": 3,
+        "y": 0
+      },
+      {
+        "x": 3,
+        "y": 0
+      },
+      {
+        "x": 3,
+        "y": 1
+      },
+      {
+        "x": 3,
+        "y": 2
+      },
+      {
+        "x": 3,
+        "y": 1
+      },
+      {
+        "x": 3,
+        "y": 0
+      },
+      {
+        "x": 3,
+        "y": 1
+      },
+      {
+        "x": 3,
+        "y": 2
+      },
+      {
+        "x": 3,
+        "y": 1
+      },
+      {
+        "x": 3,
+        "y": 0
+      },
+      {
+        "x": 3,
+        "y": 1
+      },
+      {
+        "x": 3,
+        "y": 2
+      },
+      {
+        "x": 3,
+        "y": 1
+      },
+      {
+        "x": 3,
+        "y": 0
+      },
+      {
+        "x": 3,
+        "y": 1
+      },
+      {
+        "x": 3,
+        "y": 1
+      },
+      {
+        "x": 3,
+        "y": 2
+      },
+      {
+        "x": 2,
+        "y": 2
+      },
+      {
+        "x": 1,
+        "y": 1
+      },
+      {
+        "x": 2,
+        "y": 1
+      },
+      {
+        "x": 2,
+        "y": 2
+      },
+      {
+        "x": 2,
+        "y": 2
+      },
+      {
+        "x": 2,
+        "y": 2
+      },
+      {
+        "x": 3,
+        "y": 2
+      },
+      {
+        "x": 4,
+        "y": 2
+      },
+      {
+        "x": 4,
+        "y": 2
+      },
+      {
+        "x": 3,
+        "y": 3
+      },
+      {
+        "x": 3,
+        "y": 2
+      },
+      {
+        "x": 3,
+        "y": 2
+      },
+      {
+        "x": 3,
+        "y": 2
+      },
+      {
+        "x": 2,
+        "y": 2
+      },
+      {
+        "x": 1,
+        "y": 2
+      },
+      {
+        "x": 1,
+        "y": 1
+      },
+      {
+        "x": 1,
+        "y": 0
+      },
+      {
+        "x": 1,
+        "y": 1
+      },
+      {
+        "x": 1,
+        "y": 1
+      },
+      {
+        "x": 2,
+        "y": 2
+      },
+      {
+        "x": 2,
+        "y": 2
+      },
+      {
+        "x": 4,
+        "y": 2
+      },
+      {
+        "x": 4,
+        "y": 2
+      }
+    ],
+    "chatHistory": [
+      {
+        "role": "system",
+        "content": "\nYou are a cautious and strategic agent in a grid-based game. Your primary goal is to find the gold and return to the starting cell (1,1) without dying.\n\n**--- Rules of the World ---**\n1.  **Objective:** Find the gold, pick it up, and navigate back to the starting cell (1,1) to win.\n2.  **Movement:** You can move one cell at a time: \u0060Move Right\u0060, \u0060Move Left\u0060, \u0060Move Up\u0060, \u0060Move Down\u0060.\n3.  **Hazards:**\n    *   **Pits:** If you enter a cell with a pit, you die. A \u0027Breeze\u0027 in your current cell means an adjacent cell contains a pit.\n    *   **Wumpus:** If you enter a cell with the Wumpus, you die. A \u0027Stench\u0027 in your current cell means the Wumpus is in an adjacent cell.\n4.  **Shooting:**\n    *   You have one arrow. You can \u0060Shoot Right\u0060, \u0060Shoot Left\u0060, \u0060Shoot Up\u0060, or \u0060Shoot Down\u0060.\n    *   Shooting into a cell with the Wumpus will kill it, removing the threat.\n    *   Shooting at a wall or an empty cell wastes the arrow.\n5.  **Safety:** Your top priority is survival. Always choose a safe move over a risky one. A cell is known to be safe if you have visited it, or if it\u0027s adjacent to a cell with no breeze or stench.\n\n**--- Your Task ---**\nYou will be given the current game state each turn. You must respond with only the action to take.\n\n**--- Response Format ---**\nYour response must be a single line with the action and direction, like \u0060Move Right\u0060 or \u0060Shoot Up\u0060.\n"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (1, 1)\nHas gold: false\nKnown map:\nVisited cells: (1,1) \nSafe cells: (1,2) (2,1) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: \nWhat is your next action?"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Right"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (2, 1)\nHas gold: false\nKnown map:\nVisited cells: (1,1) (2,1) \nSafe cells: (1,2) (1,1) \nCells with breeze: (2,1) \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: \nWhat is your next action?"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Left"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (1, 1)\nHas gold: false\nKnown map:\nVisited cells: (1,1) (2,1) \nSafe cells: (1,2) (2,1) \nCells with breeze: (2,1) \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: \nWhat is your next action?"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Up"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 3)\nHas gold: False\nKnown map:\nVisited cells: \nSafe cells: (2,3) (3,2) (3,4) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Down"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 2)\nHas gold: False\nKnown map:\nVisited cells: (3,2) \nSafe cells: (2,2) (2,3) (3,1) (3,4) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Left"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (2, 2)\nHas gold: False\nKnown map:\nVisited cells: (2,2) (3,2) \nSafe cells: (1,2) (2,1) (2,3) (3,1) (3,4) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Up"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (2, 3)\nHas gold: False\nKnown map:\nVisited cells: (2,2) (2,3) (3,2) \nSafe cells: (1,2) (1,3) (2,1) (2,4) (3,1) (3,4) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Right"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 3)\nHas gold: False\nKnown map:\nVisited cells: (2,2) (2,3) (3,2) \nSafe cells: (1,2) (1,3) (2,1) (2,4) (3,1) (3,4) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Down"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 2)\nHas gold: False\nKnown map:\nVisited cells: (2,2) (2,3) (3,2) \nSafe cells: (1,2) (1,3) (2,1) (2,4) (3,1) (3,4) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Down"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 1)\nHas gold: False\nKnown map:\nVisited cells: (2,2) (2,3) (3,1) (3,2) \nSafe cells: (1,2) (1,3) (2,1) (2,4) (3,0) (3,4) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Down"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 0)\nHas gold: False\nKnown map:\nVisited cells: (2,2) (2,3) (3,1) (3,2) \nSafe cells: (1,2) (1,3) (2,0) (2,1) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Left"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (2, 0)\nHas gold: False\nKnown map:\nVisited cells: (2,2) (2,3) (3,1) (3,2) \nSafe cells: (1,0) (1,2) (1,3) (2,1) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Up"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (2, 1)\nHas gold: False\nKnown map:\nVisited cells: (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (1,0) (1,1) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Up"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (2, 2)\nHas gold: False\nKnown map:\nVisited cells: (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (1,0) (1,1) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Right"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 2)\nHas gold: False\nKnown map:\nVisited cells: (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (1,0) (1,1) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Down"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 1)\nHas gold: False\nKnown map:\nVisited cells: (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (1,0) (1,1) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Down"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 0)\nHas gold: False\nKnown map:\nVisited cells: (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (1,0) (1,1) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Down"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 0)\nHas gold: False\nKnown map:\nVisited cells: (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (1,0) (1,1) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Up"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 1)\nHas gold: False\nKnown map:\nVisited cells: (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (1,0) (1,1) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Up"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 2)\nHas gold: False\nKnown map:\nVisited cells: (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (1,0) (1,1) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Down"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 1)\nHas gold: False\nKnown map:\nVisited cells: (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (1,0) (1,1) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Left"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (2, 1)\nHas gold: False\nKnown map:\nVisited cells: (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (1,0) (1,1) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Up"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (2, 2)\nHas gold: False\nKnown map:\nVisited cells: (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (1,0) (1,1) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Right"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 2)\nHas gold: False\nKnown map:\nVisited cells: (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (1,0) (1,1) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Down"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 1)\nHas gold: False\nKnown map:\nVisited cells: (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (1,0) (1,1) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Down"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 0)\nHas gold: False\nKnown map:\nVisited cells: (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (1,0) (1,1) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Down"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 0)\nHas gold: False\nKnown map:\nVisited cells: (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (1,0) (1,1) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Up"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 1)\nHas gold: False\nKnown map:\nVisited cells: (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (1,0) (1,1) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Up"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 2)\nHas gold: False\nKnown map:\nVisited cells: (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (1,0) (1,1) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Down"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 1)\nHas gold: False\nKnown map:\nVisited cells: (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (1,0) (1,1) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Down"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 0)\nHas gold: False\nKnown map:\nVisited cells: (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (1,0) (1,1) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Up"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 1)\nHas gold: False\nKnown map:\nVisited cells: (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (1,0) (1,1) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Up"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 2)\nHas gold: False\nKnown map:\nVisited cells: (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (1,0) (1,1) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Down"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 1)\nHas gold: False\nKnown map:\nVisited cells: (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (1,0) (1,1) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Down"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 0)\nHas gold: False\nKnown map:\nVisited cells: (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (1,0) (1,1) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Up"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 1)\nHas gold: False\nKnown map:\nVisited cells: (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (1,0) (1,1) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Up"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 2)\nHas gold: False\nKnown map:\nVisited cells: (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (1,0) (1,1) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Down"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 1)\nHas gold: False\nKnown map:\nVisited cells: (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (1,0) (1,1) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Down"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 0)\nHas gold: False\nKnown map:\nVisited cells: (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (1,0) (1,1) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Up"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 1)\nHas gold: False\nKnown map:\nVisited cells: (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (1,0) (1,1) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 1)\nHas gold: False\nKnown map:\nVisited cells: (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (1,0) (1,1) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Up"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 2)\nHas gold: False\nKnown map:\nVisited cells: (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (1,0) (1,1) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Left"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (2, 2)\nHas gold: False\nKnown map:\nVisited cells: (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (1,0) (1,1) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Down"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Left"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (1, 1)\nHas gold: False\nKnown map:\nVisited cells: (1,1) (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (0,1) (1,0) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Right"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (2, 1)\nHas gold: False\nKnown map:\nVisited cells: (1,1) (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (0,1) (1,0) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Up"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (2, 2)\nHas gold: False\nKnown map:\nVisited cells: (1,1) (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (0,1) (1,0) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (2, 2)\nHas gold: False\nKnown map:\nVisited cells: (1,1) (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (0,1) (1,0) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (2, 2)\nHas gold: False\nKnown map:\nVisited cells: (1,1) (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (0,1) (1,0) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Right"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 2)\nHas gold: False\nKnown map:\nVisited cells: (1,1) (2,1) (2,2) (2,3) (3,1) (3,2) \nSafe cells: (0,1) (1,0) (1,2) (1,3) (2,4) (3,4) (4,0) (4,1) (4,2) (4,3) \nCells with breeze: \nCells with stench: \nPerceived Wumpus cells: \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Right"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Down"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Up"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (4, 2)\nHas gold: False\nKnown map:\nVisited cells: (1,1) (2,1) (2,2) (2,3) (3,1) (3,2) (4,1) (4,2) \nSafe cells: (0,1) (1,0) (1,2) (1,3) (2,4) (3,4) (4,0) (4,3) (5,1) \nCells with breeze: \nCells with stench: (4,2) (5,1) (5,3) (6,2) \nPerceived Wumpus cells: (5,2) \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (4, 2)\nHas gold: False\nKnown map:\nVisited cells: (1,1) (2,1) (2,2) (2,3) (3,1) (3,2) (4,1) (4,2) \nSafe cells: (0,1) (1,0) (1,2) (1,3) (2,4) (3,4) (4,0) (4,3) (5,1) \nCells with breeze: \nCells with stench: (4,2) (5,1) (5,3) (6,2) \nPerceived Wumpus cells: (5,2) \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Left"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Up"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 3)\nHas gold: False\nKnown map:\nVisited cells: (1,1) (2,1) (2,2) (2,3) (3,1) (3,2) (4,1) (4,2) \nSafe cells: (0,1) (1,0) (1,2) (1,3) (2,4) (3,4) (4,0) (4,3) (5,1) \nCells with breeze: \nCells with stench: (4,2) (5,1) (5,3) (6,2) \nPerceived Wumpus cells: (5,2) \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Down"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 2)\nHas gold: False\nKnown map:\nVisited cells: (1,1) (2,1) (2,2) (2,3) (3,1) (3,2) (4,1) (4,2) \nSafe cells: (0,1) (1,0) (1,2) (1,3) (2,4) (3,4) (4,0) (4,3) (5,1) \nCells with breeze: \nCells with stench: (4,2) (5,1) (5,3) (6,2) \nPerceived Wumpus cells: (5,2) \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 2)\nHas gold: False\nKnown map:\nVisited cells: (1,1) (2,1) (2,2) (2,3) (3,1) (3,2) (4,1) (4,2) \nSafe cells: (0,1) (1,0) (1,2) (1,3) (2,4) (3,4) (4,0) (4,3) (5,1) \nCells with breeze: \nCells with stench: (4,2) (5,1) (5,3) (6,2) \nPerceived Wumpus cells: (5,2) \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (3, 2)\nHas gold: False\nKnown map:\nVisited cells: (1,1) (2,1) (2,2) (2,3) (3,1) (3,2) (4,1) (4,2) \nSafe cells: (0,1) (1,0) (1,2) (1,3) (2,4) (3,4) (4,0) (4,3) (5,1) \nCells with breeze: \nCells with stench: (4,2) (5,1) (5,3) (6,2) \nPerceived Wumpus cells: (5,2) \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Left"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (2, 2)\nHas gold: False\nKnown map:\nVisited cells: (1,1) (2,1) (2,2) (2,3) (3,1) (3,2) (4,1) (4,2) \nSafe cells: (0,1) (1,0) (1,2) (1,3) (2,4) (3,4) (4,0) (4,3) (5,1) \nCells with breeze: \nCells with stench: (4,2) (5,1) (5,3) (6,2) \nPerceived Wumpus cells: (5,2) \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Left"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (1, 2)\nHas gold: False\nKnown map:\nVisited cells: (1,1) (1,2) (2,1) (2,2) (2,3) (3,1) (3,2) (4,1) (4,2) \nSafe cells: (0,1) (0,2) (1,0) (1,3) (2,4) (3,4) (4,0) (4,3) (5,1) \nCells with breeze: \nCells with stench: (4,2) (5,1) (5,3) (6,2) \nPerceived Wumpus cells: (5,2) \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Down"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (1, 1)\nHas gold: False\nKnown map:\nVisited cells: (1,1) (1,2) (2,1) (2,2) (2,3) (3,1) (3,2) (4,1) (4,2) \nSafe cells: (0,1) (0,2) (1,0) (1,3) (2,4) (3,4) (4,0) (4,3) (5,1) \nCells with breeze: \nCells with stench: (4,2) (5,1) (5,3) (6,2) \nPerceived Wumpus cells: (5,2) \nPerceived wall cells: (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Down"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (1, 0)\nHas gold: False\nKnown map:\nVisited cells: (1,1) (1,2) (2,1) (2,2) (2,3) (3,1) (3,2) (4,1) (4,2) \nSafe cells: (0,0) (0,1) (0,2) (1,3) (2,4) (3,4) (4,0) (4,3) (5,1) \nCells with breeze: \nCells with stench: (4,2) (5,1) (5,3) (6,2) \nPerceived Wumpus cells: (5,2) \nPerceived wall cells: (1,0) (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Up"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (1, 1)\nHas gold: False\nKnown map:\nVisited cells: (1,1) (1,2) (2,1) (2,2) (2,3) (3,1) (3,2) (4,1) (4,2) \nSafe cells: (0,0) (0,1) (0,2) (1,3) (2,4) (3,4) (4,0) (4,3) (5,1) \nCells with breeze: \nCells with stench: (4,2) (5,1) (5,3) (6,2) \nPerceived Wumpus cells: (5,2) \nPerceived wall cells: (1,0) (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (1, 1)\nHas gold: False\nKnown map:\nVisited cells: (1,1) (1,2) (2,1) (2,2) (2,3) (3,1) (3,2) (4,1) (4,2) \nSafe cells: (0,0) (0,1) (0,2) (1,3) (2,4) (3,4) (4,0) (4,3) (5,1) \nCells with breeze: \nCells with stench: (4,2) (5,1) (5,3) (6,2) \nPerceived Wumpus cells: (5,2) \nPerceived wall cells: (1,0) (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Right"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Up"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (2, 2)\nHas gold: False\nKnown map:\nVisited cells: (1,1) (1,2) (2,1) (2,2) (2,3) (3,1) (3,2) (4,1) (4,2) \nSafe cells: (0,0) (0,1) (0,2) (1,3) (2,4) (3,4) (4,0) (4,3) (5,1) \nCells with breeze: \nCells with stench: (4,2) (5,1) (5,3) (6,2) \nPerceived Wumpus cells: (5,2) \nPerceived wall cells: (1,0) (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (2, 2)\nHas gold: False\nKnown map:\nVisited cells: (1,1) (1,2) (2,1) (2,2) (2,3) (3,1) (3,2) (4,1) (4,2) \nSafe cells: (0,0) (0,1) (0,2) (1,3) (2,4) (3,4) (4,0) (4,3) (5,1) \nCells with breeze: \nCells with stench: (4,2) (5,1) (5,3) (6,2) \nPerceived Wumpus cells: (5,2) \nPerceived wall cells: (1,0) (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Right"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Right"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (4, 2)\nHas gold: False\nKnown map:\nVisited cells: (1,1) (1,2) (2,1) (2,2) (2,3) (3,1) (3,2) (4,1) (4,2) \nSafe cells: (0,0) (0,1) (0,2) (1,3) (2,4) (3,4) (4,0) (4,3) (5,1) \nCells with breeze: \nCells with stench: (4,2) (5,1) (5,3) (6,2) \nPerceived Wumpus cells: (5,2) \nPerceived wall cells: (1,0) (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "user",
+        "content": "New Turn:\nCurrent position: (4, 2)\nHas gold: False\nKnown map:\nVisited cells: (1,1) (1,2) (2,1) (2,2) (2,3) (3,1) (3,2) (4,1) (4,2) \nSafe cells: (0,0) (0,1) (0,2) (1,3) (2,4) (3,4) (4,0) (4,3) (5,1) \nCells with breeze: \nCells with stench: (4,2) (5,1) (5,3) (6,2) \nPerceived Wumpus cells: (5,2) \nPerceived wall cells: (1,0) (2,0) (3,0) \nWhat is your next action?\n"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Right"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Down"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Left"
+      },
+      {
+        "role": "assistant",
+        "content": "Move Right"
+      }
+    ]
+  }
+]
